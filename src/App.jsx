@@ -1,9 +1,12 @@
 import React from 'react'
-import Registrationpage from './Registrationpage'
+import Registrationpage from './component/Registrationpage'
+
 
 const App = () => {
   return (
-  <Registrationpage/>
+  <>
+   <Registrationpage/>
+  </>
   )
 }
 
