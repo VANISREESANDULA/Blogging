@@ -6,6 +6,7 @@ const App = () => {
   return (
   <>
    <Registrationpage/>
+   <h1></h1>
   </>
   )
 }
