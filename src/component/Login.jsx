@@ -1,8 +1,12 @@
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import bgImage from "../assets/top-view-photo-laptop-flowerpot-small-spiral-notebook-pen-isolated-white-wooden-table-background-with-blank-space_352249-4747.avif"; 
+
 
 const Login = () => {
   const navigate = useNavigate();
+  const [isFormRight, setIsFormRight] = useState(true);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -13,16 +17,28 @@ const Login = () => {
     },
   });
 
-  const handleSignUp = () => {
-    navigate('/register');
-  };
+  // const handleSignUp = () => {
+  //   navigate('/register');
+  // };
+const handleSignUp = () => {
+  setIsFormRight(false); // form goes left
+  setTimeout(() => {
+    navigate("/register");
+  });
+};
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="flex w-full max-w-4xl rounded-2xl overflow-hidden backdrop-blur-lg bg-white/40 shadow-2xl border border-white/30">
+    <div  className="min-h-screen flex items-center justify-center px-4 md:px-0 bg-gradient-to-br relative  bg-cover bg-center bg-no-repeat " 
+    >
+      
+ <div className={`flex flex-col md:flex-row w-11/12 max-w-5xl rounded-2xl overflow-hidden backdrop-blur-lg bg-white/40 shadow-2xl border border-white/30 mx-auto transition-all duration-700 ${
+    isFormRight ? "md:flex-row-reverse" : ""
+  }`}
+ >
         
         {/* Sign In Section */}
-        <div className="w-1/2 p-10 flex flex-col justify-center">
+       <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
+
           <h2 className="text-2xl font-semibold text-center mb-4">Sign In</h2>
           <div className="flex justify-center space-x-4 mb-4">
             <button type="button" className="border rounded-full p-2">
@@ -109,7 +125,7 @@ const Login = () => {
 
         {/* Sign Up Promotion Section - with background image */}
         <div
-          className="w-1/2 flex flex-col items-center justify-center text-white p-10 relative"
+          className="w-full md:w-1/2 flex flex-col items-center justify-center text-white p-10 relative"
           style={{
             backgroundImage: 'url("color bg.jpg")',
             backgroundSize: 'cover',
