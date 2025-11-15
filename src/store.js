@@ -1,10 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import exampleReducer from './slice';
 import authReducer from "../src/component/redux/authSlice";
-
+import globalReducer from "../src/component/redux/globalSlice";
 export const store = configureStore({
   reducer: {
-    example: exampleReducer, // you can add more slices later here
     auth: authReducer,
+    global: globalReducer,
   },
 });
