@@ -132,6 +132,7 @@ const Registrationpage = () => {
                 shadow-xl
                 `}>
           <h2 className="text-2xl font-semibold text-center mb-4">Sign Up</h2>
+          <h2>sdvckDSv</h2>
 
           {/* Avatar Upload */ }
           <div className="flex justify-center mb-4 relative w-fit mx-auto">
