@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import 'react-advanced-cropper/dist/style.css'
 
 
+
 const Registrationpage = () => {
   const navigate = useNavigate();
   const [imageToCrop, setImageToCrop] = useState(null);
@@ -22,11 +23,33 @@ const Registrationpage = () => {
   const dispatch = useDispatch();
   const { loading, error, user } = useSelector((state) => state.auth);
 
+  // Validation function for password
+  const validatePassword = (password) => {
+    const errors = [];
+    
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters');
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter');
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter');
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      errors.push('Password must contain at least one number');
+    }
+    if (!/(?=.*[@$!%*?&])/.test(password)) {
+      errors.push('Password must contain at least one special character (@$!%*?&)');
+    }
+    
+    return errors;
   const checkPasswordStrength = (password) => {
     const strongRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     if (!password) setPasswordStrength("");
     else if (strongRegex.test(password)) setPasswordStrength("strong");
     else setPasswordStrength("weak");
+
   };
 
   const formik = useFormik({
@@ -40,6 +63,34 @@ const Registrationpage = () => {
     validate: (values) => {
       const errors = {};
 
+      // Username validation
+      if (!values.username.trim()) {
+        errors.username = 'Full name is required';
+      } else if (values.username.trim().length < 2) {
+        errors.username = 'Username must be at least 2 characters';
+      }
+
+      // Email validation
+      if (!values.email) {
+        errors.email = 'Email is required';
+      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+        errors.email = 'Invalid email address';
+      }
+
+      // Password validation
+      if (!values.password) {
+        errors.password = 'Password is required';
+      } else {
+        const passwordErrors = validatePassword(values.password);
+        if (passwordErrors.length > 0) {
+          errors.password = passwordErrors[0]; // Show first error
+        }
+      }
+
+      // Confirm password validation
+      if (!values.confirmpassword) {
+        errors.confirmpassword = 'Please confirm your password';
+      } else if (values.password !== values.confirmpassword) {
       if (!values.username.trim()) errors.username = 'Full name is required';
       if (!values.email) errors.email = 'Email is required';
       else if (!/\S+@\S+\.\S+/.test(values.email)) {
@@ -53,6 +104,7 @@ const Registrationpage = () => {
 
       if (!values.confirmpassword) errors.confirmpassword = 'Please confirm your password';
       else if (values.password !== values.confirmpassword)
+
         errors.confirmpassword = 'Passwords must match';
 
       return errors;
@@ -89,6 +141,15 @@ const Registrationpage = () => {
     const reader = new FileReader();
     reader.onload = () => setImageToCrop(reader.result);
     reader.readAsDataURL(file);
+
+            setAvatarPreview(URL.createObjectURL(file));
+            formik.setFieldValue("avatar", file);
+          }
+        }, formik.values.avatar?.type || "image/png");
+      }
+    }
+    setImageToCrop(null);
+
   };
 
   const handleCropSave = () => {
@@ -134,6 +195,8 @@ const Registrationpage = () => {
           <h2 className="text-2xl font-semibold text-center mb-4">Sign Up</h2>
 
           {/* Avatar Upload */ }
+          {/* Avatar Upload */}
+
           <div className="flex justify-center mb-4 relative w-fit mx-auto">
             <label className="relative cursor-pointer">
               <img
@@ -160,6 +223,8 @@ const Registrationpage = () => {
           </div>
 
           {/* Cropping the image */}
+          {/* Cropper Popup */}
+
           {imageToCrop && (
             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
               <div className="bg-white p-4 rounded-md shadow-xl w-[350px] h-[450px] flex flex-col gap-3">
@@ -202,18 +267,29 @@ const Registrationpage = () => {
           )}
 
           <form onSubmit={formik.handleSubmit}>
+          {/* Formik Form */}
+          <form onSubmit={formik.handleSubmit}>
+            {/* Full Name Field */}
+
             <div className="relative mb-6">
               <input
                 type="text"
                 id="username"
                 name="username"
                 className={`w-full px-4 py-3  ${formik.errors.username ? "border-red-500" : "border-black-300"} rounded-lg focus:outline-none shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={getFieldStyles('username').input}
+
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.username}
                 placeholder=" "
               />
               <label htmlFor="username" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.username ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label
+                htmlFor="username"
+                className={getFieldStyles('username').label}
+              >
+
                 Full name
               </label>
               {formik.touched.username && formik.errors.username && (
@@ -222,39 +298,58 @@ const Registrationpage = () => {
             </div>
             <div className="relative mb-6">
               <label className="absolute right-3 top-2 text-orange-500">*</label>
+            {/* Email Field */}
+            <div className="relative mb-6">
+
               <input
                 type="email"
                 id="email"
                 name="email"
                 required
                 className={`w-full px-4 py-3  ${formik.errors.email ? "border-red-500" : "border-black-300"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={getFieldStyles('email').input}
+
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.email}
                 placeholder=" "
               />
               <label htmlFor="email" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.email ? 'top-[-8px] text-black bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label
+                htmlFor="email"
+                className={getFieldStyles('email').label}
+              >
+
                 Email
               </label>
               {formik.touched.email && formik.errors.email && (
                 <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
               )}
             </div>
+            {/* Password Field */}
+
             <div className="relative mb-6">
               <input
                 type="password"
                 id="password"
                 name="password"
                 className={`w-full px-4 py-3  ${formik.errors.password ? "border-red-500" : passwordStrength === "strong" ? "border-green-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={getFieldStyles('password').input}
+                onChange={formik.handleChange}
                 onChange={(e) => {
                   formik.handleChange(e);
                   checkPasswordStrength(e.target.value);
                 }}
+
                 onBlur={formik.handleBlur}
                 value={formik.values.password}
                 placeholder=" "
               />
               <label htmlFor="password" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.password ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label
+                htmlFor="password"
+                className={getFieldStyles('password').label}
+              >
                 Password
               </label>
 
@@ -266,26 +361,41 @@ const Registrationpage = () => {
               {formik.touched.password && formik.errors.password && (
                 <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
               )}
+              {formik.touched.password && !formik.errors.password && (
+                <div className="text-green-500 text-sm mt-1">✓ Valid password</div>
+              )}
             </div>
+
             <div className="relative mb-6">
               <input
                 type="password"
                 id="confirmpassword"
                 name="confirmpassword"
                 className={`w-full px-4 py-3  ${formik.errors.confirmpassword ? "border-red-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={getFieldStyles('confirmpassword').input}
+
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.confirmpassword}
                 placeholder=" "
               />
               <label htmlFor="confirmpassword" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.confirmpassword ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label
+                htmlFor="confirmpassword"
+                className={getFieldStyles('confirmpassword').label}
+              >
+
                 Confirm Password
               </label>
               {formik.touched.confirmpassword && formik.errors.confirmpassword && (
                 <div className="text-red-500 text-sm mt-1">{formik.errors.confirmpassword}</div>
               )}
+              {formik.touched.confirmpassword && !formik.errors.confirmpassword && (
+                <div className="text-green-500 text-sm mt-1">✓ Passwords match</div>
+              )}
             </div>
             <button type="submit" className="w-full py-3 rounded-lg text-black font-bold shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 hover:opacity-90 transition-opacity">
+
               SIGN UP
             </button>
             {loading && <p className="text-blue-600 mt-2">Creating account...</p>}
@@ -318,6 +428,28 @@ const Registrationpage = () => {
                SIGN IN
             </button>
 
+        {/* Sign In Promotion Section */}
+        <div
+          className="w-1/2 flex flex-col items-center justify-center text-white p-10 relative"
+          style={{
+            backgroundImage: 'url("color bg.jpg")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <div className="bg-black/40 absolute inset-0 pointer-events-none rounded-lg"></div>
+          <div className="relative z-10 flex flex-col items-center justify-center w-full">
+            <h3 className="text-xl font-semibold mb-3">Welcome Back!</h3>
+            <p className="mb-5 text-center">
+              Already have an account? Sign in to access all features
+            </p>
+            <button
+              type="button"
+              onClick={handleSignIn}
+              className="border border-white rounded-lg px-6 py-2 font-semibold hover:bg-white hover:text-purple-500 transition"
+            >
+              SIGN IN
+            </button>
           </div>
         </div>
       </div>
@@ -327,3 +459,7 @@ const Registrationpage = () => {
 };
 
 export default Registrationpage;
+}
+
+export default Registrationpage;
+

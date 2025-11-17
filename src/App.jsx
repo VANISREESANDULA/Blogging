@@ -5,6 +5,7 @@ import Registrationpage from './component/Registrationpage';
 import Home from './component/Home';
 import AddFriends from './component/AddFriends';
 
+
 function App() {
   return (
     <Router>
