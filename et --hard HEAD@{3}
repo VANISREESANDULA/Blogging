@@ -1,0 +1,15 @@
+[33m002ade2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewpage[m[33m, [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to HEAD@{1}
+[33m9de4164[m HEAD@{1}: checkout: moving from main to newpage
+[33m002ade2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewpage[m[33m, [m[1;32mmain[m[33m)[m HEAD@{2}: checkout: moving from newpage to main
+[33m9de4164[m HEAD@{3}: commit: newly pages added
+[33m9a1c489[m HEAD@{4}: commit: mess
+[33m002ade2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewpage[m[33m, [m[1;32mmain[m[33m)[m HEAD@{5}: checkout: moving from main to newpage
+[33m002ade2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewpage[m[33m, [m[1;32mmain[m[33m)[m HEAD@{6}: checkout: moving from home to main
+[33m0544d89[m[33m ([m[1;31morigin/home[m[33m, [m[1;32mhome[m[33m)[m HEAD@{7}: commit: f
+[33ma26452b[m HEAD@{8}: commit: homepage created
+[33md1f1207[m[33m ([m[1;31morigin/validations[m[33m, [m[1;32mvalidations[m[33m)[m HEAD@{9}: checkout: moving from validations to home
+[33md1f1207[m[33m ([m[1;31morigin/validations[m[33m, [m[1;32mvalidations[m[33m)[m HEAD@{10}: commit: Validations updated
+[33m998a34a[m[33m ([m[1;31morigin/featureapi[m[33m, [m[1;32mfeatureapi[m[33m)[m HEAD@{11}: checkout: moving from featureapi to validations
+[33m998a34a[m[33m ([m[1;31morigin/featureapi[m[33m, [m[1;32mfeatureapi[m[33m)[m HEAD@{12}: commit: connected to api
+[33m002ade2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewpage[m[33m, [m[1;32mmain[m[33m)[m HEAD@{13}: checkout: moving from main to featureapi
+[33m002ade2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewpage[m[33m, [m[1;32mmain[m[33m)[m HEAD@{14}: clone: from https://github.com/VANISREESANDULA/Blogging
