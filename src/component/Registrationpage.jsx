@@ -146,7 +146,7 @@ const Registrationpage = () => {
                 name="avatar"
                 accept="image/*"
                 onChange={handleFileSelect}
-                className="absolute inset-0 opacity-0 cursor-pointer shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50"
+                className="absolute inset-0 opacity-0 cursor-pointer shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 "
               />
               <span
                 className="absolute bottom-1 right-1 p-1 rounded-md border-2 border-gray-100 shadow-lg"
@@ -207,7 +207,7 @@ const Registrationpage = () => {
                 type="text"
                 id="username"
                 name="username"
-                className={`w-full px-4 py-3  ${formik.errors.username ? "border-red-500" : "border-black-300"} rounded-lg focus:outline-none shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3  ${formik.errors.username ? "border-red-500" : "border-black-300"} rounded-lg focus:outline-none shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:border-amber-950 focus:ring-1 focus:ring-amber-950`}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.username}
@@ -227,7 +227,7 @@ const Registrationpage = () => {
                 id="email"
                 name="email"
                 required
-                className={`w-full px-4 py-3  ${formik.errors.email ? "border-red-500" : "border-black-300"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3  ${formik.errors.email ? "border-red-500" : "border-black-300"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.email}
@@ -245,7 +245,7 @@ const Registrationpage = () => {
                 type="password"
                 id="password"
                 name="password"
-                className={`w-full px-4 py-3  ${formik.errors.password ? "border-red-500" : passwordStrength === "strong" ? "border-green-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3  ${formik.errors.password ? "border-red-500" : passwordStrength === "strong" ? "border-green-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`}
                 onChange={(e) => {
                   formik.handleChange(e);
                   checkPasswordStrength(e.target.value);
@@ -272,7 +272,7 @@ const Registrationpage = () => {
                 type="password"
                 id="confirmpassword"
                 name="confirmpassword"
-                className={`w-full px-4 py-3  ${formik.errors.confirmpassword ? "border-red-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3  ${formik.errors.confirmpassword ? "border-red-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.confirmpassword}
@@ -285,7 +285,7 @@ const Registrationpage = () => {
                 <div className="text-red-500 text-sm mt-1">{formik.errors.confirmpassword}</div>
               )}
             </div>
-            <button type="submit" className="w-full py-3 rounded-lg text-black font-bold shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 hover:opacity-90 transition-opacity">
+            <button type="submit" className="w-full py-3 rounded-lg text-black font-bold shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 hover:opacity-90 transition-opacity focus:border-amber-950 focus:ring-1 focus:ring-amber-950">
               SIGN UP
             </button>
             {loading && <p className="text-blue-600 mt-2">Creating account...</p>}

@@ -98,7 +98,7 @@ const handleSignIn = () => {
                 type="email"
                 id="email"
                 name="email"
-                className="w-full px-4 py-3  shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                className="w-full px-4 py-3  shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 rounded-lg focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950"
                 onChange={formik.handleChange}
                 value={formik.values.email}
                 placeholder=" "
@@ -120,7 +120,7 @@ const handleSignIn = () => {
                 type="password"
                 id="password"
                 name="password"
-                className="w-full px-4 py-3  rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                className="w-full px-4 py-3  rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950"
                 onChange={formik.handleChange}
                 value={formik.values.password}
                 placeholder=" "
@@ -145,7 +145,7 @@ const handleSignIn = () => {
 
             <button
               type="submit"
-              className="w-full py-3 rounded-lg text-black font-semibold  shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/80 hover:opacity-90 transition-opacity"
+              className="w-full py-3 rounded-lg text-black font-semibold  shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/80 hover:opacity-90 transition-opacity focus:border-amber-950 focus:ring-1 focus:ring-amber-950"
             >
               SIGN IN
             </button>
