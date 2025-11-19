@@ -9,6 +9,7 @@ import SettingsPage from './component/SettingsPage';
 import Home from './component/Home';
 import Bookmarks from './component/Bookmarks';
 
+
 function App() {
   return (
     <Router>
