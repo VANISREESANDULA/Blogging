@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from "./redux/authSlice";
 import { toast } from "react-toastify";
-import bgImage from "../assets/BG.jpg";
 
 
 const Login = () => {
@@ -107,7 +106,7 @@ const handleSignIn = () => {
                 htmlFor="email"
                 className={`absolute left-4 text-black font-bold transition-all duration-200  pointer-events-none ${
                   formik.values.email 
-                    ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' 
+                    ? 'top-2 text-xs bg-white px-2 text-purple-600' 
                     : 'top-3 text-base'
                 }`}
               >
