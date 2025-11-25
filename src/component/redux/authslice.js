@@ -1,5 +1,3 @@
-
-
 // src/component/redux/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -9,7 +7,7 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://192.168.0.28:5000/api/users/register", userData);
+      const response = await axios.post("http://192.168.0.63:5000/api/users/register", userData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Registration failed");
@@ -22,7 +20,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://192.168.0.28:5000/api/users/login", userData);
+      const response = await axios.post("http://192.168.0.63:5000/api/users/login", userData);
       // Example: response.data should include a token and user info
       return response.data;
     } catch (error) {
