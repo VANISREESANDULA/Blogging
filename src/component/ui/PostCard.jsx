@@ -36,11 +36,11 @@ const PostCard = ({ author, timestamp, content, media, stats }) => {
   }, [showMoreMenu]);
 
   return (
-    <div className="border-b border-border hover:bg-secondary/30 transition-colors duration-200 py-4 sm:py-6 px-4 sm:px-6">
+    <div className=" border-border hover:bg-secondary/30 transition-colors duration-200  py-4 sm:py-6 px-4 sm:px-6">
       <div className="flex gap-3 sm:gap-4">
         
         {/* Avatar */}
-        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-linear-to-br from-primary to-accent shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
           {author.avatar}
         </div>
 

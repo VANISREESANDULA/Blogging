@@ -36,7 +36,7 @@ const Layout = ({ children }) => {
 
   return (
     <div className={darkMode ? "dark" : ""}>
-      <div className="min-h-screen bg-background text-foreground bg-slate-50" >
+      <div className="min-h-screen bg-background text-foreground bg-zinc-100" >
 
         {/* Header */}
         <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">

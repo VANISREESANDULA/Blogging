@@ -29,7 +29,7 @@ const USER_POSTS = [
     content: "Just launched our new design system! 🎨",
     media: {
       type: "image",
-      src: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop",
+      src: "https://th.bing.com/th/id/OIP.DMp_AOnNy76EtRHZhXTdzwHaNK?w=115&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
     },
     stats: {
       likes: 1203,
@@ -65,7 +65,11 @@ const Profile = () => {
         <div className="border-b border-border">
 
           {/* Cover Photo */}
-          <div className="h-32 sm:h-48 md:h-64 bg-gradient-to-r from-primary/30 to-accent/30" />
+          <div className="h-100 sm:h-48 md:h-64 bg-linear-to-r from-primary/30 to-accent/30" 
+          style={{
+           backgroundImage: 'url("/Screenshot 2025-11-13 232324.png.jpg")',
+            filter: "brightness(0.9)",
+          }}/>
 
           {/* Profile Info */}
           <div className="px-4 sm:px-6 py-4 sm:py-6 relative">
@@ -118,7 +122,7 @@ const Profile = () => {
                     <span className="font-bold text-foreground">
                       {PROFILE_DATA.following}
                     </span>{" "}
-                    <span className="text-muted-foreground">Following</span>
+                    <span className="text-muted-foreground ">Following</span>
                   </button>
 
                   <button
@@ -139,9 +143,9 @@ const Profile = () => {
                 <button className="px-3 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold border-2 border-primary text-primary hover:bg-primary/10 transition-colors text-xs sm:text-base">
                   Edit
                 </button>
-                <button className="p-2 rounded-full bg-primary text-primary-foreground hover:shadow-lg transition-shadow">
+                {/* <button className="p-2 rounded-full bg-primary text-primary-foreground hover:shadow-lg transition-shadow">
                   <MessageCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
-                </button>
+                </button> */}
               </div>
 
             </div>
@@ -196,7 +200,7 @@ const Profile = () => {
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded cursor-pointer hover:opacity-80 transition-opacity"
+                  className="aspect-square bg-linear-to-br from-primary/20 to-accent/20 rounded cursor-pointer hover:opacity-80 transition-opacity"
                 />
               ))}
             </div>
@@ -225,7 +229,7 @@ const Profile = () => {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowFollowersModal(false)}
           />
-          <div className="relative w-full max-w-md mx-4 rounded-2xl bg-card shadow-2xl animate-scale-in max-h-96 overflow-hidden flex flex-col">
+          <div className="relative w-full max-w-md mx-4 rounded-2xl bg-card shadow-2xl animate-scale-in max-h-96 overflow-hidden flex flex-col bg-blue-50">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-xl font-bold">Followers</h2>
               <button
@@ -242,7 +246,7 @@ const Profile = () => {
                   className="p-4 border-b border-border hover:bg-secondary/30 transition-colors flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-accent text-black  border-2 flex items-center justify-center font-bold">
                       {follower.avatar}
                     </div>
                     <div>
@@ -270,10 +274,10 @@ const Profile = () => {
       {showFollowingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/10 backdrop-blur-sm"
             onClick={() => setShowFollowingModal(false)}
           />
-          <div className="relative w-full max-w-md mx-4 rounded-2xl bg-card shadow-2xl animate-scale-in max-h-96 overflow-hidden flex flex-col">
+          <div className="relative w-full max-w-md mx-4 rounded-2xl bg-card shadow-2xl animate-scale-in max-h-96 overflow-hidden flex flex-col bg-blue-50">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-xl font-bold">Following</h2>
               <button
@@ -287,10 +291,10 @@ const Profile = () => {
               {FOLLOWERS.map((user) => (
                 <div
                   key={user.id}
-                  className="p-4 border-b border-border hover:bg-secondary/30 transition-colors flex items-center justify-between"
+                  className="p-4 border-b border-border hover:bg-secondary/30 transition-colors flex items-center justify-between "
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-accent text-black border-2 flex items-center justify-center font-bold ">
                       {user.avatar}
                     </div>
                     <div>
