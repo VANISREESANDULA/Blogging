@@ -1,345 +1,3 @@
-// import { useFormik } from "formik";
-// import { useNavigate } from "react-router-dom";
-// import { useState, useRef, useEffect } from "react";
-// import { Cropper } from "react-advanced-cropper";
-// import { useDispatch, useSelector } from "react-redux";
-// import { registerUser } from "./redux/authSlice";
-// import { toast, ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-// import "react-advanced-cropper/dist/style.css";
-
-// const Registrationpage = () => {
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
-//   const cropperRef = useRef(null);
-
-//   const [imageToCrop, setImageToCrop] = useState(null);
-//   const [avatarPreview, setAvatarPreview] = useState(null);
-//   const [passwordStrength, setPasswordStrength] = useState("");
-//   const [book, setBook] = useState(false);
-
-//   const { loading, error, user } = useSelector((state) => state.auth);
-
-//   // ❗ FIXED: Password Strength & Validation
-//   const checkPasswordStrength = (password) => {
-//     const strongRegex =
-//       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
-//     if (!password) setPasswordStrength("");
-//     else if (strongRegex.test(password)) setPasswordStrength("strong");
-//     else setPasswordStrength("weak");
-//   };
-
-//   const validatePassword = (password) => {
-//     const errors = [];
-
-//     if (password.length < 8) errors.push("Password must be 8+ characters");
-//     if (!/(?=.*[a-z])/.test(password))
-//       errors.push("Must contain lowercase letter");
-//     if (!/(?=.*[A-Z])/.test(password))
-//       errors.push("Must contain uppercase letter");
-//     if (!/(?=.*\d)/.test(password)) errors.push("Must contain a number");
-//     if (!/(?=.*[@$!%*?&])/.test(password))
-//       errors.push("Must include special character");
-
-//     return errors;
-//   };
-
-//   // ❗ A helper to animate placeholders
-//   const getFieldStyles = (field) => ({
-//     label: `absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${
-//       formik.values[field]
-//         ? "top-[-8px] text-xs bg-white px-2 text-purple-600"
-//         : "top-3 text-base"
-//     }`,
-//   });
-
-//   // ❗ FIXED: Formik
-//   const formik = useFormik({
-//     initialValues: {
-//       username: "",
-//       email: "",
-//       password: "",
-//       confirmpassword: "",
-//       avatar: null,
-//     },
-
-//     validate: (values) => {
-//       const errors = {};
-
-//       if (!values.username.trim())
-//         errors.username = "Full name is required";
-//       else if (values.username.trim().length < 2)
-//         errors.username = "Username must be at least 2 characters";
-
-//       if (!values.email) errors.email = "Email is required";
-//       else if (!/\S+@\S+\.\S+/.test(values.email))
-//         errors.email = "Invalid email address";
-
-//       if (!values.password) errors.password = "Password is required";
-//       else {
-//         const passErrors = validatePassword(values.password);
-//         if (passErrors.length > 0) errors.password = passErrors[0];
-//       }
-
-//       if (!values.confirmpassword)
-//         errors.confirmpassword = "Please confirm your password";
-//       else if (values.password !== values.confirmpassword)
-//         errors.confirmpassword = "Passwords must match";
-
-//       return errors;
-//     },
-
-//     onSubmit: (values) => {
-//       const data = new FormData();
-//       data.append("username", values.username);
-//       data.append("email", values.email);
-//       data.append("password", values.password);
-//       data.append("confirmpassword", values.confirmpassword);
-//       if (values.avatar) data.append("profilePhoto", values.avatar);
-
-//       dispatch(registerUser(data));
-//       console.log("Form submitted:", values);
-//     },
-//   });
-
-//   // ❗ redirect after registration
-//   useEffect(() => {
-//     if (user) {
-//       toast.success("Registration Successful!");
-//       formik.resetForm();
-//       setAvatarPreview(null);
-//       setPasswordStrength("");
-
-//       setTimeout(() => navigate("/login"), 1500);
-//     }
-//   }, [user, navigate]);
-
-//   // ❗ FIXED: Image upload
-//   const handleFileSelect = (e) => {
-//     const file = e.target.files[0];
-//     if (!file) return;
-
-//     const reader = new FileReader();
-//     reader.onload = () => setImageToCrop(reader.result);
-//     reader.readAsDataURL(file);
-
-//     formik.setFieldValue("avatar", file);
-//     setAvatarPreview(URL.createObjectURL(file));
-//   };
-
-//   // ❗ FIXED: Cropping Save
-//   const handleCropSave = () => {
-//     const cropper = cropperRef.current;
-
-//     if (cropper) {
-//       const canvas = cropper.getCanvas();
-
-//       if (canvas) {
-//         canvas.toBlob(
-//           (blob) => {
-//             const file = new File([blob], "avatar.png", { type: blob.type });
-//             formik.setFieldValue("avatar", file);
-//             setAvatarPreview(URL.createObjectURL(file));
-//           },
-//           "image/png",
-//           1
-//         );
-//       }
-//     }
-//     setImageToCrop(null);
-//   };
-
-//   const handleSignUp = () => {
-//     setBook(!book);
-//     navigate("/login");
-//   };
-
-//   return (
-//     <div
-//       className="min-h-screen flex items-center justify-center py-12 bg-cover bg-center bg-no-repeat"
-//       style={{
-//         backgroundImage: 'url("/Screenshot 2025-11-13 232324.png.jpg")',
-//       }}
-//     >
-//       <div className="w-full max-w-4xl shadow-2xl rounded-2xl flex max-md:flex-row overflow-hidden bg-black/20 flex-row-reverse">
-
-//         {/* LEFT (SIGN UP FORM) */}
-//         <div className="w-full md:w-1/2 p-10 border border-black rounded-2xl shadow-xl bg-white/20 backdrop-blur-lg">
-
-//           <h2 className="text-2xl font-semibold text-center mb-4">Sign Up</h2>
-
-//           {/* Avatar Upload */}
-//           <div className="flex justify-center mb-4 relative w-fit mx-auto">
-//             <label className="relative cursor-pointer">
-//               <img
-//                 src={avatarPreview || "/Profile Icon.png"}
-//                 alt="Avatar"
-//                 className="h-32 w-32 border-2 bg-white object-cover rounded-md"
-//               />
-//               <input
-//                 type="file"
-//                 name="avatar"
-//                 accept="image/*"
-//                 onChange={handleFileSelect}
-//                 className="absolute inset-0 opacity-0 cursor-pointer"
-//               />
-//             </label>
-//           </div>
-
-//           {/* CROP POPUP */}
-//           {imageToCrop && (
-//             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-//               <div className="bg-white p-4 rounded-md shadow-xl w-[350px] h-[450px] flex flex-col gap-3">
-//                 <div className="flex-1 overflow-hidden rounded-md">
-//                   <Cropper
-//                     ref={cropperRef}
-//                     src={imageToCrop}
-//                     className="w-full h-full"
-//                     stencilProps={{
-//                       movable: true,
-//                       resizable: true,
-//                       handlers: true,
-//                       lines: true,
-//                     }}
-//                     stencilSize={{ width: "80%", height: "80%" }}
-//                     imageRestriction="fit-area"
-//                   />
-//                 </div>
-//                 <div className="flex justify-between">
-//                   <button
-//                     onClick={() => setImageToCrop(null)}
-//                     className="px-3 py-1 bg-gray-300 rounded-md"
-//                   >
-//                     Cancel
-//                   </button>
-//                   <button
-//                     onClick={handleCropSave}
-//                     className="px-3 py-1 bg-purple-600 text-white rounded-md"
-//                   >
-//                     Done
-//                   </button>
-//                 </div>
-//               </div>
-//             </div>
-//           )}
-
-//           {/* FORM */}
-//           <form onSubmit={formik.handleSubmit}>
-
-//             {/* Username */}
-//             <div className="relative mb-6">
-//               <input
-//                 type="text"
-//                 name="username"
-//                 className="w-full px-4 py-3 rounded-lg bg-orange-100/50"
-//                 onChange={formik.handleChange}
-//                 value={formik.values.username}
-//               />
-//               <label className={getFieldStyles("username").label}>
-//                 Full Name
-//               </label>
-//               {formik.errors.username && (
-//                 <p className="text-red-500 text-sm">{formik.errors.username}</p>
-//               )}
-//             </div>
-
-//             {/* Email */}
-//             <div className="relative mb-6">
-//               <input
-//                 type="email"
-//                 name="email"
-//                 className="w-full px-4 py-3 rounded-lg bg-orange-100/50"
-//                 onChange={formik.handleChange}
-//                 value={formik.values.email}
-//               />
-//               <label className={getFieldStyles("email").label}>Email</label>
-//               {formik.errors.email && (
-//                 <p className="text-red-500 text-sm">{formik.errors.email}</p>
-//               )}
-//             </div>
-
-//             {/* Password */}
-//             <div className="relative mb-6">
-//               <input
-//                 type="password"
-//                 name="password"
-//                 className="w-full px-4 py-3 rounded-lg bg-orange-100/50"
-//                 onChange={(e) => {
-//                   formik.handleChange(e);
-//                   checkPasswordStrength(e.target.value);
-//                 }}
-//                 value={formik.values.password}
-//               />
-//               <label className={getFieldStyles("password").label}>
-//                 Password
-//               </label>
-
-//               {passwordStrength === "strong" && (
-//                 <p className="text-green-500 text-sm">Strong password 💪</p>
-//               )}
-//               {passwordStrength === "weak" && (
-//                 <p className="text-red-500 text-sm">Weak password ⚠️</p>
-//               )}
-
-//               {formik.errors.password && (
-//                 <p className="text-red-500 text-sm">{formik.errors.password}</p>
-//               )}
-//             </div>
-
-//             {/* Confirm Password */}
-//             <div className="relative mb-6">
-//               <input
-//                 type="password"
-//                 name="confirmpassword"
-//                 className="w-full px-4 py-3 rounded-lg bg-orange-100/50"
-//                 onChange={formik.handleChange}
-//                 value={formik.values.confirmpassword}
-//               />
-//               <label className={getFieldStyles("confirmpassword").label}>
-//                 Confirm Password
-//               </label>
-//               {formik.errors.confirmpassword && (
-//                 <p className="text-red-500 text-sm">
-//                   {formik.errors.confirmpassword}
-//                 </p>
-//               )}
-//             </div>
-
-//             <button
-//               type="submit"
-//               className="w-full py-3 rounded-lg bg-orange-100/50 font-bold"
-//             >
-//               SIGN UP
-//             </button>
-
-//             {loading && <p className="text-blue-600 mt-2">Creating account...</p>}
-//             {error && <p className="text-red-600 mt-2">{error}</p>}
-//           </form>
-//         </div>
-
-//         {/* RIGHT SIDE CARD */}
-//         <div className="w-full md:w-1/2 relative flex flex-col items-center justify-center text-white p-10 bg-black/20 backdrop-blur-xl">
-//           <h3 className="text-xl font-semibold mb-3">Welcome Back!</h3>
-//           <p className="mb-5 text-center">
-//             Already have an account? Sign in to access all features
-//           </p>
-//           <button
-//             onClick={() => navigate("/login")}
-//             className="border border-white rounded-lg px-6 py-2 font-semibold hover:bg-white hover:text-purple-600 transition"
-//           >
-//             SIGN IN
-//           </button>
-//         </div>
-//       </div>
-
-//       <ToastContainer position="top-center" autoClose={1500} />
-//     </div>
-//   );
-// };
-
-// export default Registrationpage;
-
-
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
@@ -549,13 +207,13 @@ const Registrationpage = () => {
                 type="text"
                 id="username"
                 name="username"
-                className={`w-full px-4 py-3 border ${formik.errors.username ? "border-red-500" : "border-black-300"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3 border ${formik.errors.username ? "border-red-500" : "border-black-300"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.username}
                 placeholder=" "
               />
-              <label htmlFor="username" className={`absolute left-4 text-gray-100 transition-all duration-200 pointer-events-none ${formik.values.username ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label htmlFor="username" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.username ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>
                 Full name
               </label>
               {formik.touched.username && formik.errors.username && (
@@ -569,13 +227,13 @@ const Registrationpage = () => {
                 id="email"
                 name="email"
                 required
-                className={`w-full px-4 py-3 border ${formik.errors.email ? "border-red-500" : "border-black-300"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3 border ${formik.errors.email ? "border-red-500" : "border-black-300"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.email}
                 placeholder=" "
               />
-              <label htmlFor="email" className={`absolute left-4 text-gray-100 transition-all duration-200 pointer-events-none ${formik.values.email ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label htmlFor="email" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.email ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>
                 Email
               </label>
               {formik.touched.email && formik.errors.email && (
@@ -587,7 +245,8 @@ const Registrationpage = () => {
                 type="password"
                 id="password"
                 name="password"
-                className={`w-full px-4 py-3 border ${formik.errors.password ? "border-red-500" : passwordStrength === "strong" ? "border-green-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3 border ${formik.errors.password ? "border-red-500" : passwordStrength === "strong" ? "border-green-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none 
+                focus:border-amber-950  focus:ring-1 focus:ring-amber-950`}
                 onChange={(e) => {
                   formik.handleChange(e);
                   checkPasswordStrength(e.target.value);
@@ -596,7 +255,7 @@ const Registrationpage = () => {
                 value={formik.values.password}
                 placeholder=" "
               />
-              <label htmlFor="password" className={`absolute left-4 text-gray-100 transition-all duration-200 pointer-events-none ${formik.values.password ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label htmlFor="password" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.password ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>
                 Password
               </label>
 
@@ -614,13 +273,13 @@ const Registrationpage = () => {
                 type="password"
                 id="confirmpassword"
                 name="confirmpassword"
-                className={`w-full px-4 py-3 border ${formik.errors.confirmpassword ? "border-red-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500`}
+                className={`w-full px-4 py-3 border ${formik.errors.confirmpassword ? "border-red-500" : "border-gray-800"} rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 focus:outline-none focus:border-amber-950  focus:ring-1 focus:ring-amber-950`}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.confirmpassword}
                 placeholder=" "
               />
-              <label htmlFor="confirmpassword" className={`absolute left-4 text-gray-100 transition-all duration-200 pointer-events-none ${formik.values.confirmpassword ? 'top-[-8px] text-xs bg-white px-2 text-purple-600' : 'top-3 text-base'}`}>
+              <label htmlFor="confirmpassword" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.confirmpassword ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>
                 Confirm Password
               </label>
               {formik.touched.confirmpassword && formik.errors.confirmpassword && (
@@ -656,7 +315,7 @@ const Registrationpage = () => {
               Already have an account? Sign in to access all features
             </p>
             <button type="button" onClick={handleSignUp}
-            className="border border-white rounded-lg px-6 py-2 font-semibold hover:bg-white hover:text-purple-500 transition">
+            className="border border-white rounded-lg px-6 py-2 font-semibold hover:bg-white hover:text-amber-950 transition">
                SIGN IN
             </button>
 
