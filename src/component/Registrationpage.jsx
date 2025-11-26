@@ -1,13 +1,14 @@
+// 
+
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { Cropper } from 'react-advanced-cropper';
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "./redux/authSlice";
+import { registerUser, resetRegistrationSuccess } from "./redux/authSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import 'react-advanced-cropper/dist/style.css'
-
 
 const Registrationpage = () => {
   const navigate = useNavigate();
@@ -16,14 +17,14 @@ const Registrationpage = () => {
   const [passwordStrength, setPasswordStrength] = useState(""); 
   const [isFlipped, setIsFlipped] = useState(false);
   const [isFormRight, setIsFormRight] = useState(false);
-  const [book,setBook]=useState(false)
+  const [book, setBook] = useState(false);
 
   const cropperRef = useRef(null);
   const dispatch = useDispatch();
-  const { loading, error, user } = useSelector((state) => state.auth);
+  const { loading, error, registrationSuccess } = useSelector((state) => state.auth);
 
   const checkPasswordStrength = (password) => {
-    const strongRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!password) setPasswordStrength("");
     else if (strongRegex.test(password)) setPasswordStrength("strong");
     else setPasswordStrength("weak");
@@ -40,20 +41,41 @@ const Registrationpage = () => {
     validate: (values) => {
       const errors = {};
 
-      if (!values.username.trim()) errors.username = 'Full name is required';
-      if (!values.email) errors.email = 'Email is required';
-      else if (!/\S+@\S+\.\S+/.test(values.email)) {
-        errors.email = 'Invalid email address';
+      // Username validation
+      if (!values.username.trim()) {
+        errors.username = 'Full name is required';
+      } else if (values.username.trim().length < 2) {
+        errors.username = 'Full name must be at least 2 characters';
       }
 
-      if (!values.password) errors.password = 'Password is required';
-      else if (values.password.length < 8) errors.password = 'Password must be at least 8 characters';
-      else if (!/(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])/.test(values.password))
-        errors.password = 'Password must contain letters, numbers & a special character';
+      // Email validation with proper format
+      if (!values.email) {
+        errors.email = 'Email is required';
+      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+        errors.email = 'Invalid email address format';
+      }
 
-      if (!values.confirmpassword) errors.confirmpassword = 'Please confirm your password';
-      else if (values.password !== values.confirmpassword)
+      // Enhanced password validation
+      if (!values.password) {
+        errors.password = 'Password is required';
+      } else if (values.password.length < 8) {
+        errors.password = 'Password must be at least 8 characters';
+      } else if (!/(?=.*[a-z])/.test(values.password)) {
+        errors.password = 'Password must contain at least one lowercase letter';
+      } else if (!/(?=.*[A-Z])/.test(values.password)) {
+        errors.password = 'Password must contain at least one uppercase letter';
+      } else if (!/(?=.*\d)/.test(values.password)) {
+        errors.password = 'Password must contain at least one number';
+      } else if (!/(?=.*[@$!%*?&])/.test(values.password)) {
+        errors.password = 'Password must contain at least one special character (@$!%*?&)';
+      }
+
+      // Confirm password validation
+      if (!values.confirmpassword) {
+        errors.confirmpassword = 'Please confirm your password';
+      } else if (values.password !== values.confirmpassword) {
         errors.confirmpassword = 'Passwords must match';
+      }
 
       return errors;
     },
@@ -67,21 +89,36 @@ const Registrationpage = () => {
         data.append("profilePhoto", values.avatar);
       }
       dispatch(registerUser(data));
-      console.log('Form submitted:', values);
     },
   });
 
+  // Check if form is valid to enable/disable button
+  const isFormValid = () => {
+    return (
+      formik.values.username &&
+      formik.values.email &&
+      formik.values.password &&
+      formik.values.confirmpassword &&
+      !formik.errors.username &&
+      !formik.errors.email &&
+      !formik.errors.password &&
+      !formik.errors.confirmpassword
+    );
+  };
+
   useEffect(() => {
-    if (user) {
-      toast.success("Registration Successful ");
-       formik.resetForm();
-    setAvatarPreview(null);
-    setPasswordStrength("");
+    if (registrationSuccess) {
+      toast.success("Registration Successful! Redirecting to login...");
+      formik.resetForm();
+      setAvatarPreview(null);
+      setPasswordStrength("");
+      
       setTimeout(() => {
         navigate('/login');
-      }, 1500);
+        dispatch(resetRegistrationSuccess());
+      }, 2000);
     }
-  }, [user, navigate]);
+  }, [registrationSuccess, navigate, dispatch]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -116,7 +153,6 @@ const Registrationpage = () => {
     navigate("/login");
   },200); 
 };
-
 
   return (
    <div className="min-h-screen flex items-center justify-center py-12 bg-cover bg-center bg-no-repeat " style={{
@@ -286,12 +322,19 @@ const Registrationpage = () => {
                 <div className="text-red-500 text-sm mt-1">{formik.errors.confirmpassword}</div>
               )}
             </div>
-            <button type="submit" className="w-full py-3 rounded-lg text-white font-semibold shadow-md bg-linear-to-br shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)]  bg-orange-100/50 hover:opacity-90 transition-opacity">
-              SIGN UP
+            <button 
+              type="submit" 
+              disabled={!isFormValid() || loading}
+              className={`w-full py-3 rounded-lg text-white font-semibold shadow-md bg-linear-to-br shadow-[0px_0px_15px_1px_rgba(0,0,0,0.5)] transition-opacity ${
+                !isFormValid() || loading 
+                  ? 'bg-gray-400 cursor-not-allowed opacity-50' 
+                  : 'bg-orange-100/50 hover:opacity-90'
+              }`}
+            >
+              {loading ? "Creating Account..." : "SIGN UP"}
             </button>
-            {loading && <p className="text-blue-600 mt-2">Creating account...</p>}
-            {error && <p className="text-red-600 mt-2">{error}</p>}
-            {user && <p className="text-green-600 mt-2">Account created successfully!</p>}
+            {loading && <p className="text-blue-600 mt-2 text-center">Creating account...</p>}
+            {error && <p className="text-red-600 mt-2 text-center">{error}</p>}
           </form>
         </div>
 
@@ -303,7 +346,6 @@ const Registrationpage = () => {
                ${book?"rotate-y-180 transition-all duration-300 origin-right  bg-black text-transparent":" "}
              `}
   style={{
-    // backgroundImage: 'url("color bg.jpg")',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
   }}

@@ -225,8 +225,6 @@ const showNativeNotification = (notif) => {
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState(NOTIFICATIONS_DATA);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [nativeEnabled, setNativeEnabled] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
   const [expandedNotifications, setExpandedNotifications] = useState(new Set());
   const [commentInputs, setCommentInputs] = useState({});
@@ -494,23 +492,6 @@ const Notifications = () => {
     setViewingPost(null);
   };
 
-  // Mark notification as read
-  const markAsRead = (notificationId, event) => {
-    event?.stopPropagation();
-    setNotifications(prev =>
-      prev.map(notif =>
-        notif.id === notificationId ? { ...notif, isRead: true } : notif
-      )
-    );
-  };
-
-  // Mark all as read
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notif => ({ ...notif, isRead: true }))
-    );
-  };
-
   // Handle like action
   const handleLike = (notificationId, event) => {
     event?.stopPropagation();
@@ -530,7 +511,7 @@ const Notifications = () => {
         return notif;
       })
     );
-    if (soundEnabled) playBeep();
+    playBeep();
   };
 
   // Handle comment action
@@ -1027,46 +1008,7 @@ const Notifications = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-2">
-              {unreadCount > 0 && (
-                <button
-                  onClick={markAllAsRead}
-                  className="text-xs bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-2 py-1 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 transition-all"
-                >
-                  Mark all read
-                </button>
-              )}
-
-              <button
-                onClick={() => setSoundEnabled(s => !s)}
-                className={`text-xs px-2 py-1 rounded-lg font-medium transition-all border ${
-                  soundEnabled 
-                    ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" 
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                {soundEnabled ? '🔊' : '🔇'}
-              </button>
-
-              <button
-                onClick={() => {
-                  setNativeEnabled(n => {
-                    const next = !n;
-                    if (next && window.Notification && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-                      Notification.requestPermission().catch(() => {});
-                    }
-                    return next;
-                  });
-                }}
-                className={`text-xs px-2 py-1 rounded-lg font-medium transition-all border ${
-                  nativeEnabled 
-                    ? "bg-green-600 text-white border-green-600 hover:bg-green-700" 
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                {nativeEnabled ? '📱' : '📱'}
-              </button>
-            </div>
+            {/* Removed sound and native notification toggles and mark all read button */}
           </div>
 
           {/* Compact Notification Insights */}
@@ -1148,14 +1090,8 @@ const Notifications = () => {
                       : "border-l-blue-500 bg-gradient-to-r from-blue-50/80 to-indigo-50/60 hover:from-blue-50 hover:to-indigo-50"
                   } ${expandedNotifications.has(notification.id) ? "bg-blue-50/50 shadow-inner" : ""} shadow-sm hover:shadow-md border-b border-gray-200`}
                 >
-                  {/* Quick Actions */}
+                  {/* Quick Actions - Removed the checkmark button */}
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <button 
-                      onClick={(e) => markAsRead(notification.id, e)}
-                      className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors border border-blue-600"
-                    >
-                      <Check size={14} />
-                    </button>
                     <button 
                       onClick={(e) => handleComment(notification.id, e)}
                       className="p-1.5 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors border border-gray-300"
