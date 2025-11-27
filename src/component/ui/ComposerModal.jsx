@@ -31,12 +31,12 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-white/10 backdrop-blur-md"
+        className="absolute inset-0 bg-white/20 backdrop-blur-md"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl rounded-3xl bg-card shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col border">
+      <div className="relative w-full max-w-2xl rounded-3xl bg-slate-100 shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col border">
         
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border bg-linear-to-r from-primary/10 to-accent/10">
@@ -57,7 +57,7 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
           
           {/* User Avatar */}
           <div className="flex gap-3 sm:gap-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-black font-bold">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-linear-to-br from-primary to-accent flex items-center border-2 justify-center text-black font-bold">
               U
             </div>
 
@@ -84,7 +84,7 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Share your thoughts..."
             autoFocus
-            className="w-full min-h-40 resize-none bg-secondary rounded-2xl px-4 py-3 text-foreground border border-border focus:border-primary focus:ring-2 focus:ring-primary/50"
+            className="w-full min-h-40 resize-none bg-secondary rounded-2xl px-4 py-3 text-foreground border border-border focus:border-amber-50  focus:ring-primary/50"
           />
         </div>
 
@@ -98,7 +98,7 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
             className={cn(
               "px-6 py-2 rounded-full font-bold flex items-center gap-2 transition-all",
               content.trim()
-                ? "bg-gradient-to-r from-primary to-accent text-white hover:scale-105 hover:shadow-lg"
+                ? "bg-linear-to-r from-primary to-accent text-white hover:scale-105 hover:shadow-lg"
                 : "bg-muted text-muted-foreground cursor-not-allowed"
             )}
           >

@@ -137,8 +137,8 @@ const Messages = () => {
                 <div className="flex gap-2 sm:gap-3 items-start">
                   
                   {/* Avatar */}
-                  <div className="relative shrink-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-lg group-hover:shadow-xl transition-shadow duration-200">
+                  <div className="relative shrink-0 bg-">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-400 bg-linear-to-br from-primary to-accent text-white flex items-center justify-center font-bold text-sm sm:text-base">
                       {conversation.avatar}
                     </div>
                     {conversation.online && (

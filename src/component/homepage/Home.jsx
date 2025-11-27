@@ -1,13 +1,10 @@
- 
-
-
-
 // import React, { useState } from "react";
 // import Layout from "../ui/Layout";
 // import PostCard from "../ui/PostCard";
 // import ComposerModal from "../ui/ComposerModal";
 // import CreateButton from "../ui/CreateButton";
 // import { useNavigate } from "react-router-dom";
+// import { fetchArticles } from "../redux/articlesSlice";
 
 // const SAMPLE_POSTS = [
 //   {
@@ -56,6 +53,7 @@
 //   const [posts, setPosts] = useState(SAMPLE_POSTS);
 //   const [isComposerOpen, setIsComposerOpen] = useState(false);
 //   const navigate=useNavigate()
+//   const dispatch = useDispatch();
 //   const handleNewPost = (postData) => {
 //     const newPost = {
 //       id: Date.now().toString(),
@@ -140,6 +138,7 @@
 // };
 
 // export default Home;
+
 
 import React, { useEffect, useState } from "react";
 import Layout from "../ui/Layout";

@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import API from "../../api/articlesApi"; // <-- Make sure this is correct
+// import API from "../../api/articlesApi";
 
-// ============================
 // GET ALL ARTICLES
-// ============================
 export const fetchArticles = createAsyncThunk(
   "articles/getAll",
   async (_, { rejectWithValue }) => {
@@ -16,9 +14,7 @@ export const fetchArticles = createAsyncThunk(
   }
 );
 
-// ============================
 // CREATE ARTICLE
-// ============================
 export const createArticle = createAsyncThunk(
   "articles/create",
   async (data, { rejectWithValue }) => {
@@ -31,9 +27,7 @@ export const createArticle = createAsyncThunk(
   }
 );
 
-// ============================
-// LIKE / UNLIKE ARTICLE
-// ============================
+// LIKE/UNLIKE ARTICLE
 export const likeArticle = createAsyncThunk(
   "articles/like",
   async (id, { rejectWithValue }) => {
@@ -46,9 +40,7 @@ export const likeArticle = createAsyncThunk(
   }
 );
 
-// ============================
 // ADD COMMENT
-// ============================
 export const addComment = createAsyncThunk(
   "articles/comment",
   async ({ id, comment }, { rejectWithValue }) => {
@@ -61,9 +53,6 @@ export const addComment = createAsyncThunk(
   }
 );
 
-// ============================
-// SLICE
-// ============================
 const articlesSlice = createSlice({
   name: "articles",
   initialState: {
@@ -75,9 +64,7 @@ const articlesSlice = createSlice({
   reducers: {},
 
   extraReducers: (builder) => {
-    // --------------------
     // GET ARTICLES
-    // --------------------
     builder.addCase(fetchArticles.pending, (state) => {
       state.loading = true;
     });
@@ -85,29 +72,19 @@ const articlesSlice = createSlice({
       state.loading = false;
       state.list = action.payload;
     });
-    builder.addCase(fetchArticles.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
 
-    // --------------------
     // CREATE ARTICLE
-    // --------------------
     builder.addCase(createArticle.fulfilled, (state, action) => {
       state.list.unshift(action.payload); // add to top
     });
 
-    // --------------------
     // LIKE ARTICLE
-    // --------------------
     builder.addCase(likeArticle.fulfilled, (state, action) => {
       const article = state.list.find((a) => a._id === action.payload.id);
       if (article) article.likes = action.payload.likes;
     });
 
-    // --------------------
     // ADD COMMENT
-    // --------------------
     builder.addCase(addComment.fulfilled, (state, action) => {
       const article = state.list.find((a) => a._id === action.payload.id);
       if (article) article.comments = action.payload.comments;
