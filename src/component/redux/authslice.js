@@ -1,3 +1,5 @@
+// 
+
 // src/component/redux/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -37,12 +39,17 @@ const authSlice = createSlice({
     loading: false,
     success: false,
     error: null,
+    registrationSuccess: false,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.success = false;
+      state.registrationSuccess = false;
+    },
+    resetRegistrationSuccess: (state) => {
+      state.registrationSuccess = false;
     },
   },
   extraReducers: (builder) => {
@@ -51,15 +58,18 @@ const authSlice = createSlice({
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.registrationSuccess = false;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.user = action.payload.user;
+        state.registrationSuccess = true;
+        // Don't set user or token - we don't want auto-login
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.registrationSuccess = false;
       })
 
       // ✅ Login
@@ -80,5 +90,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, resetRegistrationSuccess } = authSlice.actions;
 export default authSlice.reducer;

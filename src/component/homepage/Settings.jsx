@@ -209,6 +209,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Layout from "../ui/Layout";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 export default function Settings() {
   const [open, setOpen] = useState({
@@ -221,8 +222,30 @@ export default function Settings() {
     about: false,
   });
 
+  const navigate = useNavigate(); // Initialize navigate function
+
   const toggle = (key) => {
     setOpen({ ...open, [key]: !open[key] });
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    // Add any logout logic here (clear tokens, session, etc.)
+    // For example:
+    // localStorage.removeItem('authToken');
+    // sessionStorage.clear();
+    
+    // Redirect to login page
+    navigate('/login'); // Change '/login' to your actual login route
+  };
+
+  // Logout All Accounts function
+  const handleLogoutAll = () => {
+    // Add logic to logout from all accounts
+    // Clear all authentication data
+    
+    // Redirect to login page
+    navigate('/login'); // Change '/login' to your actual login route
   };
 
   return (
@@ -307,10 +330,20 @@ export default function Settings() {
         {/* Login Details */}
         <h2 className="text-gray-500 text-sm mt-6 mb-2">Login Details</h2>
         <div className="bg-gray-100 rounded-xl p-6 space-y-4">
-
           <p className="text-blue-600 cursor-pointer hover:underline">Add Account</p>
-          <p className="text-red-600 cursor-pointer hover:underline">Logout</p>
-          <p className="text-red-600 cursor-pointer hover:underline">
+          
+          {/* Updated logout buttons with onClick handlers */}
+          <p 
+            className="text-red-600 cursor-pointer hover:underline" 
+            onClick={handleLogout}
+          >
+            Logout
+          </p>
+          
+          <p 
+            className="text-red-600 cursor-pointer hover:underline" 
+            onClick={handleLogoutAll}
+          >
             Logout All Accounts
           </p>
         </div>
