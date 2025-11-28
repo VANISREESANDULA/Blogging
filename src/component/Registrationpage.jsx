@@ -1,5 +1,3 @@
-// 
-
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
@@ -156,14 +154,14 @@ const Registrationpage = () => {
 
   return (
    <div className="min-h-screen flex items-center justify-center py-12 bg-cover bg-center bg-no-repeat " style={{
-    backgroundImage: 'url("/Screenshot 2025-11-13 232324.png.jpg")',
+    backgroundImage: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url("/Screenshot 2025-11-13 232324.png.jpg")',
     filter: 'brightness(1)' 
   }}>
-  <div className="w-full max-w-4xl  shadow-2xl rounded-2xl flex max-md:flex-row overflow-hidden inset-0 bg-black/10 flex-row-reverse">
+  <div className="w-full max-w-4xl  shadow-2xl rounded-2xl flex max-md:flex-row overflow-hidden inset-0 bg-black/30 border-2/20 flex-row-reverse">
 
         <div className={`w-full md:w-1/2 p-10 
               border 
-                border-black
+                border-black/10
                 rounded-2xl 
                 shadow-xl
                 `}>
@@ -175,7 +173,7 @@ const Registrationpage = () => {
               <img
                 src={avatarPreview || "/Profile Icon.png"}
                 alt="Avatar"
-                className="h-32 w-32 border-2 border-gray-300 bg-white/20 object-cover rounded-md overflow-hidden"
+                className="h-32 w-32 border-2 border-black-300 bg-white/10 object-cover rounded-md overflow-hidden"
               />
               <input
                 type="file"
@@ -185,10 +183,9 @@ const Registrationpage = () => {
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
               <span
-                className="absolute bottom-1 right-1 p-1 rounded-md border-2 border-gray-100 shadow-lg"
-                style={{ background: "linear-gradient(135deg, #7c3aed, #db2777)" }}
+                className="absolute bottom-1 right-1 p-1 rounded-md border-2 border-black-100 shadow-lg bg-cyan-50"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12v6m0-6l-3 3m3-3l3 3m5-8a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7z" />
                 </svg>
               </span>
@@ -340,7 +337,7 @@ const Registrationpage = () => {
 
         {/* Right Section card*/}
       <div className={`w-full md:w-1/2 relative flex items-center justify-center text-white p-10
-             border border-black/30 
+             border border-black/10 
              rounded-2xl 
              shadow-2xl
                ${book?"rotate-y-180 transition-all duration-300 origin-right  bg-black text-transparent":" "}

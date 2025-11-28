@@ -67,17 +67,17 @@ const Login = () => {
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 bg-cover bg-center bg-no-repeat" style={{
-      backgroundImage: 'url("/Screenshot 2025-11-13 232324.png.jpg")',
-      filter: 'brightness(1)' 
-    }}>
-      <div className="w-full max-w-4xl shadow-2xl rounded-2xl flex flex-col md:flex-row overflow-hidden inset-0 bg-black/20">
+    <div className="min-h-screen flex items-center justify-center py-12 bg-cover bg-center bg-no-repeat " style={{
+    backgroundImage: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url("/Screenshot 2025-11-13 232324.png.jpg")',
+    filter: 'brightness(1)' 
+  }}>
+      <div className="w-full max-w-4xl shadow-2xl rounded-2xl flex flex-col md:flex-row overflow-hidden inset-0 bg-black/20 border-2/20">
         {/* Login Form */}
-        <div className="w-full md:w-1/2 p-10 border border-black/40 rounded-2xl shadow-xl bg-white/90">
+        <div className="w-full md:w-1/2 p-10 border border-black/40 rounded-2xl shadow-xl ">
           <h2 className="text-2xl font-semibold text-center mb-4 text-gray-800">Sign In</h2>
           <div className="flex items-center mb-4">
             <span className="grow border-t border-gray-300"></span>
-            <span className="mx-2 text-gray-600 text-sm">or use your email</span>
+            <span className="mx-2 text-black  text-sm">or use your email</span>
             <span className="grow border-t border-gray-300"></span>
           </div>
 
@@ -86,8 +86,8 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
-                name="email"
-                className="w-full px-4 py-3 shadow-[0px_0px_15px_1px_rgba(0,0,0,0.3)] bg-orange-100/50 rounded-lg focus:outline-none focus:border-amber-950 focus:ring-2 focus:ring-amber-950 transition-all duration-200"
+                name="email" 
+                className="w-full px-4 py-3 shadow-[0px_0px_15px_1px_rgba(0,0,0,0.3)] border-2 bg-orange-100/50 rounded-lg  focus:outline-none focus:border-amber-950 focus:ring-2 focus:ring-amber-950 transition-all duration-200"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.email}
@@ -95,7 +95,7 @@ const Login = () => {
               />
               <label
                 htmlFor="email"
-                className={`absolute left-4 text-gray-700 font-medium transition-all duration-200 pointer-events-none ${
+                className={`absolute left-4 text-black font-bold  transition-all duration-200 pointer-events-none ${
                   formik.values.email 
                     ? 'top-[-8px] text-xs bg-white px-2 text-amber-900' 
                     : 'top-3 text-base'
@@ -113,7 +113,7 @@ const Login = () => {
                 type="password"
                 id="password"
                 name="password"
-                className="w-full px-4 py-3 rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.3)] bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-2 focus:ring-amber-950 transition-all duration-200"
+                className="w-full px-4 py-3 rounded-lg shadow-[0px_0px_15px_1px_rgba(0,0,0,0.3)] border-2 bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-2 focus:ring-amber-950 transition-all duration-200"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.password}
@@ -121,7 +121,7 @@ const Login = () => {
               />
               <label
                 htmlFor="password"
-                className={`absolute left-4 text-gray-700 font-medium transition-all duration-200 pointer-events-none ${
+                className={`absolute left-4 text-black font-bold font-medium transition-all duration-200 pointer-events-none ${
                   formik.values.password 
                     ? 'top-[-8px] text-xs bg-white px-2 text-amber-900' 
                     : 'top-3 text-base'
@@ -168,7 +168,7 @@ const Login = () => {
             book ? "rotate-y-180 transition-all duration-300 origin-left bg-black text-transparent" : ""
           }`}
           style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            // background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
