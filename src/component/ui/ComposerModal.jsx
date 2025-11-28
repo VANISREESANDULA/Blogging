@@ -98,7 +98,7 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
             className={cn(
               "px-6 py-2 rounded-full font-bold flex items-center gap-2 transition-all",
               content.trim()
-                ? "bg-linear-to-r from-primary to-accent text-white hover:scale-105 hover:shadow-lg"
+                ? "bg-neutral-400 text-black  border-2 hover:scale-105 hover:shadow-lg"
                 : "bg-muted text-muted-foreground cursor-not-allowed"
             )}
           >

@@ -18,10 +18,14 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const navigate=useNavigate()
 
+  // const toggleDarkMode = () => {
+  //   setDarkMode(!darkMode);
+  //   // document.documentElement.classList.toggle("dark");still
+  // };
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle("dark");
-  };
+  setDarkMode((prev) => !prev);
+};
+
 
   const navItems = [
     { path: "/home", label: "Home", icon: Home },
@@ -35,9 +39,9 @@ const Layout = ({ children }) => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className={darkMode ? "dark" : ""}>
-      <div className="min-h-screen bg-background text-foreground bg-zinc-100" >
-
+   <div className={darkMode ? "dark" : ""}>
+  <div className="min-h-screen bg-zinc-100 text-black dark:bg-zinc-900 dark:text-white">
+   
         {/* Header */}
         <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
           <div className="flex items-center justify-between px-4 py-3 md:px-6"

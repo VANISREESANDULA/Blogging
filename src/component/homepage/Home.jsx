@@ -147,11 +147,12 @@ import ComposerModal from "../ui/ComposerModal";
 import CreateButton from "../ui/CreateButton";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchArticles, createArticle } from "../redux/articlesSlice";
+import { fetchArticles, createArticle } from "../redux/authslice";
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   // Get articles + loading from Redux store
   const { list: articles, loading } = useSelector((state) => state.articles);

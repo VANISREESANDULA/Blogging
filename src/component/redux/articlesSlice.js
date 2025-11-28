@@ -1,95 +1,95 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import API from "../../api/articlesApi";
+// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+// // import API from "../../api/articlesApi";
 
-// GET ALL ARTICLES
-export const fetchArticles = createAsyncThunk(
-  "articles/getAll",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await API.get("/articles");
-      return res.data;
-    } catch (err) {
-      return rejectWithValue("Unable to fetch articles");
-    }
-  }
-);
+// // GET ALL ARTICLES
+// export const fetchArticles = createAsyncThunk(
+//   "articles/getAll",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const res = await API.get("/articles");
+//       return res.data;
+//     } catch (err) {
+//       return rejectWithValue("Unable to fetch articles");
+//     }
+//   }
+// );
 
-// CREATE ARTICLE
-export const createArticle = createAsyncThunk(
-  "articles/create",
-  async (data, { rejectWithValue }) => {
-    try {
-      const res = await API.post("/articles", data);
-      return res.data;
-    } catch (err) {
-      return rejectWithValue("Unable to create article");
-    }
-  }
-);
+// // CREATE ARTICLE
+// export const createArticle = createAsyncThunk(
+//   "articles/create",
+//   async (data, { rejectWithValue }) => {
+//     try {
+//       const res = await API.post("/articles", data);
+//       return res.data;
+//     } catch (err) {
+//       return rejectWithValue("Unable to create article");
+//     }
+//   }
+// );
 
-// LIKE/UNLIKE ARTICLE
-export const likeArticle = createAsyncThunk(
-  "articles/like",
-  async (id, { rejectWithValue }) => {
-    try {
-      const res = await API.put(`/articles/${id}/like`);
-      return { id, likes: res.data.likes };
-    } catch (err) {
-      return rejectWithValue("Unable to like article");
-    }
-  }
-);
+// // LIKE/UNLIKE ARTICLE
+// export const likeArticle = createAsyncThunk(
+//   "articles/like",
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       const res = await API.put(`/articles/${id}/like`);
+//       return { id, likes: res.data.likes };
+//     } catch (err) {
+//       return rejectWithValue("Unable to like article");
+//     }
+//   }
+// );
 
-// ADD COMMENT
-export const addComment = createAsyncThunk(
-  "articles/comment",
-  async ({ id, comment }, { rejectWithValue }) => {
-    try {
-      const res = await API.post(`/articles/${id}/comment`, { comment });
-      return { id, comments: res.data.comments };
-    } catch (err) {
-      return rejectWithValue("Unable to add comment");
-    }
-  }
-);
+// // ADD COMMENT
+// export const addComment = createAsyncThunk(
+//   "articles/comment",
+//   async ({ id, comment }, { rejectWithValue }) => {
+//     try {
+//       const res = await API.post(`/articles/${id}/comment`, { comment });
+//       return { id, comments: res.data.comments };
+//     } catch (err) {
+//       return rejectWithValue("Unable to add comment");
+//     }
+//   }
+// );
 
-const articlesSlice = createSlice({
-  name: "articles",
-  initialState: {
-    list: [],
-    loading: false,
-    error: null,
-  },
+// const articlesSlice = createSlice({
+//   name: "articles",
+//   initialState: {
+//     list: [],
+//     loading: false,
+//     error: null,
+//   },
 
-  reducers: {},
+//   reducers: {},
 
-  extraReducers: (builder) => {
-    // GET ARTICLES
-    builder.addCase(fetchArticles.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(fetchArticles.fulfilled, (state, action) => {
-      state.loading = false;
-      state.list = action.payload;
-    });
+//   extraReducers: (builder) => {
+//     // GET ARTICLES
+//     builder.addCase(fetchArticles.pending, (state) => {
+//       state.loading = true;
+//     });
+//     builder.addCase(fetchArticles.fulfilled, (state, action) => {
+//       state.loading = false;
+//       state.list = action.payload;
+//     });
 
-    // CREATE ARTICLE
-    builder.addCase(createArticle.fulfilled, (state, action) => {
-      state.list.unshift(action.payload); // add to top
-    });
+//     // CREATE ARTICLE
+//     builder.addCase(createArticle.fulfilled, (state, action) => {
+//       state.list.unshift(action.payload); // add to top
+//     });
 
-    // LIKE ARTICLE
-    builder.addCase(likeArticle.fulfilled, (state, action) => {
-      const article = state.list.find((a) => a._id === action.payload.id);
-      if (article) article.likes = action.payload.likes;
-    });
+//     // LIKE ARTICLE
+//     builder.addCase(likeArticle.fulfilled, (state, action) => {
+//       const article = state.list.find((a) => a._id === action.payload.id);
+//       if (article) article.likes = action.payload.likes;
+//     });
 
-    // ADD COMMENT
-    builder.addCase(addComment.fulfilled, (state, action) => {
-      const article = state.list.find((a) => a._id === action.payload.id);
-      if (article) article.comments = action.payload.comments;
-    });
-  }
-});
+//     // ADD COMMENT
+//     builder.addCase(addComment.fulfilled, (state, action) => {
+//       const article = state.list.find((a) => a._id === action.payload.id);
+//       if (article) article.comments = action.payload.comments;
+//     });
+//   }
+// });
 
-export default articlesSlice.reducer;
+// export default articlesSlice.reducer;
