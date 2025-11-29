@@ -149,6 +149,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchArticles, createArticle } from "../redux/authslice";
 
+
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

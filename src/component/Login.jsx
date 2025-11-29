@@ -2,7 +2,7 @@ import { useFormik } from 'formik';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from "./redux/authSlice";
+import { loginUser } from "./redux/authslice";
 import { toast } from "react-toastify";
 
 const Login = () => {
