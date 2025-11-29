@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { Cropper } from 'react-advanced-cropper';
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser, resetRegistrationSuccess } from "./redux/authSlice";
+import { registerUser, resetRegistrationSuccess } from "./redux/authslice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import 'react-advanced-cropper/dist/style.css'
