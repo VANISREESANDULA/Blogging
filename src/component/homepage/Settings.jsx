@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setThemeMode } from "../redux/themeSlice";
 import { setFont, setFontSize, getFontOptions, getFontSizeOptions } from "../redux/fontSlice";
+import { logout } from "../redux/authSlice";
 
 export default function Settings() {
   const dispatch = useDispatch();
@@ -46,7 +47,8 @@ export default function Settings() {
   };
 
   const handleLogout = () => {
-    navigate('/login');
+    dispatch(logout());      // remove user from redux & localStorage
+    navigate("/login");      // redirect to login page
   };
 
   const handleAddAccount = () => {
