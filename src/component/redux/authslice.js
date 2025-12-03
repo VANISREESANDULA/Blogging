@@ -1,197 +1,47 @@
-// // 
-
-// // src/component/redux/authSlice.js
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import axios from "axios";
-
-// // ✅ Register User
-// export const registerUser = createAsyncThunk(
-//   "auth/registerUser",
-//   async (userData, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.post("http://192.168.0.66:5000/api/users/register", userData);
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data?.message || "Registration failed");
-//     }
-//   }
-// );
-
-// // ✅ Login User
-// export const loginUser = createAsyncThunk(
-//   "auth/loginUser",
-//   async (userData, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.post("http://192.168.0.66:5000/api/users/login", userData);
-//       // Example: response.data should include a token and user info
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data?.message || "Login failed");
-//     }
-//   }
-// );
-
-// const authSlice = createSlice({
-//   name: "auth",
-//   initialState: {
-//     user: null,
-//     token: null,
-//     loading: false,
-//     success: false,
-//     error: null,
-//     registrationSuccess: false,
-//   },
-//   reducers: {
-//     logout: (state) => {
-//       state.user = null;
-//       state.token = null;
-//       state.success = false;
-//       state.registrationSuccess = false;
-//     },
-//     resetRegistrationSuccess: (state) => {
-//       state.registrationSuccess = false;
-//     },
-//   },
-//   extraReducers: (builder) => {
-//     builder
-//       // ✅ Register
-//       .addCase(registerUser.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//         state.registrationSuccess = false;
-//       })
-//       .addCase(registerUser.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.success = true;
-//         state.registrationSuccess = true;
-//         // Don't set user or token - we don't want auto-login
-//       })
-//       .addCase(registerUser.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//         state.registrationSuccess = false;
-//       })
-
-//       // ✅ Login
-//       .addCase(loginUser.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(loginUser.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.success = true;
-//         state.user = action.payload.user;
-//         state.token = action.payload.token;
-//       })
-//       .addCase(loginUser.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       });
-//   },
-// });
-
-// export const { logout, resetRegistrationSuccess } = authSlice.actions;
-// export default authSlice.reducer;
+//----------------------------------------------------------------
 
 
 
-// src/component/redux/appSlices.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { combineReducers } from '@reduxjs/toolkit';
 
 /* ============================================================
    AUTH THUNKS
 ============================================================ */
 
-// Register User
+// REGISTER
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://192.168.0.212:5000/api/users/register",
+        "https://robo-1-qqhu.onrender.com/api/users/register",
         userData
       );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Registration failed");
+      return rejectWithValue(
+        error.response?.data?.message || "Registration failed"
+      );
     }
   }
 );
 
-// Login User
+// LOGIN
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (userData, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://192.168.0.212:5000/api/users/login",
-        userData
+        "https://robo-1-qqhu.onrender.com/api/users/login",
+        data
       );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Login failed");
-    }
-  }
-);
-
-/* ============================================================
-   ARTICLES THUNKS
-============================================================ */
-
-// Get All Articles
-export const fetchArticles = createAsyncThunk(
-  "articles/getAll",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await axios.get("http://192.168.0.212:5000/api/articles");
-      return res.data;
-    } catch (err) {
-      return rejectWithValue("Unable to fetch articles");
-    }
-  }
-);
-
-// Create Article
-export const createArticle = createAsyncThunk(
-  "articles/create",
-  async (data, { rejectWithValue }) => {
-    try {
-      const res = await axios.post("http://192.168.0.212:5000/api/articles", data);
-      return res.data;
-    } catch (err) {
-      return rejectWithValue("Unable to create article");
-    }
-  }
-);
-
-// Like Article
-export const likeArticle = createAsyncThunk(
-  "articles/like",
-  async (id, { rejectWithValue }) => {
-    try {
-      const res = await axios.put(
-        `http://192.168.0.212:5000/api/articles/${id}/like`
+      return rejectWithValue(
+        error.response?.data?.message || "Login failed"
       );
-      return { id, likes: res.data.likes };
-    } catch (err) {
-      return rejectWithValue("Unable to like article");
-    }
-  }
-);
-
-// Add Comment
-export const addComment = createAsyncThunk(
-  "articles/comment",
-  async ({ id, comment }, { rejectWithValue }) => {
-    try {
-      const res = await axios.post(
-        `http://192.168.0.212:5000/api/articles/${id}/comment`,
-        { comment }
-      );
-      return { id, comments: res.data.comments };
-    } catch (err) {
-      return rejectWithValue("Unable to add comment");
     }
   }
 );
@@ -200,45 +50,50 @@ export const addComment = createAsyncThunk(
    AUTH SLICE
 ============================================================ */
 
+const initialState = {
+  user: null,
+  token: null,
+  loading: false,
+  error: null,
+  registrationSuccess: null,
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null,
-    token: null,
-    loading: false,
-    success: false,
-    error: null,
-    registrationSuccess: false,
-  },
+  initialState,
   reducers: {
-    logout: (state) => {
+    logout(state) {
       state.user = null;
       state.token = null;
-      state.success = false;
-      state.registrationSuccess = false;
+      state.error = null;
+      state.registrationSuccess = null;
+
     },
-    resetRegistrationSuccess: (state) => {
-      state.registrationSuccess = false;
+    resetError(state) {
+      state.error = null;
+    },
+    resetRegistrationSuccess(state) {
+      state.registrationSuccess = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Register
+      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.registrationSuccess = false;
       })
-      .addCase(registerUser.fulfilled, (state) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.registrationSuccess = true;
+
+         
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-
-      // Login
+      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -246,8 +101,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.success = true;
+        state.token = action.payload.token; 
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -257,57 +111,270 @@ const authSlice = createSlice({
 });
 
 /* ============================================================
-   ARTICLES SLICE
+   ARTICLE THUNKS
 ============================================================ */
 
-const articlesSlice = createSlice({
+// CREATE ARTICLE
+export const createArticle = createAsyncThunk(
+  "articles/createArticle",
+  async (articleData, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const token = auth.token;
+      console.log("Sending article data:", articleData);
+      const response = await axios.post(
+        "https://robo-1-qqhu.onrender.com/api/articles",
+        articleData,
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Article creation error:", error.response?.status, error.response?.data);
+      return rejectWithValue(
+        error.response?.data?.message || "Article creation failed"
+      );
+    }
+  }
+);
+
+// GET ALL ARTICLES
+// GET ALL ARTICLES
+export const getArticles = createAsyncThunk(
+  "articles/getArticles",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const token = auth?.token;
+
+      // 1️⃣ Fetch all articles
+      const articlesRes = await axios.get(
+        "https://robo-1-qqhu.onrender.com/api/articles",
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      let articles = articlesRes.data;
+
+      // 2️⃣ Fetch author details for each article
+      const enhancedArticles = await Promise.all(
+        articles.map(async (article) => {
+          try {
+            const userRes = await axios.get(
+              `https://robo-1-qqhu.onrender.com/api/users/${article.author}`, 
+              {
+                headers: {
+                  Authorization: token ? `Bearer ${token}` : "",
+                },
+              }
+            );
+
+            return {
+              ...article,
+              author: userRes.data, // attach user object
+            };
+          } catch {
+            return {
+              ...article,
+              author: { username: "Unknown", email: "unknown" },
+            };
+          }
+        })
+      );
+
+      return enhancedArticles;
+    } catch (error) {
+      console.error("getArticles error:", error.response?.status, error.response?.data);
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch articles");
+    }
+  }
+);
+
+
+
+
+/* ============================================================
+   ARTICLE SLICE
+============================================================ */
+
+const articleSlice = createSlice({
   name: "articles",
   initialState: {
-    list: [],
+    articles: [],
     loading: false,
     error: null,
+    articleCreated: false,
   },
-  reducers: {},
+  reducers: {
+    resetArticleCreated(state) {
+      state.articleCreated = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      // Get Articles
-      .addCase(fetchArticles.pending, (state) => {
+      // CREATE
+      .addCase(createArticle.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(fetchArticles.fulfilled, (state, action) => {
-        state.loading = false;
-        state.list = action.payload;
-      })
-
-      // Create Article
       .addCase(createArticle.fulfilled, (state, action) => {
-        state.list.unshift(action.payload);
+        state.loading = false;
+        state.articleCreated = true;
+        state.articles.push(action.payload);
       })
-
-      // Like Article
-      .addCase(likeArticle.fulfilled, (state, action) => {
-        const article = state.list.find((a) => a._id === action.payload.id);
-        if (article) article.likes = action.payload.likes;
+      .addCase(createArticle.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
-
-      // Add Comment
+//       // GET ARTICLES
+      .addCase(getArticles.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getArticles.fulfilled, (state, action) => {
+        state.loading = false;
+        state.articles = action.payload;
+      })
+      .addCase(getArticles.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(addComment.fulfilled, (state, action) => {
-        const article = state.list.find((a) => a._id === action.payload.id);
-        if (article) article.comments = action.payload.comments;
-      });
+  const { articleId, comment } = action.payload;
+  const article = state.articles.find((a) => a._id === articleId);
+  if (article) {
+    article.comments = [...(article.comments || []), comment];
+  }
+})
+.addCase(toggleLikeArticle.fulfilled, (state, action) => {
+  const { articleId, data } = action.payload;
+  const articleIndex = state.articles.findIndex(a => a._id === articleId);
+
+  if (articleIndex !== -1) {
+    state.articles[articleIndex].likeCount = data.likeCount;
+    state.articles[articleIndex].likedBy = data.likedBy;
+    state.articles[articleIndex].likedByCurrentUser = data.likedByCurrentUser;
+  }
+});
+
+
+
   },
 });
 
 /* ============================================================
-   EXPORT ALL AT ONE PLACE
+   EXPORTS
 ============================================================ */
 
-export const { logout, resetRegistrationSuccess } = authSlice.actions;
+export const {
+  logout,
+  resetError,
+  resetRegistrationSuccess,
+} = authSlice.actions;
+
+export const {
+  resetArticleCreated,
+} = articleSlice.actions;
+
+// Combine reducers
+export const rootReducer = combineReducers({
+  auth: authSlice.reducer,
+  articles: articleSlice.reducer,
+});
 
 export const authReducer = authSlice.reducer;
-export const articlesReducer = articlesSlice.reducer;
+export const articlesReducer = articleSlice.reducer;
 
 
+export const addComment = createAsyncThunk(
+  "articles/addComment",
+  async ({ articleId, text }, { getState, rejectWithValue }) => {
+    try {
+      const token = getState().auth?.token;
+      if (!token) return rejectWithValue("No token");
+
+      const response = await axios.post(
+        `https://robo-1-qqhu.onrender.com/api/articles/${articleId}/comment`,
+        { text }, // Backend expects { text: "Your comment" }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Comment Failed");
+    }
+  }
+);
+
+
+
+// LIKE OR UNLIKE ARTICLE
+export const toggleLikeArticle = createAsyncThunk(
+  "articles/toggleLikeArticle",
+  async (articleId, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const token = auth.token;
+
+      const response = await axios.put(
+        `https://robo-1-qqhu.onrender.com/api/articles/${articleId}/like`,
+        {},
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      return {
+        articleId,
+        data: response.data, // updated likeCount & likedBy
+      };
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+
+// Inside redux/authslice.js
+export const deleteArticle = createAsyncThunk(
+  "articles/deleteArticle",
+  async (articleId, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const token = auth?.token;
+
+      const response = await axios.delete(
+        `https://robo-1-qqhu.onrender.com/api/articles/${articleId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      return { articleId };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+extraReducers: (builder) => {
+  builder.addCase(deleteArticle.fulfilled, (state, action) => {
+    state.articles = state.articles.filter(
+      (article) => article._id !== action.payload.articleId
+    );
+  });
+}
 
 
 

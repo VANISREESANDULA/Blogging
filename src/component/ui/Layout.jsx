@@ -17,6 +17,13 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isDark = useSelector((state) => state.theme.isDark);
+  const {user}=useSelector((state)=>state.auth);
+    const avatarSrc = user?.profilePhoto
+    ? user.profilePhoto.startsWith("data:")
+      ? user.profilePhoto
+      : `data:image/png;base64,${user.profilePhoto}`
+    : null;
+
 
   const navItems = [
     { path: "/home", label: "Home", icon: Home },
@@ -73,12 +80,23 @@ const Layout = ({ children }) => {
           {/* Right Section */}
           <div className="flex items-center gap-2 md:gap-4">
             {/* Profile Avatar */}
-            <Link
-              to="/profile"
-              className={`hidden sm:flex w-9 h-9 rounded-full items-center justify-center font-bold text-sm hover:shadow-lg transition-shadow ${isDark ? 'bg-gray-700 text-white' : 'bg-zinc-300 text-black'}`}
-            >
-              U
-            </Link>
+          <Link
+            to="/profile"
+            className={`hidden sm:flex w-9 h-9 rounded-full items-center justify-center font-bold text-sm hover:shadow-lg transition-shadow ${
+              isDark ? "bg-gray-700 text-white" : "bg-red-300 text-black"
+            }`}
+          >
+            {avatarSrc ? (
+              <img
+                src={avatarSrc}
+                alt={user?.username || "User"}
+                className="w-9 h-9 rounded-full object-cover"
+              />
+                ) : (
+                  (user?.username?.charAt(0)?.toUpperCase() || "U")
+                )}
+              </Link>
+
 
             {/* Mobile Menu Button */}
             <button
