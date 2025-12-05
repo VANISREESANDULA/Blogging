@@ -2,6 +2,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { combineReducers } from '@reduxjs/toolkit';
+import { notificationReducer } from "./notificationsSlice"; 
+import { addNotification } from "./notificationsSlice";
 
 /* ============================================================
    AUTH THUNKS
@@ -53,6 +55,10 @@ const initialState = {
   loading: false,
   error: null,
   registrationSuccess: null,
+  followRequestStatus: null,
+followRequestMessage: "",
+acceptFollowStatus: null,
+acceptFollowMessage: "",
 };
 
 
@@ -76,6 +82,25 @@ const authSlice = createSlice({
     resetRegistrationSuccess(state) {
       state.registrationSuccess = null;
     },
+    followRequestSent(state, action) {
+  state.followRequestStatus = "success";
+  state.followRequestMessage = action.payload;
+},
+
+followRequestError(state, action) {
+  state.followRequestStatus = "error";
+  state.followRequestMessage = action.payload;
+},
+acceptFollowSuccess(state, action) {
+  state.acceptFollowStatus = "success";
+  state.acceptFollowMessage = action.payload;
+},
+
+acceptFollowError(state, action) {
+  state.acceptFollowStatus = "error";
+  state.acceptFollowMessage = action.payload;
+},
+
   },
   extraReducers: (builder) => {
     builder
@@ -332,6 +357,8 @@ const articleSlice = createSlice({
   },
 });
 
+
+
 /* ============================================================
    EXPORTS
 ============================================================ */
@@ -340,6 +367,10 @@ export const {
   logout,
   resetError,
   resetRegistrationSuccess,
+  followRequestSent,
+  followRequestError,
+   acceptFollowSuccess,
+  acceptFollowError,
 } = authSlice.actions;
 
 export const {
@@ -351,10 +382,12 @@ export const {
 export const rootReducer = combineReducers({
   auth: authSlice.reducer,
   articles: articleSlice.reducer,
+    notifications: notificationReducer, 
 });
 
 export const authReducer = authSlice.reducer;
 export const articlesReducer = articleSlice.reducer;
+
 
 
 /* ============================================================
@@ -411,6 +444,85 @@ export const toggleLikeArticle = createAsyncThunk(
     }
   }
 );
+
+
+// SEND FOLLOW REQUEST
+export const sendFollowRequest = (username) => async (dispatch, getState) => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log("🔥 TOKEN USED:", token); 
+   const res = await fetch("https://robo-1-qqhu.onrender.com/api/follow/send-request", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({ targetUsername: username }),
+});
+
+const data = await res.json();
+console.log("Backend response:", data);
+
+
+    if (!res.ok) {
+      return dispatch(followRequestError(data.message || "Failed to send follow request"));
+    }
+
+    dispatch(followRequestSent(data.message || "Request sent successfully"));
+
+// add notification
+dispatch(addNotification({
+  type: "followRequestSent",
+  message: `You sent a follow request to ${username}`,
+  createdAt: new Date().toISOString(),
+}));
+
+  } catch (error) {
+    dispatch(followRequestError(error.message));
+  }
+};
+
+export const incomingFollowRequest = (user) => (dispatch) => {
+  dispatch(addNotification({
+    type: "followRequestIncoming",
+    message: `${user.username} sent you a follow request`,
+    userId: user._id,
+    createdAt: new Date().toISOString()
+  }));
+};
+
+export const acceptFollowRequest = (followerId) => async (dispatch, getState) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("https://robo-1-qqhu.onrender.com/api/follow/accept-request", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ followerId }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return dispatch(acceptFollowError(data.message || "Failed to accept follow request"));
+    }
+
+    dispatch(acceptFollowSuccess(data.message || "Follow request accepted"));
+    dispatch(addNotification({
+  type: "followRequestAccepted",
+  message: `${data.followerName} accepted your follow request`,
+  createdAt: new Date(),
+}));
+    return data;
+  } catch (error) {
+    dispatch(acceptFollowError(error.message));
+  }
+};
+
+
 
 // delete article
 export const deleteArticle = createAsyncThunk(

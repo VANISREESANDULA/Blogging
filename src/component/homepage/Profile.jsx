@@ -22,6 +22,9 @@ const Profile = () => {
   const [cropType, setCropType] = useState(null); // 'profile' or 'background'
   const [croppedProfileImage, setCroppedProfileImage] = useState(null);
   const [croppedBackgroundImage, setCroppedBackgroundImage] = useState(null);
+  const [followUsername, setFollowUsername] = useState("");
+  const [showFollowRequest, setShowFollowRequest] = useState(false);
+
   const dispatch = useDispatch();
 
   const token = useSelector((state) => state.auth.token);
@@ -44,13 +47,13 @@ const Profile = () => {
   // Filter posts for current user
   const userPosts = user && Array.isArray(articles)
     ? articles.filter((post) => {
-        return (
-          (post.author?._id === user._id) ||        // Case 1: author is object
-          (post.author === user._id) ||             // Case 2: author is string id
-          (post.user?._id === user._id) ||          // sometimes articles use `user`    
-          (post.author?.username === user.username) // fallback
-        );
-      })
+      return (
+        (post.author?._id === user._id) ||        // Case 1: author is object
+        (post.author === user._id) ||             // Case 2: author is string id
+        (post.user?._id === user._id) ||          // sometimes articles use `user`    
+        (post.author?.username === user.username) // fallback
+      );
+    })
     : [];
 
   // Local profile data
@@ -64,9 +67,9 @@ const Profile = () => {
     location: user?.location || "San Francisco, CA",
     joinDate: user?.createdAt
       ? `Joined ${new Date(user.createdAt).toLocaleDateString("en-US", {
-          month: "long",
-          year: "numeric",
-        })}`
+        month: "long",
+        year: "numeric",
+      })}`
       : "Joined March 2023",
     followers: user?.followersCount || 0,
     following: user?.followingCount || 0,
@@ -205,23 +208,56 @@ const Profile = () => {
 
   const postsCount = userPosts?.length || 0;
 
+  const handleSendFollowRequest = async () => {
+    if (!followUsername.trim()) {
+      alert("Enter a valid username");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("https://robo-1-qqhu.onrender.com/api/follow/send-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          targetUsername: followUsername
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Failed to send follow request");
+        return;
+      }
+
+      alert("Follow request sent!");
+      setFollowUsername("");
+    } catch (error) {
+      alert("Something went wrong");
+      console.error(error);
+    }
+  };
+
+
   return (
     <Layout>
       <div
-        className={`min-h-screen transition-colors duration-300 ${
-          isDark ? "bg-gray-950" : "bg-white"
-        }`}
+        className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-gray-950" : "bg-white"
+          }`}
       >
         <div
-          className={`max-w-4xl mx-auto transition-colors duration-300 ${
-            isDark ? "bg-gray-900" : "bg-white"
-          }`}
+          className={`max-w-4xl mx-auto transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-white"
+            }`}
         >
           {/* Profile Header */}
           <div
-            className={`border-b transition-colors duration-300 ${
-              isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
-            }`}
+            className={`border-b transition-colors duration-300 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
+              }`}
           >
             {/* Cover Photo */}
             {/* <div
@@ -241,9 +277,8 @@ const Profile = () => {
 
             {/* Profile Info */}
             <div
-              className={`p-18 relative transition-colors duration-300 ${
-                isDark ? "bg-gray-900" : "bg-neutral-100"
-              }`}
+              className={`p-18 relative transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-neutral-100"
+                }`}
             >
               <div className="flex items-start justify-between gap-4">
                 {/* Left Section */}
@@ -255,34 +290,30 @@ const Profile = () => {
 
                   {/* Name + Username */}
                   <h1
-                    className={`text-xl sm:text-2xl md:text-3xl font-bold transition-colors duration-300 ${
-                      isDark ? "text-gray-100" : "text-gray-900"
-                    }`}
+                    className={`text-xl sm:text-2xl md:text-3xl font-bold transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"
+                      }`}
                   >
                     {localProfileData.name}
                   </h1>
                   <p
-                    className={`text-sm transition-colors duration-300 ${
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
+                    className={`text-sm transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"
+                      }`}
                   >
                     @{localProfileData.username}
                   </p>
 
                   {/* Bio */}
                   <p
-                    className={`text-sm md:text-base transition-colors duration-300 ${
-                      isDark ? "text-gray-300" : "text-gray-800"
-                    } mt-2 sm:mt-4 max-w-lg`}
+                    className={`text-sm md:text-base transition-colors duration-300 ${isDark ? "text-gray-300" : "text-gray-800"
+                      } mt-2 sm:mt-4 max-w-lg`}
                   >
                     {localProfileData.bio}
                   </p>
 
                   {/* Meta */}
                   <div
-                    className={`flex flex-wrap gap-2 sm:gap-4 text-sm mt-2 sm:mt-4 ${
-                      isDark ? "text-gray-400" : "text-gray-700"
-                    }`}
+                    className={`flex flex-wrap gap-2 sm:gap-4 text-sm mt-2 sm:mt-4 ${isDark ? "text-gray-400" : "text-gray-700"
+                      }`}
                   >
                     <div className="flex items-center gap-1">
                       <MapPin
@@ -309,9 +340,8 @@ const Profile = () => {
                   <div className="flex gap-6 mt-4 sm:mt-6 text-sm">
                     <button
                       onClick={() => setShowFollowingModal(true)}
-                      className={`hover:underline transition-colors duration-300 ${
-                        isDark ? "text-gray-300" : ""
-                      }`}
+                      className={`hover:underline transition-colors duration-300 ${isDark ? "text-gray-300" : ""
+                        }`}
                     >
                       <span className="font-bold text-gray-900">
                         {localProfileData.following}
@@ -327,9 +357,8 @@ const Profile = () => {
 
                     <button
                       onClick={() => setShowFollowersModal(true)}
-                      className={`hover:underline transition-colors duration-300 ${
-                        isDark ? "text-gray-300" : ""
-                      }`}
+                      className={`hover:underline transition-colors duration-300 ${isDark ? "text-gray-300" : ""
+                        }`}
                     >
                       <span className="font-bold text-gray-900">
                         {localProfileData.followers}
@@ -354,20 +383,55 @@ const Profile = () => {
                       </span>
                     </div>
                   </div>
+                  {/* Follow Request Input */}
+                  {showFollowRequest && (
+                    <div className="mt-6">
+                      <h3 className={`text-base font-semibold mb-2 ${isDark ? "text-gray-200" : "text-gray-900"}`}>
+                        Send Follow Request
+                      </h3>
+
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Enter username"
+                          value={followUsername}
+                          onChange={(e) => setFollowUsername(e.target.value)}
+                          className={`flex-1 px-3 py-2 rounded-lg border 
+          ${isDark ? "bg-gray-800 border-gray-700 text-gray-100" : "bg-white border-gray-300"}`}
+                        />
+                        <button
+                          onClick={handleSendFollowRequest}
+                          className={`px-4 py-2 rounded-lg font-semibold 
+          ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
+                        >
+                          Send
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-2 flex-shrink-0">
                   <button
                     onClick={handleEditClick}
-                    className={`px-4 sm:px-6 py-2 sm:py-2 rounded-full font-semibold border-2 transition-colors text-sm sm:text-base ${
-                      isDark
-                        ? "border-blue-500 text-blue-300 hover:bg-blue-900/20"
-                        : "border-blue-500 text-blue-600 hover:bg-blue-50"
-                    }`}
+                    className={`px-4 sm:px-6 py-2 sm:py-2 rounded-full font-semibold border-2 transition-colors text-sm sm:text-base ${isDark
+                      ? "border-blue-500 text-blue-300 hover:bg-blue-900/20"
+                      : "border-blue-500 text-blue-600 hover:bg-blue-50"
+                      }`}
                   >
                     Edit Profile
                   </button>
+                  <button
+                    onClick={() => setShowFollowRequest(!showFollowRequest)}
+                    className={`px-4 py-2 rounded-lg font-semibold 
+    ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
+                  >
+                    Send Follow Request
+                  </button>
+
                 </div>
               </div>
             </div>
@@ -375,26 +439,22 @@ const Profile = () => {
 
           {/* Tabs */}
           <div
-            className={`border-b transition-colors duration-300 px-4 sm:px-6 ${
-              isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
-            }`}
+            className={`border-b transition-colors duration-300 px-4 sm:px-6 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
+              }`}
           >
             <div className="flex gap-4 sm:gap-8 overflow-x-auto">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 font-semibold border-b-2 transition-colors text-sm sm:text-base whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? `border-blue-500 ${
-                          isDark ? "text-blue-300" : "text-blue-600"
-                        }`
-                      : `border-transparent ${
-                          isDark
-                            ? "text-gray-400 hover:text-gray-200"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`
-                  }`}
+                  className={`py-4 font-semibold border-b-2 transition-colors text-sm sm:text-base whitespace-nowrap ${activeTab === tab.id
+                    ? `border-blue-500 ${isDark ? "text-blue-300" : "text-blue-600"
+                    }`
+                    : `border-transparent ${isDark
+                      ? "text-gray-400 hover:text-gray-200"
+                      : "text-gray-500 hover:text-gray-700"
+                    }`
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -404,9 +464,8 @@ const Profile = () => {
 
           {/* Tab Content */}
           <div
-            className={`border-l border-r transition-colors duration-300 ${
-              isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
-            }`}
+            className={`border-l border-r transition-colors duration-300 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
+              }`}
           >
             {activeTab === "posts" && (
               <div className="mt-6 space-y-5 p-4">
@@ -416,40 +475,38 @@ const Profile = () => {
                       key={post._id}
                       className="bg-white rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700 p-4"
                     >
-                        <PostCard
-                    _id={post._id}
-                    user={post.user}
-                    onLike={() => handleLike(post._id)}
-                    author={{
-                      name: post.user?.name ||post.author?.username ||post.author?.fullname||post.user.email||'Unknown',
-                              username: post.author?.username||'unknown',
-                              profilePhoto: post.author?.profilePhoto||post.user.profilePhoto||null
-                       
-                    }}
-                    timestamp={post.createdAt} 
-                    title={post.title}
-                    content={post.content}
-                    stats={{
-                      likes: post.likes?.length || post.likeCount || 0,
-                      comments: post.comments?.length || 0,
-                      shares: 0,
-                    }}
-                    isProfilePost={true} 
-                  />
+                      <PostCard
+                        _id={post._id}
+                        user={post.user}
+                        onLike={() => handleLike(post._id)}
+                        author={{
+                          name: post.user?.name || post.author?.username || post.author?.fullname || post.user.email || 'Unknown',
+                          username: post.author?.username || 'unknown',
+                          profilePhoto: post.author?.profilePhoto || post.user.profilePhoto || null
+
+                        }}
+                        timestamp={post.createdAt}
+                        title={post.title}
+                        content={post.content}
+                        stats={{
+                          likes: post.likes?.length || post.likeCount || 0,
+                          comments: post.comments?.length || 0,
+                          shares: 0,
+                        }}
+                        isProfilePost={true}
+                      />
 
                     </div>
                   ))
                 ) : (
                   <div
-                    className={`flex flex-col items-center justify-center py-12 px-4 transition-colors duration-300 ${
-                      isDark ? "text-gray-300" : ""
-                    }`}
+                    className={`flex flex-col items-center justify-center py-12 px-4 transition-colors duration-300 ${isDark ? "text-gray-300" : ""
+                      }`}
                   >
                     <div className="text-6xl mb-4 text-gray-400">📝</div>
                     <h3
-                      className={`font-bold text-lg ${
-                        isDark ? "text-gray-100" : "text-gray-900"
-                      }`}
+                      className={`font-bold text-lg ${isDark ? "text-gray-100" : "text-gray-900"
+                        }`}
                     >
                       No posts yet
                     </h3>
@@ -475,56 +532,49 @@ const Profile = () => {
               onClick={() => setShowEditDialog(false)}
             />
             <div
-              className={`relative w-full max-w-2xl mx-4 rounded-2xl shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col transition-colors duration-300 ${
-                isDark
-                  ? "bg-gray-900 border border-gray-700 text-gray-100"
-                  : "bg-white"
-              }`}
+              className={`relative w-full max-w-2xl mx-4 rounded-2xl shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col transition-colors duration-300 ${isDark
+                ? "bg-gray-900 border border-gray-700 text-gray-100"
+                : "bg-white"
+                }`}
             >
               <div
-                className={`flex items-center justify-between px-6 py-4 border-b transition-colors duration-300 ${
-                  isDark ? "border-gray-700" : "border-gray-200"
-                }`}
+                className={`flex items-center justify-between px-6 py-4 border-b transition-colors duration-300 ${isDark ? "border-gray-700" : "border-gray-200"
+                  }`}
               >
                 <h2
-                  className={`text-xl font-bold ${
-                    isDark ? "text-gray-100" : "text-gray-900"
-                  }`}
+                  className={`text-xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"
+                    }`}
                 >
                   Edit Profile
                 </h2>
                 <button
                   onClick={() => setShowEditDialog(false)}
-                  className={`p-1 transition-colors ${
-                    isDark
-                      ? "text-gray-300 hover:text-gray-100"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`p-1 transition-colors ${isDark
+                    ? "text-gray-300 hover:text-gray-100"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <X size={20} />
                 </button>
               </div>
 
               <div
-                className={`overflow-y-auto flex-1 p-6 transition-colors duration-300 ${
-                  isDark ? "bg-gray-900" : "bg-white"
-                }`}
+                className={`overflow-y-auto flex-1 p-6 transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-white"
+                  }`}
               >
                 <form onSubmit={handleEditSubmit} className="space-y-6">
                   {/* Profile Photo Upload */}
                   <div className="space-y-3">
                     <label
-                      className={`block text-sm font-medium ${
-                        isDark ? "text-gray-100" : "text-gray-900"
-                      }`}
+                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                        }`}
                     >
                       Profile Photo
                     </label>
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl border-4 overflow-hidden ${
-                          isDark ? "border-gray-800" : "border-white"
-                        }`}
+                        className={`w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl border-4 overflow-hidden ${isDark ? "border-gray-800" : "border-white"
+                          }`}
                       >
                         {croppedProfileImage || localProfileData.avatar ? (
                           <img
@@ -551,19 +601,17 @@ const Profile = () => {
                         />
                         <label
                           htmlFor="profilePhoto"
-                          className={`cursor-pointer px-4 py-2 rounded-lg hover:transition-colors flex items-center gap-2 text-sm ${
-                            isDark
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-blue-500 text-white hover:bg-blue-600"
-                          }`}
+                          className={`cursor-pointer px-4 py-2 rounded-lg hover:transition-colors flex items-center gap-2 text-sm ${isDark
+                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                            }`}
                         >
                           <Upload size={16} />
                           Change Photo
                         </label>
                         <p
-                          className={`text-xs mt-1 ${
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          }`}
+                          className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-600"
+                            }`}
                         >
                           Recommended: Square image, at least 400x400 pixels
                         </p>
@@ -578,9 +626,8 @@ const Profile = () => {
                         }
                       >
                         <p
-                          className={`text-sm ${
-                            isDark ? "text-green-300" : "text-green-700"
-                          }`}
+                          className={`text-sm ${isDark ? "text-green-300" : "text-green-700"
+                            }`}
                         >
                           ✓ New profile photo ready to save
                         </p>
@@ -591,16 +638,14 @@ const Profile = () => {
                   {/* Background Photo Upload */}
                   <div className="space-y-3">
                     <label
-                      className={`block text-sm font-medium ${
-                        isDark ? "text-gray-100" : "text-gray-900"
-                      }`}
+                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                        }`}
                     >
                       Background Photo
                     </label>
                     <div
-                      className={`border-2 border-dashed rounded-lg p-4 text-center ${
-                        isDark ? "border-gray-700 bg-gray-800" : "border-gray-300"
-                      }`}
+                      className={`border-2 border-dashed rounded-lg p-4 text-center ${isDark ? "border-gray-700 bg-gray-800" : "border-gray-300"
+                        }`}
                     >
                       <input
                         type="file"
@@ -611,25 +656,22 @@ const Profile = () => {
                       />
                       <label
                         htmlFor="backgroundPhoto"
-                        className={`cursor-pointer flex flex-col items-center gap-2 ${
-                          isDark ? "text-gray-200" : ""
-                        }`}
+                        className={`cursor-pointer flex flex-col items-center gap-2 ${isDark ? "text-gray-200" : ""
+                          }`}
                       >
                         <Camera
                           size={24}
                           className={isDark ? "text-gray-300" : "text-gray-500"}
                         />
                         <span
-                          className={`text-sm ${
-                            isDark ? "text-gray-100" : "text-gray-900"
-                          }`}
+                          className={`text-sm ${isDark ? "text-gray-100" : "text-gray-900"
+                            }`}
                         >
                           Upload Background Photo
                         </span>
                         <span
-                          className={`text-xs ${
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          }`}
+                          className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"
+                            }`}
                         >
                           Recommended: 1500x500 pixels
                         </span>
@@ -644,9 +686,8 @@ const Profile = () => {
                         }
                       >
                         <p
-                          className={`text-sm ${
-                            isDark ? "text-green-300" : "text-green-700"
-                          }`}
+                          className={`text-sm ${isDark ? "text-green-300" : "text-green-700"
+                            }`}
                         >
                           ✓ New background photo ready to save
                         </p>
@@ -658,9 +699,8 @@ const Profile = () => {
                   <div className="space-y-2">
                     <label
                       htmlFor="name"
-                      className={`block text-sm font-medium ${
-                        isDark ? "text-gray-100" : "text-gray-900"
-                      }`}
+                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                        }`}
                     >
                       Name
                     </label>
@@ -670,11 +710,10 @@ const Profile = () => {
                       name="name"
                       value={editFormData.name}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        isDark
-                          ? "bg-gray-800 border-gray-700 text-gray-100"
-                          : "border border-gray-300 bg-white text-gray-900"
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isDark
+                        ? "bg-gray-800 border-gray-700 text-gray-100"
+                        : "border border-gray-300 bg-white text-gray-900"
+                        }`}
                       placeholder="Enter your name"
                     />
                   </div>
@@ -683,9 +722,8 @@ const Profile = () => {
                   <div className="space-y-2">
                     <label
                       htmlFor="bio"
-                      className={`block text-sm font-medium ${
-                        isDark ? "text-gray-100" : "text-gray-900"
-                      }`}
+                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                        }`}
                     >
                       Bio
                     </label>
@@ -695,11 +733,10 @@ const Profile = () => {
                       value={editFormData.bio}
                       onChange={handleInputChange}
                       rows={3}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
-                        isDark
-                          ? "bg-gray-800 border-gray-700 text-gray-100"
-                          : "border border-gray-300 bg-white text-gray-900"
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${isDark
+                        ? "bg-gray-800 border-gray-700 text-gray-100"
+                        : "border border-gray-300 bg-white text-gray-900"
+                        }`}
                       placeholder="Tell us about yourself..."
                     />
                   </div>
@@ -708,9 +745,8 @@ const Profile = () => {
                   <div className="space-y-2">
                     <label
                       htmlFor="location"
-                      className={`block text-sm font-medium ${
-                        isDark ? "text-gray-100" : "text-gray-900"
-                      }`}
+                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                        }`}
                     >
                       Location
                     </label>
@@ -720,11 +756,10 @@ const Profile = () => {
                       name="location"
                       value={editFormData.location}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        isDark
-                          ? "bg-gray-800 border-gray-700 text-gray-100"
-                          : "border border-gray-300 bg-white text-gray-900"
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isDark
+                        ? "bg-gray-800 border-gray-700 text-gray-100"
+                        : "border border-gray-300 bg-white text-gray-900"
+                        }`}
                       placeholder="Where are you based?"
                     />
                   </div>
@@ -738,21 +773,19 @@ const Profile = () => {
                         setCroppedProfileImage(null);
                         setCroppedBackgroundImage(null);
                       }}
-                      className={`flex-1 px-4 py-2 rounded-lg hover:transition-colors ${
-                        isDark
-                          ? "border border-gray-700 text-gray-200 hover:bg-gray-800"
-                          : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                      }`}
+                      className={`flex-1 px-4 py-2 rounded-lg hover:transition-colors ${isDark
+                        ? "border border-gray-700 text-gray-200 hover:bg-gray-800"
+                        : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
-                        isDark
-                          ? "bg-blue-600 text-white hover:bg-blue-700"
-                          : "bg-blue-500 text-white hover:bg-blue-600"
-                      }`}
+                      className={`flex-1 px-4 py-2 rounded-lg transition-colors ${isDark
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-blue-500 text-white hover:bg-blue-600"
+                        }`}
                     >
                       Save Changes
                     </button>
@@ -863,11 +896,10 @@ const Profile = () => {
                       </div>
                     </div>
                     <button
-                      className={`px-4 py-1 rounded-full text-sm font-semibold ${
-                        follower.isFollowing
-                          ? "bg-gray-200 text-gray-800"
-                          : "bg-blue-500 text-white"
-                      }`}
+                      className={`px-4 py-1 rounded-full text-sm font-semibold ${follower.isFollowing
+                        ? "bg-gray-200 text-gray-800"
+                        : "bg-blue-500 text-white"
+                        }`}
                     >
                       {follower.isFollowing ? "Following" : "Follow"}
                     </button>
