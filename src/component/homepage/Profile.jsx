@@ -7,11 +7,6 @@ import { Cropper } from "react-advanced-cropper";
 import "react-advanced-cropper/dist/style.css";
 import { getArticles } from "../redux/authslice";
 
-const FOLLOWERS = [
-  { id: 1, name: "Sarah Johnson", username: "sarahj", avatar: "S", isFollowing: true },
-  { id: 2, name: "Alex Chen", username: "alexchen", avatar: "A", isFollowing: false },
-  { id: 3, name: "Emma Davis", username: "emmadavis", avatar: "E", isFollowing: true },
-];
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
@@ -28,19 +23,30 @@ const Profile = () => {
   const dispatch = useDispatch();
 
   const token = useSelector((state) => state.auth.token);
-
-  const cropperRef = useRef(null);
-
   // fetch articles when profile mounts (so user posts are available)
   useEffect(() => {
     if (token) {
       dispatch(getArticles());
     }
   }, [dispatch, token]);
+  const { user } = useSelector((state) => state.auth);
+  // const updateUser=()=>{
+
+  // }
+  // const userstr=localStorage.getItem('user')
+  // const user =JSON.parse(userstr)
+  // console.log("heyyyyyyyy",user.email)
+  // console.log("heyyyyyyyy",user.followers[0].username)
+  // const user = useSelector((state) => state.auth.user);
+
+  const cropperRef = useRef(null);
+  // 🔥 ADD THIS RIGHT HERE
+  const followersList = user?.followers || [];
+  const followingList = user?.following || [];
+
 
   // Redux state
   const isDark = useSelector((state) => state.theme.isDark);
-  const { user } = useSelector((state) => state.auth);
   const { articles = [] } = useSelector((state) => state.articles);
 
 
@@ -57,24 +63,56 @@ const Profile = () => {
     : [];
 
   // Local profile data
+  // const [localProfileData, setLocalProfileData] = useState({
+  //   name: user?.username || "Your Name",
+  //   username: user?.username || "yourname",
+  //   avatar: user?.profilePhoto || null,
+  //   bio:
+  //     user?.bio ||
+  //     "Designer & Developer | Creating beautiful digital experiences | Coffee enthusiast ☕",
+  //   location: user?.location || "San Francisco, CA",
+  //   joinDate: user?.createdAt
+  //     ? `Joined ${new Date(user.createdAt).toLocaleDateString("en-US", {
+  //       month: "long",
+  //       year: "numeric",
+  //     })}`
+  //     : "Joined March 2023",
+  //   followers: user?.followersCount || 0,
+  //   following: user?.followingCount || 0,
+  //   background: user?.backgroundPhoto || "/Screenshot 2025-11-13 232324.png.jpg",
+  // });
   const [localProfileData, setLocalProfileData] = useState({
     name: user?.username || "Your Name",
     username: user?.username || "yourname",
     avatar: user?.profilePhoto || null,
-    bio:
-      user?.bio ||
-      "Designer & Developer | Creating beautiful digital experiences | Coffee enthusiast ☕",
-    location: user?.location || "San Francisco, CA",
+    bio: user?.bio || "",
+    location: user?.location || "",
     joinDate: user?.createdAt
       ? `Joined ${new Date(user.createdAt).toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
       })}`
-      : "Joined March 2023",
-    followers: user?.followersCount || 0,
-    following: user?.followingCount || 0,
-    background: user?.backgroundPhoto || "/Screenshot 2025-11-13 232324.png.jpg",
+      : "Joined",
+    // followers: followersArray.length,
+    // following: followingArray.length,
+    followers: user?.followers?.length || 0,
+    following: user?.following?.length || 0,
+    background: user?.backgroundPhoto || "",
   });
+
+  // useEffect(() => {
+  //   if (!user) return;
+
+  //   setLocalProfileData((prev) => ({
+  //     ...prev,
+  //     // followers: (user.followers || []).length,
+  //     // following: (user.following || []).length,
+  //     followers: user?.followers?.length || 0,
+  //     following: user?.following?.length || 0,
+  //   }));
+  // }, [user]);
+
+
 
   const [editFormData, setEditFormData] = useState({
     name: "",
@@ -343,9 +381,12 @@ const Profile = () => {
                       className={`hover:underline transition-colors duration-300 ${isDark ? "text-gray-300" : ""
                         }`}
                     >
-                      <span className="font-bold text-gray-900">
+                      {/* <span className="font-bold text-gray-900">
                         {localProfileData.following}
-                      </span>{" "}
+                      </span>{" "} */}
+                       <span className="font-bold">
+                        {user?.following?.length || 0}
+                      </span>
                       <span
                         className={
                           isDark ? "text-gray-400" : "text-gray-600"
@@ -360,9 +401,13 @@ const Profile = () => {
                       className={`hover:underline transition-colors duration-300 ${isDark ? "text-gray-300" : ""
                         }`}
                     >
-                      <span className="font-bold text-gray-900">
+                      {/* <span className="font-bold text-gray-900">
                         {localProfileData.followers}
-                      </span>{" "}
+                      </span> */}
+                       <span className="font-bold">
+                        {user?.followers?.length || 0}
+                      </span>
+                      {" "}
                       <span
                         className={
                           isDark ? "text-gray-400" : "text-gray-600"
@@ -384,7 +429,7 @@ const Profile = () => {
                     </div>
                   </div>
                   {/* Follow Request Input */}
-                  {showFollowRequest && (
+                  {/* {showFollowRequest && (
                     <div className="mt-6">
                       <h3 className={`text-base font-semibold mb-2 ${isDark ? "text-gray-200" : "text-gray-900"}`}>
                         Send Follow Request
@@ -408,7 +453,7 @@ const Profile = () => {
                         </button>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
 
                 </div>
@@ -424,13 +469,13 @@ const Profile = () => {
                   >
                     Edit Profile
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => setShowFollowRequest(!showFollowRequest)}
                     className={`px-4 py-2 rounded-lg font-semibold 
     ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
                   >
                     Send Follow Request
-                  </button>
+                  </button> */}
 
                 </div>
               </div>
@@ -479,12 +524,28 @@ const Profile = () => {
                         _id={post._id}
                         user={post.user}
                         onLike={() => handleLike(post._id)}
-                        author={{
-                          name: post.user?.name || post.author?.username || post.author?.fullname || post.user.email || 'Unknown',
-                          username: post.author?.username || 'unknown',
-                          profilePhoto: post.author?.profilePhoto || post.user.profilePhoto || null
+                        // author={{
+                        //   name: post.user?.name || post.author?.username || post.author?.fullname || post.user.email || 'Unknown',
+                        //   username: post.author?.username || 'unknown',
+                        //   profilePhoto: post.author?.profilePhoto || post.user.profilePhoto || null
 
+                        // }}
+                        author={{
+                          name: post.author?.username ||
+                            post.user?.name ||
+                            post.user?.email?.split("@")[0] ||
+                            "Unknown",
+
+                          username: post.author?.username ||
+                            post.user?.username ||
+                            "unknown",
+
+                          profilePhoto:
+                            post.author?.profilePhoto ||
+                            post.user?.profilePhoto ||
+                            null,
                         }}
+
                         timestamp={post.createdAt}
                         title={post.title}
                         content={post.content}
@@ -864,7 +925,7 @@ const Profile = () => {
         )}
 
         {/* Followers Modal */}
-        {showFollowersModal && (
+        {/* {showFollowersModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -908,10 +969,75 @@ const Profile = () => {
               </div>
             </div>
           </div>
+        )} */}
+        {showFollowersModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowFollowersModal(false)}
+            />
+
+            <div className="relative w-full max-w-md mx-4 rounded-2xl bg-white shadow-2xl max-h-96 overflow-hidden flex flex-col">
+              <div className="flex items-center justify-between px-6 py-4 border-b">
+                <h2 className="text-xl font-bold">Followers</h2>
+                <button onClick={() => setShowFollowersModal(false)}>✕</button>
+              </div>
+
+              <div className="overflow-y-auto flex-1">
+                {followersList.length === 0 ? (
+                  <p className="p-4 text-gray-600">No followers yet</p>
+                ) : (
+                  followersList.map((follower) =>
+                  //   (
+                  //   <div
+                  //     key={follower._id}
+                  //     className="p-4 border-b hover:bg-gray-50 flex items-center justify-between"
+                  //   >
+                  //     <div className="flex items-center gap-3">
+                  //       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold">
+                  //         {follower.username?.charAt(0).toUpperCase()}
+                  //       </div>
+
+                  //       <div>
+                  //         <p className="font-bold">{follower.username}</p>
+                  //         <p className="text-xs text-gray-600">@{follower.username}</p>
+                  //       </div>
+                  //     </div>
+
+                  //     <button className="px-4 py-1 rounded-full bg-gray-200">
+                  //       Following
+                  //     </button>
+                  //   </div>
+                  // )
+                  {
+                    const avatar = follower?.profilePhoto
+                      ? `data:image/png;base64,${follower.profilePhoto}`
+                      : follower?.username?.[0]?.toUpperCase() || "U";
+
+                    return (
+                      <div key={follower._id} className="p-4 border-b flex justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold">
+                            {avatar}
+                          </div>
+
+                          <div>
+                            <p className="font-bold">{follower.username}</p>
+                            <p className="text-xs opacity-60">@{follower.username}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  )
+                )}
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Following Modal */}
-        {showFollowingModal && (
+        {/* {showFollowingModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -950,7 +1076,51 @@ const Profile = () => {
               </div>
             </div>
           </div>
+        )} */}
+        {showFollowingModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowFollowingModal(false)}
+            />
+
+            <div className="relative w-full max-w-md mx-4 rounded-2xl bg-white shadow-2xl max-h-96 overflow-hidden flex flex-col">
+              <div className="flex items-center justify-between px-6 py-4 border-b">
+                <h2 className="text-xl font-bold">Following</h2>
+                <button onClick={() => setShowFollowingModal(false)}>✕</button>
+              </div>
+
+              <div className="overflow-y-auto flex-1">
+                {followingList.length === 0 ? (
+                  <p className="p-4 text-gray-600">Not following anyone</p>
+                ) : (
+                  followingList.map((userFollow) => (
+                    <div
+                      key={userFollow._id}
+                      className="p-4 border-b hover:bg-gray-50 flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold">
+                          {userFollow.username?.charAt(0).toUpperCase()}
+                        </div>
+
+                        <div>
+                          <p className="font-bold">{userFollow.username}</p>
+                          <p className="text-xs text-gray-600">@{userFollow.username}</p>
+                        </div>
+                      </div>
+
+                      <button className="px-4 py-1 rounded-full bg-gray-200">
+                        Unfollow
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         )}
+
       </div>
     </Layout>
   );
