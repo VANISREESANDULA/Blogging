@@ -38,7 +38,7 @@ const Layout = ({ children }) => {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-950 text-white' : 'bg-zinc-100 text-black'}`}>
       {/* Header */}
-      <header className={`sticky top-0 z-40 border-b transition-colors duration-300 ${isDark ? 'border-gray-700 bg-gray-900/95' : 'border-border bg-background/95'} backdrop-blur`}>
+      <header className={`sticky top-0 z-40 border-b transition-colors duration-300 ${isDark ? 'border-gray-100 bg-gray-800/10' : 'border-border bg-background/95'} backdrop-blur`}>
         <div className="flex items-center justify-between px-4 py-3 md:px-6">
           {/* Logo */}
           <Link
@@ -48,7 +48,7 @@ const Layout = ({ children }) => {
             <div className="w-8 h-8 bg-linear-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white">
               {/* S */}
             </div>
-            <span className="hidden sm:inline">Social</span>
+            <span className="hidden sm:inline">Driftly</span>
           </Link>
 
           {/* Desktop Navigation */}

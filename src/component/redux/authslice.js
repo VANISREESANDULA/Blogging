@@ -1,9 +1,9 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { combineReducers } from '@reduxjs/toolkit';
-import { notificationReducer } from "./notificationsSlice"; 
+import { notificationReducer } from "./notificationsSlice";
 import { addNotification } from "./notificationsSlice";
+import { socket } from "../../socket";
 
 /* ============================================================
    AUTH THUNKS
@@ -15,7 +15,7 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "https://robo-1-qqhu.onrender.com/api/users/register",
+        "https://robo-zv8u.onrender.com/api/users/register",
         userData
       );
       return response.data;
@@ -33,9 +33,11 @@ export const loginUser = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "https://robo-1-qqhu.onrender.com/api/users/login",
+        "https://robo-zv8u.onrender.com/api/users/login",
         data
       );
+      console.log("from code ", response.data)
+
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -56,9 +58,9 @@ const initialState = {
   error: null,
   registrationSuccess: null,
   followRequestStatus: null,
-followRequestMessage: "",
-acceptFollowStatus: null,
-acceptFollowMessage: "",
+  followRequestMessage: "",
+  acceptFollowStatus: null,
+  acceptFollowMessage: "",
 };
 
 
@@ -67,15 +69,17 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout(state) {
-  state.user = null;
-  state.token = null;
-  state.error = null;
-  state.registrationSuccess = null;
+      state.user = null;
+      state.token = null;
+      state.error = null;
+      state.registrationSuccess = null;
 
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-},
-
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    },
+    setUser(state, action) {
+      state.user = action.payload;
+    },
     resetError(state) {
       state.error = null;
     },
@@ -83,23 +87,60 @@ const authSlice = createSlice({
       state.registrationSuccess = null;
     },
     followRequestSent(state, action) {
-  state.followRequestStatus = "success";
-  state.followRequestMessage = action.payload;
-},
+      state.followRequestStatus = "success";
+      state.followRequestMessage = action.payload;
+    },
+    followRequestError(state, action) {
+      state.followRequestStatus = "error";
+      state.followRequestMessage = action.payload;
+    },
+    acceptFollowSuccess(state, action) {
+      state.acceptFollowStatus = "success";
+      state.acceptFollowMessage = action.payload;
+    },
 
-followRequestError(state, action) {
-  state.followRequestStatus = "error";
-  state.followRequestMessage = action.payload;
-},
-acceptFollowSuccess(state, action) {
-  state.acceptFollowStatus = "success";
-  state.acceptFollowMessage = action.payload;
-},
+    acceptFollowError(state, action) {
+      state.acceptFollowStatus = "error";
+      state.acceptFollowMessage = action.payload;
+    },
+    updateFollowers(state, action) {
+      const { followerId, followingId } = action.payload;
+       if (!state.user) return;
 
-acceptFollowError(state, action) {
-  state.acceptFollowStatus = "error";
-  state.acceptFollowMessage = action.payload;
-},
+      // If current user IS the follower
+      if (state.user._id === followerId) {
+        if (!state.user.following.includes(followingId)) {
+          state.user.following.push(followingId);
+        }
+      }
+
+      // If current user IS the one who was followed
+      if (state.user._id === followingId) {
+        if (!state.user.followers.includes(followerId)) {
+          state.user.followers.push(followerId);
+        }
+      }
+
+      // Save to localStorage 
+      localStorage.setItem("user", JSON.stringify(state.user));
+    }
+    // updateFollowRelation(state, action) {
+    //   const { followerId, followingId } = action.payload;
+
+    //   if (!state.user) return;
+
+    //   // YOU received a follower
+    //   if (!state.user.followers.includes(followerId)) {
+    //     state.user.followers.push(followerId);
+    //   }
+
+    //   // YOU are now following someone
+    //   if (!state.user.following.includes(followingId)) {
+    //     state.user.following.push(followingId);
+    //   }
+
+    //   localStorage.setItem("user", JSON.stringify(state.user));
+    // }
 
   },
   extraReducers: (builder) => {
@@ -125,17 +166,24 @@ acceptFollowError(state, action) {
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-state.token = action.payload.token;
+        state.token = action.payload.token;
 
-// SAVE TO LOCAL STORAGE
-localStorage.setItem("token", action.payload.token);
-localStorage.setItem("user", JSON.stringify(action.payload.user));
+        // SAVE TO LOCAL STORAGE
+        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+
+        // // 🔥 Connect Socket.IO
+        // socket.connect();
+
+        // // 🔥 Join user room
+        // socket.emit("join", action.payload.user._id);
+
 
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
   },
 });
 
@@ -152,7 +200,7 @@ export const createArticle = createAsyncThunk(
       const token = auth.token;
       console.log("Sending article data:", articleData);
       const response = await axios.post(
-        "https://robo-1-qqhu.onrender.com/api/articles",
+        "https://robo-zv8u.onrender.com/api/articles",
         articleData,
         {
           headers: {
@@ -183,7 +231,7 @@ export const getArticles = createAsyncThunk(
 
       // 1️⃣ Fetch all articles
       const articlesRes = await axios.get(
-        "https://robo-1-qqhu.onrender.com/api/articles",
+        "https://robo-zv8u.onrender.com/api/articles",
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
@@ -210,7 +258,7 @@ export const getArticles = createAsyncThunk(
           // Otherwise, article.author is likely an id string — try to fetch the user
           try {
             const userRes = await axios.get(
-              `https://robo-1-qqhu.onrender.com/api/users/${article.author}`,
+              `https://robo-zv8u.onrender.com/api/users/${article.author}`,
               {
                 headers: {
                   Authorization: token ? `Bearer ${token}` : "",
@@ -286,20 +334,20 @@ const articleSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-     .addCase(createArticle.fulfilled, (state, action) => {
-  state.loading = false;
-  state.articleCreated = true;
+      .addCase(createArticle.fulfilled, (state, action) => {
+        state.loading = false;
+        state.articleCreated = true;
 
-  const newArticle = action.payload;
+        const newArticle = action.payload;
 
-  // Attach the logged-in user as author immediately
-  const currentUser = state.auth?.user || null;
-  if (currentUser) {
-    newArticle.author = currentUser;
-  }
+        // Attach the logged-in user as author immediately
+        const currentUser = state.auth?.user || null;
+        if (currentUser) {
+          newArticle.author = currentUser;
+        }
 
-  state.articles.unshift(newArticle);
-})
+        state.articles.unshift(newArticle);
+      })
 
       .addCase(createArticle.rejected, (state, action) => {
         state.loading = false;
@@ -369,8 +417,9 @@ export const {
   resetRegistrationSuccess,
   followRequestSent,
   followRequestError,
-   acceptFollowSuccess,
+  acceptFollowSuccess,
   acceptFollowError,
+  // updateFollowRelation,
 } = authSlice.actions;
 
 export const {
@@ -382,11 +431,13 @@ export const {
 export const rootReducer = combineReducers({
   auth: authSlice.reducer,
   articles: articleSlice.reducer,
-    notifications: notificationReducer, 
+  notifications: notificationReducer,
 });
 
 export const authReducer = authSlice.reducer;
 export const articlesReducer = articleSlice.reducer;
+export const { updateFollowers } = authSlice.actions;
+export const { setUser } = authSlice.actions;
 
 
 
@@ -402,7 +453,7 @@ export const addComment = createAsyncThunk(
       if (!token) return rejectWithValue("No token");
 
       const response = await axios.post(
-        `https://robo-1-qqhu.onrender.com/api/articles/${articleId}/comment`,
+        `https://robo-zv8u.onrender.com/api/articles/${articleId}/comment`,
         { text }, // Backend expects { text: "Your comment" }
         {
           headers: {
@@ -425,10 +476,10 @@ export const toggleLikeArticle = createAsyncThunk(
     try {
       const state = getState();
       const token = state.auth.token;
-      const currentUserId = state.auth.user?._1d || state.auth.user?.id || state.auth.user?._id;
+      const currentUserId = -state.auth.user?._1d || + state.auth.user?.id || state.auth.user?._id;
 
       const response = await axios.put(
-        `https://robo-1-qqhu.onrender.com/api/articles/${articleId}/like`,
+        `https://robo-zv8u.onrender.com/api/articles/${articleId}/like`,
         {},
         { headers: { Authorization: token ? `Bearer ${token}` : "" } }
       );
@@ -447,21 +498,145 @@ export const toggleLikeArticle = createAsyncThunk(
 
 
 // SEND FOLLOW REQUEST
+// export const sendFollowRequest = (username) => async (dispatch) => {
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const res = await fetch(
+//       "https://robo-zv8u.onrender.com/api/follow/send-request",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify({ targetUsername: username }),
+//       }
+//     );
+
+//     const data = await res.json();
+//     console.log("Backend response:", data);
+
+//     if (!res.ok) {
+//       return dispatch(
+//         followRequestError(data.message || "Failed to send request")
+//       );
+//     }
+
+//     dispatch(followRequestSent("Follow request sent"));
+
+//     // Add local UI notification
+//     dispatch(
+//       addNotification({
+//         type: "followRequestSent",
+//         message: `You sent a follow request to ${username}`,
+//         createdAt: new Date().toISOString(),
+//       })
+//     );
+
+//     // ❌ DO NOT EMIT ANY SOCKET HERE
+//   } catch (error) {
+//     dispatch(followRequestError(error.message));
+//   }
+// };
+// export const acceptFollowRequest = (followerId) => async (dispatch) => {
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const res = await fetch(
+//       "https://robo-zv8u.onrender.com/api/follow/accept-request",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify({ followerId }),
+//       }
+//     );
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//       return dispatch(acceptFollowError(data.message));
+//     }
+
+//     dispatch(acceptFollowSuccess("Accepted successfully"));
+
+//     dispatch(
+//       addNotification({
+//         type: "followRequestAccepted",
+//         message: `You accepted the follow request`,
+//         createdAt: new Date().toISOString(),
+//       })
+//     );
+
+//     // ❌ DO NOT EMIT ANYTHING – backend already emits followRequestAccepted
+
+//     return data;
+//   } catch (error) {
+//     dispatch(acceptFollowError(error.message));
+//   }
+// };
+// export const rejectFollowRequest = (followerId) => async (dispatch) => {
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const res = await fetch(
+//       "https://robo-zv8u.onrender.com/api/follow/reject-request",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify({ followerId }),
+//       }
+//     );
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//       return dispatch(
+//         addNotification({
+//           type: "error",
+//           message: data.message,
+//           createdAt: new Date(),
+//         })
+//       );
+//     }
+
+//     dispatch(
+//       addNotification({
+//         type: "followRequestRejected",
+//         message: `You rejected the follow request`,
+//         createdAt: new Date().toISOString(),
+//       })
+//     );
+
+//     // ❌ NO FRONTEND EMIT NEEDED!
+
+//     return data;
+//   } catch (error) {
+//     console.error("Reject error:", error);
+//   }
+// };
+
 export const sendFollowRequest = (username) => async (dispatch, getState) => {
   try {
     const token = localStorage.getItem("token");
-    console.log("🔥 TOKEN USED:", token); 
-   const res = await fetch("https://robo-1-qqhu.onrender.com/api/follow/send-request", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    authorization: `Bearer ${token}`,
-  },
-  body: JSON.stringify({ targetUsername: username }),
-});
+    console.log("🔥 TOKEN USED:", token);
+    const res = await fetch("https://robo-zv8u.onrender.com/api/follow/send-request", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ targetUsername: username }),
+    });
 
-const data = await res.json();
-console.log("Backend response:", data);
+    const data = await res.json();
+    console.log("Backend response:", data);
 
 
     if (!res.ok) {
@@ -470,32 +645,125 @@ console.log("Backend response:", data);
 
     dispatch(followRequestSent(data.message || "Request sent successfully"));
 
-// add notification
-dispatch(addNotification({
-  type: "followRequestSent",
-  message: `You sent a follow request to ${username}`,
-  createdAt: new Date().toISOString(),
-}));
+    // add notification
+    dispatch(addNotification({
+      type: "followRequestSent",
+      message: `You sent a follow request to ${username}`,
+      createdAt: new Date().toISOString(),
+
+    }));
+    // 🔥🔥 EMIT SOCKET EVENT TO BACKEND
+    socket.emit("followRequestReceived", {
+      targetUsername: username
+    });
 
   } catch (error) {
     dispatch(followRequestError(error.message));
   }
 };
 
-export const incomingFollowRequest = (user) => (dispatch) => {
-  dispatch(addNotification({
-    type: "followRequestIncoming",
-    message: `${user.username} sent you a follow request`,
-    userId: user._id,
-    createdAt: new Date().toISOString()
-  }));
-};
+// export const acceptFollowRequest = (followerId) => async (dispatch) => {
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const res = await fetch("https://robo-zv8u.onrender.com/api/follow/accept-request", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify({ followerId }),
+//     });
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//       return dispatch(acceptFollowError(data.message || "Failed to accept follow request"));
+//     }
+
+//     // const currentUserId = getState().auth.user._id;
+//     // Update Redux user with new followers/following
+//     // if (data.updatedUser) {
+//     //   dispatch(setUser(data.updatedUser));
+//     //   localStorage.setItem("user", JSON.stringify(data.updatedUser));
+//     // }
+//     // dispatch(acceptFollowSuccess(data.message || "Follow request accepted"));
+//     dispatch(addNotification({
+//       type: "followRequestAccepted",
+//       message: `You accepted ${data.user.username}'s request`,
+//       createdAt: new Date().toISOString()
+//     }));
+//     const currentUserId = getState().auth.user._id;
+
+//     // ✅ FIXED
+//     dispatch(updateFollowers({
+//       followerId,                 // sender
+//       followingId: currentUserId, // receiver (YOU)
+//     }));
+
+//     dispatch(acceptFollowSuccess(data.message || "Follow request accepted"));
+
+//     socket.emit("accept-follow-request",
+//       { followerId: followerId }
+//     );
+
+//     // dispatch(removeIncomingRequest(followerId));
+//     return data;
+//   } catch (error) {
+//     dispatch(acceptFollowError(error.message));
+//   }
+// };
+
+
 
 export const acceptFollowRequest = (followerId) => async (dispatch, getState) => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("https://robo-1-qqhu.onrender.com/api/follow/accept-request", {
+    const res = await fetch(
+      "https://robo-zv8u.onrender.com/api/follow/accept-request",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ followerId }),
+      }
+    );
+
+    const data = await res.json();
+    if (!res.ok) {
+       return dispatch(acceptFollowError(data.message));
+    }
+    dispatch(addNotification({
+      type: "followRequestAccepted",
+      // message: `You accepted ${data.user.username}'s request`,
+      message: `You accepted ${data.user?.username || "a user's"} request`,
+      createdAt: new Date().toISOString()
+    }));
+
+    const currentUserId = getState().auth.user._id;
+
+    // ✅ FRONTEND-ONLY INSTANT UPDATE
+    dispatch(updateFollowers({
+      followerId:followerId,             // sender
+      followingId: currentUserId // receiver (YOU)
+    }));
+
+    dispatch(acceptFollowSuccess("Follow request accepted"));
+    return data;
+
+  } catch (error) {
+    dispatch(acceptFollowError(error.message));
+  }
+};
+
+export const rejectFollowRequest = (followerId) => async (dispatch) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("https://robo-zv8u.onrender.com/api/follow/reject-request", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -507,24 +775,38 @@ export const acceptFollowRequest = (followerId) => async (dispatch, getState) =>
     const data = await res.json();
 
     if (!res.ok) {
-      return dispatch(acceptFollowError(data.message || "Failed to accept follow request"));
+      return dispatch(
+        addNotification({
+          type: "error",
+          message: data.message || "Failed to reject request",
+          createdAt: new Date().toISOString()
+        })
+      );
     }
 
-    dispatch(acceptFollowSuccess(data.message || "Follow request accepted"));
+    // Success notification
     dispatch(addNotification({
-  type: "followRequestAccepted",
-  message: `${data.followerName} accepted your follow request`,
-  createdAt: new Date(),
-}));
+      type: "followRequestRejected",
+      message: `You rejected ${data.user.username}'s request`,
+      createdAt: new Date().toISOString()
+    }));
+
+    // 🔥🔥 EMIT REALTIME REJECTION
+    socket.emit("followRequestRejected", {
+      followerId
+    });
+
+    // socket.emit("reject-follow-request", data);
+
     return data;
   } catch (error) {
-    dispatch(acceptFollowError(error.message));
+    console.error("Reject error:", error);
   }
 };
 
 
-
 // delete article
+
 export const deleteArticle = createAsyncThunk(
   "articles/deleteArticle",
   async (articleId, { rejectWithValue, getState }) => {
@@ -533,7 +815,7 @@ export const deleteArticle = createAsyncThunk(
       const token = auth?.token;
 
       const response = await axios.delete(
-        `https://robo-1-qqhu.onrender.com/api/articles/${articleId}`,
+        `https://robo-zv8u.onrender.com/api/articles/${articleId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -543,407 +825,3 @@ export const deleteArticle = createAsyncThunk(
     }
   }
 );
-
-
-
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import axios from "axios";
-// import { combineReducers } from '@reduxjs/toolkit';
-
-// /* ============================================================
-//    AUTH THUNKS
-// ============================================================ */
-
-// // REGISTER
-// export const registerUser = createAsyncThunk(
-//   "auth/registerUser",
-//   async (userData, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.post(
-//         "https://robo-1-qqhu.onrender.com/api/users/register",
-//         userData
-//       );
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(
-//         error.response?.data?.message || "Registration failed"
-//       );
-//     }
-//   }
-// );
-
-// // LOGIN
-// export const loginUser = createAsyncThunk(
-//   "auth/loginUser",
-//   async (data, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.post(
-//         "https://robo-1-qqhu.onrender.com/api/users/login",
-//         data
-//       );
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(
-//         error.response?.data?.message || "Login failed"
-//       );
-//     }
-//   }
-// );
-
-// /* ============================================================
-//    AUTH SLICE
-// ============================================================ */
-
-// const initialState = {
-//   user: null,
-//   token: null,
-//   loading: false,
-//   error: null,
-//   registrationSuccess: null,
-// };
-
-// const authSlice = createSlice({
-//   name: "auth",
-//   initialState,
-//   reducers: {
-//     logout(state) {
-//       state.user = null;
-//       state.token = null;
-//       state.error = null;
-//       state.registrationSuccess = null;
-
-//     },
-//     resetError(state) {
-//       state.error = null;
-//     },
-//     resetRegistrationSuccess(state) {
-//       state.registrationSuccess = null;
-//     },
-//   },
-//   extraReducers: (builder) => {
-//     builder
-//       // REGISTER
-//       .addCase(registerUser.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(registerUser.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.registrationSuccess = true;
-
-         
-//       })
-//       .addCase(registerUser.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       })
-//       // LOGIN
-//       .addCase(loginUser.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(loginUser.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.user = action.payload.user;
-//         state.token = action.payload.token; 
-//       })
-//       .addCase(loginUser.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       });
-//   },
-// });
-
-// /* ============================================================
-//    ARTICLE THUNKS
-// ============================================================ */
-
-// // CREATE ARTICLE
-// export const createArticle = createAsyncThunk(
-//   "articles/createArticle",
-//   async (articleData, { rejectWithValue, getState }) => {
-//     try {
-//       const { auth } = getState();
-//       const token = auth.token;
-//       console.log("Sending article data:", articleData);
-//       const response = await axios.post(
-//         "https://robo-1-qqhu.onrender.com/api/articles",
-//         articleData,
-//         {
-//           headers: {
-//             Authorization: token ? `Bearer ${token}` : "",
-//           },
-//         }
-//       );
-
-//       return response.data;
-//     } catch (error) {
-//       console.error("Article creation error:", error.response?.status, error.response?.data);
-//       return rejectWithValue(
-//         error.response?.data?.message || "Article creation failed"
-//       );
-//     }
-//   }
-// );
-
-// // GET ALL ARTICLES
-// // GET ALL ARTICLES
-// export const getArticles = createAsyncThunk(
-//   "articles/getArticles",
-//   async (_, { rejectWithValue, getState }) => {
-//     try {
-//       const { auth } = getState();
-//       const token = auth?.token;
-
-//       // 1️⃣ Fetch all articles
-//       const articlesRes = await axios.get(
-//         "https://robo-1-qqhu.onrender.com/api/articles",
-//         {
-//           headers: {
-//             Authorization: token ? `Bearer ${token}` : "",
-//           },
-//         }
-//       );
-
-//       let articles = articlesRes.data;
-
-//       // 2️⃣ Fetch author details for each article
-//       const enhancedArticles = await Promise.all(
-//         articles.map(async (article) => {
-//           try {
-//             const userRes = await axios.get(
-//               `https://robo-1-qqhu.onrender.com/api/users/${article.author}`, 
-//               {
-//                 headers: {
-//                   Authorization: token ? `Bearer ${token}` : "",
-//                 },
-//               }
-//             );
-
-//             return {
-//               ...article,
-//               author: userRes.data, // attach user object
-//             };
-//           } catch {
-//             return {
-//               ...article,
-//               author: { username: "Unknown", email: "unknown" },
-//             };
-//           }
-//         })
-//       );
-
-//       return enhancedArticles;
-//     } catch (error) {
-//       console.error("getArticles error:", error.response?.status, error.response?.data);
-//       return rejectWithValue(error.response?.data?.message || "Failed to fetch articles");
-//     }
-//   }
-// );
-
-
-
-
-// /* ============================================================
-//    ARTICLE SLICE
-// ============================================================ */
-
-// const articleSlice = createSlice({
-//   name: "articles",
-//   initialState: {
-//     articles: [],
-//     loading: false,
-//     error: null,
-//     articleCreated: false,
-//   },
-//   reducers: {
-//     resetArticleCreated(state) {
-//       state.articleCreated = false;
-//     },
-//   },
-//   extraReducers: (builder) => {
-//     builder
-//       // CREATE
-//       .addCase(createArticle.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(createArticle.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.articleCreated = true;
-//         state.articles.push(action.payload);
-//       })
-//       .addCase(createArticle.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       })
-// //       // GET ARTICLES
-//       .addCase(getArticles.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(getArticles.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.articles = action.payload;
-//       })
-//       .addCase(getArticles.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       })
-// //       .addCase(addComment.fulfilled, (state, action) => {
-// //   const { articleId, comment } = action.payload;
-// //   const article = state.articles.find((a) => a._id === articleId);
-// //   if (article) {
-// //     article.comments = [...(article.comments || []), comment];
-// //   }
-// // })
-// .addCase(addComment.fulfilled, (state, action) => {
-//   const updatedArticle = action.payload.article;  // backend returns entire updated article
-
-//   const index = state.articles.findIndex(a => a._id === updatedArticle._id);
-//   if (index !== -1) {
-//     state.articles[index] = updatedArticle;  // replace article with updated version
-//   }
-// })
-
-// // .addCase(toggleLikeArticle.fulfilled, (state, action) => {
-// //   const { articleId, data } = action.payload;
-// //   const articleIndex = state.articles.findIndex(a => a._id === articleId);
-
-// //   if (articleIndex !== -1) {
-// //     state.articles[articleIndex].likeCount = data.likeCount;
-// //     state.articles[articleIndex].likedBy = data.likedBy;
-// //     state.articles[articleIndex].likedByCurrentUser = data.likedByCurrentUser;
-// //   }
-// // });
-// .addCase(toggleLikeArticle.fulfilled, (state, action) => {
-//   const { articleId, data, currentUserId } = action.payload;
-
-//   const idx = state.articles.findIndex((a) => a._id === articleId);
-//   if (idx === -1) return;
-
-//   const updated = data.article; // backend returns updated article
-
-//   state.articles[idx].likedBy = updated.likedBy;
-//   state.articles[idx].likeCount = updated.likedBy.length;
-
-//   state.articles[idx].likedByCurrentUser =
-//     updated.likedBy.includes(currentUserId);   // 🔥 FIXED
-// });
-
-
-//   },
-// });
-
-// /* ============================================================
-//    EXPORTS
-// ============================================================ */
-
-// export const {
-//   logout,
-//   resetError,
-//   resetRegistrationSuccess,
-// } = authSlice.actions;
-
-// export const {
-//   resetArticleCreated,
-// } = articleSlice.actions;
-
-// // Combine reducers
-// export const rootReducer = combineReducers({
-//   auth: authSlice.reducer,
-//   articles: articleSlice.reducer,
-// });
-
-// export const authReducer = authSlice.reducer;
-// export const articlesReducer = articleSlice.reducer;
-
-
-// export const addComment = createAsyncThunk(
-//   "articles/addComment",
-//   async ({ articleId, text }, { getState, rejectWithValue }) => {
-//     try {
-//       const token = getState().auth?.token;
-//       if (!token) return rejectWithValue("No token");
-
-//       const response = await axios.post(
-//         `https://robo-1-qqhu.onrender.com/api/articles/${articleId}/comment`,
-//         { text }, // Backend expects { text: "Your comment" }
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data || "Comment Failed");
-//     }
-//   }
-// );
-
-
-
-// // LIKE OR UNLIKE ARTICLE
-// // Optimistic toggle like thunk
-// export const toggleLikeArticle = createAsyncThunk(
-//   "articles/toggleLikeArticle",
-//   async (articleId, { rejectWithValue, getState }) => {
-//     try {
-//       const state = getState();
-//       const token = state.auth.token;
-//       const currentUserId = state.auth.user?._id || state.auth.user?.id;
-
-//       const response = await axios.put(
-//         `https://robo-1-qqhu.onrender.com/api/articles/${articleId}/like`,
-//         {},
-//         { headers: { Authorization: token ? `Bearer ${token}` : "" } }
-//       );
-
-//       // Response expected: { message, article: updatedArticle }
-//       return {
-//         articleId,
-//         data: response.data,
-//         currentUserId,
-//       };
-//     } catch (error) {
-//       return rejectWithValue({ message: error.response?.data?.message || "Like failed", articleId });
-//     }
-//   }
-// );
-
-
-
-
-// // Inside redux/authslice.js
-// export const deleteArticle = createAsyncThunk(
-//   "articles/deleteArticle",
-//   async (articleId, { rejectWithValue, getState }) => {
-//     try {
-//       const { auth } = getState();
-//       const token = auth?.token;
-
-//       const response = await axios.delete(
-//         `https://robo-1-qqhu.onrender.com/api/articles/${articleId}`,
-//         { headers: { Authorization: `Bearer ${token}` } }
-//       );
-      
-//       return { articleId };
-//     } catch (err) {
-//       return rejectWithValue(err.response.data);
-//     }
-//   }
-// );
-
-// extraReducers: (builder) => {
-//   builder.addCase(deleteArticle.fulfilled, (state, action) => {
-//     state.articles = state.articles.filter(
-//       (article) => article._id !== action.payload.articleId
-//     );
-//   });
-// }
-
-
-
- 

@@ -5,12 +5,12 @@ import {
   Route,
   Navigate
 } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 
 // AUTH FILES
 import Login from "./component/Login";
 import Registrationpage from "./component/Registrationpage";
-
 // HOMEPAGE SCREENS
 import Home from "./component/homepage/Home";
 import Explore from "./component/homepage/Explore";
@@ -19,14 +19,24 @@ import Notifications from "./component/homepage/Notifications";
 import Bookmarks from "./component/homepage/Bookmarks";
 import Profile from "./component/homepage/Profile";
 import Settings from "./component/homepage/Settings";
-// import AddFriends from "./component/homepage/AddFriends";
 import NotFound from "./component/homepage/NotFound";
-// import Index from "./component/homepage/Index";
+
+import { socket } from "./socket";
+import { addNotification } from "./component/redux/notificationsSlice";
+import { updateFollowers, logout, setUser } from "./component/redux/authslice";
+// import {
+//   updateFollowRelation,
+//   logout,
+//   setUser
+// } from "./component/redux/authslice";
+
 
 function App() {
   const isDark = useSelector((state) => state.theme.isDark);
   const currentFont = useSelector((state) => state.font.currentFont);
   const currentFontSize = useSelector((state) => state.font.currentFontSize);
+  const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
 
   // Apply theme to document root on mount and when theme changes
   useEffect(() => {
@@ -90,47 +100,149 @@ function App() {
     }
   }, [currentFontSize]);
 
+  // Validate token on app load and fetch current user
+  useEffect(() => {
+    const initAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return; // no token -> skip
+
+      try {
+        // Call backend to validate token and get current user
+        const res = await axios.get("https://robo-zv8u.onrender.com/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // If server returned user, set it in redux (and keep token in storage)
+        if (res?.data) {
+          dispatch(setUser(res.data));
+        } else {
+          // Unexpected response - clear auth
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          dispatch(logout());
+        }
+      } catch (err) {
+        // Token invalid or other error -> clear storage and logout
+        console.warn("Token validation failed, clearing auth:", err?.response?.status);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        dispatch(logout());
+      }
+    };
+
+    initAuth();
+    // run once on mount
+  }, [dispatch]);
+
+  // Socket lifecycle: connect only when a validated user exists
+  useEffect(() => {
+    if (!user) {
+      // ensure disconnected if no user
+      try {
+        socket.disconnect();
+      } catch (e) {}
+      return;
+    }
+
+    // Attach token (ensure it's the validated token)
+    socket.auth = { token: localStorage.getItem("token") };
+    socket.connect();
+
+    socket.on("connect", () => {
+      console.log("🔥 Socket connected:", socket.id);
+      socket.emit("register", user._id);
+    });
+
+    // Incoming follow request
+    socket.on("followRequestReceived", (data) => {
+      console.log("send request",data);
+      dispatch(
+        addNotification({
+          type: "followRequestIncoming",
+          message: `${data.from} sent you a follow request`,
+          fromId: data.fromId,
+          createdAt: new Date().toISOString(),
+        })
+      );
+    });
+
+    // Request accepted — update notifications + followers locally
+    socket.on("followRequestAccepted", (data) => {
+      console.log("accept request",data);
+      dispatch(
+        addNotification({
+          type: "followRequestAccepted",
+          message: `${data.by} accepted your follow request`,
+          createdAt: new Date().toISOString(),
+        })
+      );
+  //     const currentUserId = user?._id;
+  //      dispatch(updateFollowers({
+  //   followerId: data.followerId || data.byId,
+  //   followingId: data.followingId || currentUserId,
+  // }));
+      // updateFollowers expects followerId & followingId
+      // dispatch(updateFollowers({
+      //   followerId: data.followerId,
+      //   followingId: data.followingId
+      // }));
+    });
+
+    // Request rejected
+    socket.on("followRequestRejected", (data) => {
+      console.log("reject request",data);
+      dispatch(
+        addNotification({
+          type: "followRequestRejected",
+          message: `${data.by} rejected your follow request`,
+          createdAt: new Date().toISOString(),
+        })
+      );
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("followRequestReceived");
+      socket.off("followRequestAccepted");
+      socket.off("followRequestRejected");
+      try {
+         socket.off();
+        socket.disconnect();
+      } catch (e) {}
+    };
+  }, [user, dispatch]);
+
+  // Helper to protect routes (you can also move to a separate component)
+  const requireAuth = (component) => (user ? component : <Navigate to="/login" />);
+
+
+  const defaultRoute = user ? "/home" : "/register";
+
   return (
     <Router>
       <Routes>
-
-        {/* DEFAULT → REGISTRATION PAGE */}
-        <Route path="/" element={<Navigate to="/register" />} />
+        {/* DEFAULT → REGISTRATION PAGE or Home if logged in */}
+        <Route path="/" element={<Navigate to={defaultRoute} />} />
 
         {/* AUTH */}
-        <Route path="/register" element={<Registrationpage />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={user ? <Navigate to="/home" /> : <Registrationpage />} />
+        <Route path="/login" element={user ? <Navigate to="/home" /> : <Login />} />
 
-        {/* MAIN APP PAGES */}
-        <Route path="/home" element={<Home />} />
-        <Route path="/social" element={<Home />} />
-        {/* <Route path="/index" element={<Index />} /> */}
-        <Route path="/explore" element={<Explore />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/bookmarks" element={<Bookmarks />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
-        {/* <Route path="/add-friends" element={<AddFriends />} /> */}
+        {/* MAIN APP PAGES - protected */}
+        <Route path="/home" element={requireAuth(<Home />)} />
+        <Route path="/social" element={requireAuth(<Home />)} />
+        <Route path="/explore" element={requireAuth(<Explore />)} />
+        <Route path="/messages" element={requireAuth(<Messages />)} />
+        <Route path="/notifications" element={requireAuth(<Notifications />)} />
+        <Route path="/bookmarks" element={requireAuth(<Bookmarks />)} />
+        <Route path="/profile" element={requireAuth(<Profile />)} />
+        <Route path="/settings" element={requireAuth(<Settings />)} />
 
         {/* 404 PAGE */}
         <Route path="*" element={<NotFound />} />
-
       </Routes>
     </Router>
   );
 }
 
 export default App;
-
-
-
-
-
-
-
-
- 
- 
-
-

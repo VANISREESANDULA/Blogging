@@ -47,13 +47,13 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-2xl rounded-3xl bg-slate-100 shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col border">
+      <div className="relative w-full max-w-2xl rounded-3xl  shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col border-2 ">
 
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b">
-          <h2 className="text-lg sm:text-xl font-bold text-foreground">
+          <h2 className="text-lg sm:text-xl font-extrabold text-foreground ">
             Create Post
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-secondary rounded-full">
+          <button onClick={onClose} className="p-2 hover:bg-secondary rounded-full ">
             <X size={20} />
           </button>
         </div>
@@ -91,7 +91,7 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a title..."
-            className="w-full px-4 py-2 rounded-xl border bg-white text-black"
+            className="w-full px-4 py-2 rounded-xl border  text-black-100"
           />
 
           <textarea
@@ -99,7 +99,7 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Share your thoughts..."
             autoFocus
-            className="w-full min-h-40 resize-none bg-secondary rounded-2xl px-4 py-3"
+            className="w-full min-h-40 resize-none bg-secondary rounded-2xl px-4 py-3 border"
           />
         </div>
 
@@ -107,7 +107,6 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
           <span className="text-sm text-muted-foreground">
             {content.length} / 500
           </span>
-
           <button
             onClick={handlePost}
             disabled={!content.trim() || !title.trim()}

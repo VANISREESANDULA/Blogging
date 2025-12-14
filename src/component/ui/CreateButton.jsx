@@ -5,7 +5,7 @@ const CreateButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 sm:bottom-8 right-6 sm:right-8 w-14 h-14 rounded-full bg-linear-to-br from-primary via-accent to-primary flex items-center justify-center  bg-amber-950 shadow-2xl hover:shadow-2xl transition-all duration-300 hover:scale-110 group z-40"
+      className="fixed bottom-6 sm:bottom-8 right-6 sm:right-8 w-14 h-14 rounded-full bg-linear-to-br from-primary via-accent to-primary flex items-center justify-center bg-stone-500 shadow-2xl hover:shadow-2xl transition-all duration-300 hover:scale-110 group z-40"
       style={{
         backgroundSize: "200% 200%",
       }}
