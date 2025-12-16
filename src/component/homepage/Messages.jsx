@@ -101,62 +101,60 @@ const Messages = () => {
     <Layout>
       <div className="flex h-[calc(100vh-64px)] max-w-7xl mx-auto overflow-hidden bg-background">
 
-        {/* Sidebar */}
-        <div className={`w-full md:w-80 border-r border-border flex flex-col bg-background/95 backdrop-blur-sm ${selectedChat ? "hidden md:flex" : "flex"}`}>
+        {/* Sidebar - RESPONSIVE */}
+        <div className={`w-full sm:w-80 border-r border-border flex flex-col bg-background/95 backdrop-blur-sm ${selectedChat ? "hidden sm:flex" : "flex"}`}>
           
-          {/* Header */}
-          <div className="p-4 sm:p-6 border-b border-border bg-background/80">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Messages
-            </h2>
+          {/* Header - RESPONSIVE */}
+          <div className="p-3 sm:p-4 md:p-5 lg:p-6 border-b border-border bg-background/80">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4">Messages</h2>
 
             <div className="relative">
-              <Search className="absolute left-3 top-3 text-muted-foreground" size={18} />
+              <Search className="absolute left-2.5 sm:left-3 top-2.5 sm:top-3 text-muted-foreground" size={16} />
               <input
                 type="text"
                 placeholder="Search conversations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-full bg-secondary/50 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 text-sm backdrop-blur-sm"
+                className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 rounded-full bg-secondary/50 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 text-xs sm:text-sm backdrop-blur-sm"
               />
             </div>
           </div>
 
-          {/* Conversation List */}
+          {/* Conversation List - RESPONSIVE */}
           <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-border hover:scrollbar-thumb-border/80">
             {filteredConversations.map((conversation) => (
               <button
                 key={conversation.id}
                 onClick={() => setSelectedChat(conversation.id)}
-                className={`w-full p-3 sm:p-4 border-b border-border/50 hover:bg-secondary/50 transition-all duration-200 text-left group ${
+                className={`w-full p-2 sm:p-3 md:p-4 border-b border-border/50 hover:bg-secondary/50 transition-all duration-200 text-left group ${
                   selectedChat === conversation.id 
-                    ? "bg-gradient-to-r from-primary/10 to-accent/5 border-l-4 border-l-primary" 
+                    ? "bg-gray-100 border-l-3 sm:border-l-4 border-l-blue-500" 
                     : ""
                 }`}
               >
                 <div className="flex gap-2 sm:gap-3 items-start">
                   
-                  {/* Avatar */}
-                  <div className="relative shrink-0 bg-">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-400 bg-linear-to-br from-primary to-accent text-white flex items-center justify-center font-bold text-sm sm:text-base">
+                  {/* Avatar - RESPONSIVE */}
+                  <div className="relative shrink-0">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow">
                       {conversation.avatar}
                     </div>
                     {conversation.online && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-background shadow-sm" />
+                      <div className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-success rounded-full border-2 border-background shadow-sm" />
                     )}
                   </div>
 
-                  {/* Name + Last Message */}
+                  {/* Name + Last Message - RESPONSIVE */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="font-bold text-foreground text-sm sm:text-base truncate">
+                    <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                      <p className="font-bold text-foreground text-xs sm:text-sm md:text-base truncate">
                         {conversation.name}
                       </p>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-1 sm:ml-2">
                         {conversation.lastSeen}
                       </span>
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground truncate">
                       {conversation.lastMessage}
                     </p>
                   </div>
@@ -168,37 +166,37 @@ const Messages = () => {
 
         </div>
 
-        {/* Main Chat Area */}
-        <div className={`flex-1 flex flex-col bg-background/95 backdrop-blur-sm ${selectedChat ? "flex" : "hidden md:flex"}`}>
+        {/* Main Chat Area - RESPONSIVE */}
+        <div className={`flex-1 flex flex-col bg-background/95 backdrop-blur-sm ${selectedChat ? "flex" : "hidden sm:flex"}`}>
           
           {selectedChat ? (
             <>
-              {/* Chat Header */}
-              <div className="p-3 sm:p-4 border-b border-border/50 bg-background/80">
+              {/* Chat Header - RESPONSIVE */}
+              <div className="p-2 sm:p-3 md:p-4 border-b border-border/50 bg-background/80">
                 <div className="flex items-center justify-between">
 
-                  <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
                     {/* Back Button (mobile only) */}
                     <button
                       onClick={() => setSelectedChat(null)}
-                      className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors duration-200"
+                      className="sm:hidden p-1.5 hover:bg-secondary rounded-lg transition-colors duration-200 mr-1"
                     >
                       ←
                     </button>
 
-                    {/* Avatar */}
+                    {/* Avatar - RESPONSIVE */}
                     <div className="relative">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center font-bold text-sm shadow-lg">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-xs sm:text-sm md:text-base shadow">
                         {CONVERSATIONS.find((c) => c.id === selectedChat)?.avatar}
                       </div>
                       {CONVERSATIONS.find((c) => c.id === selectedChat)?.online && (
-                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-success rounded-full border-2 border-background" />
+                        <div className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-success rounded-full border-2 border-background" />
                       )}
                     </div>
 
-                    {/* Name + Online Status */}
+                    {/* Name + Online Status - RESPONSIVE */}
                     <div>
-                      <p className="font-bold text-sm sm:text-base">
+                      <p className="font-bold text-xs sm:text-sm md:text-base">
                         {CONVERSATIONS.find((c) => c.id === selectedChat)?.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -209,18 +207,18 @@ const Messages = () => {
                     </div>
                   </div>
 
-                  {/* Header Actions */}
+                  {/* Header Actions - RESPONSIVE */}
                   <div className="flex items-center gap-1">
-                    <button className="p-2 hover:bg-secondary rounded-lg transition-colors duration-200">
-                      <MoreVertical size={18} className="text-muted-foreground" />
+                    <button className="p-1.5 sm:p-2 hover:bg-secondary rounded-lg transition-colors duration-200">
+                      <MoreVertical size={16} className="sm:w-[18px] sm:h-[18px] text-muted-foreground" />
                     </button>
                   </div>
 
                 </div>
               </div>
 
-              {/* Message Area */}
-              <div className="flex-1 p-4 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-border hover:scrollbar-thumb-border/80 bg-gradient-to-b from-background to-secondary/20">
+              {/* Message Area - RESPONSIVE */}
+              <div className="flex-1 p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-border hover:scrollbar-thumb-border/80 bg-white">
                 {messages[selectedChat]?.length > 0 ? (
                   messages[selectedChat].map((message) => (
                     <div
@@ -228,15 +226,15 @@ const Messages = () => {
                       className={`flex ${message.sender === "me" ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`max-w-xs sm:max-w-md px-4 py-2 rounded-2xl relative group ${
+                        className={`max-w-[80%] xs:max-w-xs sm:max-w-sm md:max-w-md px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-xl sm:rounded-2xl relative group ${
                           message.sender === "me"
-                            ? "bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-br-md shadow-lg"
-                            : "bg-secondary text-foreground rounded-bl-md border border-border/50 shadow-sm"
+                            ? "bg-blue-100 text-black rounded-br-md shadow"
+                            : "bg-gray-100 text-foreground rounded-bl-md border border-border/50 shadow-sm"
                         }`}
                       >
-                        <p className="text-sm sm:text-base">{message.text}</p>
+                        <p className="text-xs sm:text-sm md:text-base wrap-break-word">{message.text}</p>
                         <span
-                          className={`text-xs mt-1 block text-right ${
+                          className={`text-xs mt-0.5 sm:mt-1 block text-right ${
                             message.sender === "me" ? "text-primary-foreground/70" : "text-muted-foreground"
                           }`}
                         >
@@ -248,23 +246,23 @@ const Messages = () => {
                 ) : (
                   <div className="flex justify-center items-center h-full">
                     <div className="text-center">
-                      <div className="text-4xl mb-2">💬</div>
-                      <p className="text-muted-foreground">Start a conversation!</p>
+                      <div className="text-3xl sm:text-4xl md:text-5xl mb-1 sm:mb-2">💬</div>
+                      <p className="text-sm sm:text-base text-muted-foreground">Start a conversation!</p>
                     </div>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input Box */}
-              <div className="p-3 sm:p-4 border-t border-border/50 bg-background/80">
-                <div className="flex gap-2 sm:gap-3">
-                  {/* Attachment Button */}
-                  <button className="p-2 sm:p-3 rounded-full bg-secondary hover:bg-secondary/80 border border-border/50 text-muted-foreground hover:text-foreground transition-all duration-200 flex-shrink-0">
-                    <Paperclip size={18} className="sm:w-[20px] sm:h-[20px]" />
+              {/* Input Box - RESPONSIVE */}
+              <div className="p-2 sm:p-3 md:p-4 border-t border-border/50 bg-background/80">
+                <div className="flex gap-1.5 sm:gap-2 md:gap-3 items-center w-full">
+                  {/* Attachment Button - RESPONSIVE */}
+                  <button className="p-1.5 sm:p-2 md:p-3 rounded-full bg-secondary hover:bg-secondary/80 border border-border/50 text-muted-foreground hover:text-foreground transition-all duration-200 shrink-0">
+                    <Paperclip size={14} className="sm:w-[16px] sm:h-[16px] md:w-[18px] md:h-[18px]" />
                   </button>
 
-                  {/* Message Input */}
+                  {/* Message Input - RESPONSIVE */}
                   <div className="flex-1 relative">
                     <input
                       type="text"
@@ -272,36 +270,36 @@ const Messages = () => {
                       onChange={(e) => setMessageInput(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Type your message..."
-                      className="w-full px-4 py-2.5 sm:py-3 rounded-full bg-secondary/50 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 text-sm pr-20 backdrop-blur-sm"
+                      className="w-full px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-full bg-secondary/50 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 text-xs sm:text-sm pr-16 sm:pr-20 backdrop-blur-sm"
                     />
-                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-                      <button className="p-1.5 hover:bg-background/50 rounded-full transition-colors duration-200">
-                        <Smile size={18} className="text-muted-foreground" />
+                    <div className="absolute right-1.5 sm:right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
+                      <button className="p-1 hover:bg-background/50 rounded-full transition-colors duration-200">
+                        <Smile size={14} className="sm:w-[16px] sm:h-[16px] text-muted-foreground" />
                       </button>
-                      <button className="p-1.5 hover:bg-background/50 rounded-full transition-colors duration-200">
-                        <Mic size={18} className="text-muted-foreground" />
+                      <button className="p-1 hover:bg-background/50 rounded-full transition-colors duration-200">
+                        <Mic size={14} className="sm:w-[16px] sm:h-[16px] text-muted-foreground" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Send Button */}
+                  {/* Send Button - RESPONSIVE */}
                   <button 
                     onClick={handleSendMessage}
                     disabled={!messageInput.trim()}
-                    className="p-2 sm:p-3 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground hover:shadow-lg transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                    className="p-1.5 sm:p-2 md:p-3 rounded-full bg-blue-600 text-white hover:shadow-lg transition-all duration-200 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Send size={18} className="sm:w-[20px] sm:h-[20px]" />
+                    <Send size={14} className="sm:w-[16px] sm:h-[16px] md:w-[18px] md:h-[18px]" />
                   </button>
                 </div>
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-4 bg-gradient-to-br from-background to-secondary/10">
-              <div className="text-5xl sm:text-6xl mb-4">✉️</div>
-              <p className="text-base sm:text-lg font-semibold text-foreground mb-2">
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-3 sm:px-4 md:px-5 bg-background">
+              <div className="text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4">✉️</div>
+              <p className="text-sm sm:text-base md:text-lg font-semibold text-foreground mb-1 sm:mb-2">
                 Select a conversation
               </p>
-              <p className="text-sm text-muted-foreground max-w-md">
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-xs sm:max-w-sm md:max-w-md">
                 Choose a conversation from the list to start messaging or search for existing conversations
               </p>
             </div>
@@ -310,6 +308,7 @@ const Messages = () => {
         </div>
 
       </div>
+      
     </Layout>
   );
 };

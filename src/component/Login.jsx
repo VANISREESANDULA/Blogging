@@ -2,7 +2,7 @@ import { useFormik } from 'formik';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from './redux/authSlice';
+import { loginUser } from './redux/authslice';
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -73,10 +73,10 @@ const Login = () => {
 
         {/* Login Form */}
         <div className="w-full md:w-1/2 p-10 border border-black/40 rounded-2xl shadow-xl">
-          <h2 className="text-2xl font-semibold text-center mb-4 text-gray-800">Sign In</h2>
+          <h2 className="text-2xl font-semibold text-center mb-4 text-white">Sign In</h2>
           <div className="flex items-center mb-4">
             <span className="grow border-t border-gray-300"></span>
-            <span className="mx-2 text-black text-sm">or use your email</span>
+            
             <span className="grow border-t border-gray-300"></span>
           </div>
 
@@ -112,7 +112,7 @@ const Login = () => {
             </div>
 
             <div className="text-right mb-6">
-              <a href="#" className="text-sm text-purple-600 hover:text-purple-800 transition-colors">Forgot password?</a>
+              <a href="#" className="text-sm text-blue-600 hover:text-blue-800 transition-colors">Forgot password?</a>
             </div>
 
             <button type="submit" disabled={loading} className={`w-full py-3 rounded-lg text-black font-semibold shadow-[0px_0px_15px_1px_rgba(0,0,0,0.3)] bg-orange-100/80 hover:bg-orange-200/80 transition-all duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}>
@@ -127,7 +127,7 @@ const Login = () => {
           <div className="relative z-10 text-center">
             <h3 className="text-3xl font-bold mb-6">Hello Friend!</h3>
             <p className="mb-8 text-lg max-w-md">Enter your personal details and start your journey with us</p>
-            <button type="button" onClick={handleSignUp} className="border-2 border-white rounded-lg px-8 py-3 font-semibold text-lg hover:bg-white hover:text-purple-700 transition-all duration-300 transform hover:scale-105">SIGN UP</button>
+            <button type="button" onClick={handleSignUp} className="border-2 border-white rounded-lg px-8 py-3 font-semibold text-lg hover:bg-white hover:text-blue-950 transition-all duration-300 transform hover:scale-105">SIGN UP</button>
           </div>
         </div>
       </div>
