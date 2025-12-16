@@ -33,24 +33,70 @@ html {
   @apply transition-all duration-300;
 }
 
-/* Input styling for dark mode */
-input:not([type="range"]) {
-  @apply dark:bg-gray-800 dark:text-white dark:border-gray-600;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  @apply dark:bg-gray-300;
-}
-
-/* Focus states */
-input:focus {
-  @apply dark:border-blue-500;
-}
-
 /* Selection color */
 ::selection {
   @apply bg-blue-500 text-white dark:bg-blue-600;
 }
 
+/* -----------------------------
+   Custom Animations & Utilities
+   ----------------------------- */
 
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
 
+.glass-card {
+  @apply rounded-2xl border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg transition-all duration-300;
+}
+
+.glass-card--light {
+  background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
+}
+
+.glass-card--dark {
+  background: linear-gradient(135deg, rgba(20,20,25,0.6), rgba(25,25,30,0.4));
+}
+
+.skeleton {
+  @apply bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse;
+}
+
+.btn-interactive {
+  @apply transition-transform duration-300 ease-in-out transform hover:scale-[1.03] active:scale-[0.99] shadow-sm;
+}
+
+.btn-glow {
+  box-shadow: 0 8px 20px rgba(124,58,237,0.14); /* accent glow */
+}
+
+.floating-label input:placeholder-shown + label,
+.floating-label textarea:placeholder-shown + label {
+  transform: translateY(10px);
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.parallax-bg {
+  background-attachment: fixed;
+}
+
+/* subtle scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* accessible reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

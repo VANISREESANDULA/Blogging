@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { Cropper } from 'react-advanced-cropper';
 import { useDispatch, useSelector } from "react-redux";
-import { resetRegistrationSuccess, registerUser } from './redux/authSlice';
+import { resetRegistrationSuccess, registerUser } from './redux/authslice';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import 'react-advanced-cropper/dist/style.css';
@@ -182,7 +182,7 @@ const Registrationpage = () => {
             <div className="relative mb-6">
               <input type="password" id="password" name="password" className={`w-full px-4 py-3 border ${formik.errors.password ? "border-red-500" : passwordStrength === "strong" ? "border-green-500" : "border-gray-800"} rounded-lg bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`} onChange={(e)=>{formik.handleChange(e); checkPasswordStrength(e.target.value)}} onBlur={formik.handleBlur} value={formik.values.password} placeholder=" "/>
               <label htmlFor="password" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.password ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>Password</label>
-              {passwordStrength && <p className={`text-sm mt-1 ${passwordStrength === "strong" ? "text-green-600" : "text-red-500"}`}>{passwordStrength === "strong" ? "Strong password 💪" : "Weak password ⚠️"}</p>}
+              {passwordStrength && <p className={`text-sm mt-1 ${passwordStrength === "strong" ? "text-green-600" : "text-red-500"}`}>{passwordStrength === "strong" ? "Strong password" : "Weak password"}</p>}
               {formik.touched.password && formik.errors.password && <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>}
             </div>
 
@@ -203,7 +203,7 @@ const Registrationpage = () => {
           <div className="relative z-10 text-center max-w-md">
             <h3 className="text-xl font-semibold mb-3">Welcome Back!</h3>
             <p className="mb-5">Already have an account? Sign in to access all features</p>
-            <button type="button" onClick={handleSignInClick} className="border border-white rounded-lg px-6 py-2 font-semibold hover:bg-white hover:text-amber-950 transition">SIGN IN</button>
+            <button type="button" onClick={handleSignInClick} className="border border-white rounded-lg px-6 py-2 font-semibold hover:bg-white hover:text-blue-950 transition">SIGN IN</button>
           </div>
         </div>
       </div>

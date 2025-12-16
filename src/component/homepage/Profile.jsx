@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import Layout from "../ui/Layout";
 import PostCard from "../ui/PostCard";
-import { MapPin, Calendar, X, Upload, Camera } from "lucide-react";
+import { MapPin, Calendar, X, Upload, Camera, Edit2, Search, User, Mail, Check, UserPlus, UserMinus, MoreVertical } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { Cropper } from "react-advanced-cropper";
 import "react-advanced-cropper/dist/style.css";
 import { getArticles } from "../redux/authslice";
-
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
@@ -14,105 +13,84 @@ const Profile = () => {
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
-  const [cropType, setCropType] = useState(null); // 'profile' or 'background'
+  const [cropType, setCropType] = useState(null);
   const [croppedProfileImage, setCroppedProfileImage] = useState(null);
   const [croppedBackgroundImage, setCroppedBackgroundImage] = useState(null);
   const [followUsername, setFollowUsername] = useState("");
   const [showFollowRequest, setShowFollowRequest] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeModalType, setActiveModalType] = useState("");
 
   const dispatch = useDispatch();
-
   const token = useSelector((state) => state.auth.token);
-  // fetch articles when profile mounts (so user posts are available)
+  const cropperRef = useRef(null);
+
+  // Fetch articles when profile mounts
   useEffect(() => {
     if (token) {
       dispatch(getArticles());
     }
   }, [dispatch, token]);
-  const { user } = useSelector((state) => state.auth);
-  // const updateUser=()=>{
-
-  // }
-  // const userstr=localStorage.getItem('user')
-  // const user =JSON.parse(userstr)
-  // console.log("heyyyyyyyy",user.email)
-  // console.log("heyyyyyyyy",user.followers[0].username)
-  // const user = useSelector((state) => state.auth.user);
-
-  const cropperRef = useRef(null);
-  // 🔥 ADD THIS RIGHT HERE
-  const followersList = user?.followers || [];
-  const followingList = user?.following || [];
-
 
   // Redux state
   const isDark = useSelector((state) => state.theme.isDark);
+  const { user } = useSelector((state) => state.auth);
   const { articles = [] } = useSelector((state) => state.articles);
 
+  // Debug user data
+  useEffect(() => {
+    if (user) {
+      console.log("🔍 USER DATA:", user);
+      console.log("📸 PROFILE PHOTO:", user.profilePhoto);
+      console.log("👥 Followers Count:", user.followers?.length || 0);
+      console.log("👤 Following Count:", user.following?.length || 0);
+    }
+  }, [user]);
 
   // Filter posts for current user
   const userPosts = user && Array.isArray(articles)
     ? articles.filter((post) => {
       return (
-        (post.author?._id === user._id) ||        // Case 1: author is object
-        (post.author === user._id) ||             // Case 2: author is string id
-        (post.user?._id === user._id) ||          // sometimes articles use `user`    
-        (post.author?.username === user.username) // fallback
+        (post.author?._id === user._id) ||
+        (post.author === user._id) ||
+        (post.user?._id === user._id) ||
+        (post.author?.username === user.username)
       );
     })
     : [];
 
   // Local profile data
-  // const [localProfileData, setLocalProfileData] = useState({
-  //   name: user?.username || "Your Name",
-  //   username: user?.username || "yourname",
-  //   avatar: user?.profilePhoto || null,
-  //   bio:
-  //     user?.bio ||
-  //     "Designer & Developer | Creating beautiful digital experiences | Coffee enthusiast ☕",
-  //   location: user?.location || "San Francisco, CA",
-  //   joinDate: user?.createdAt
-  //     ? `Joined ${new Date(user.createdAt).toLocaleDateString("en-US", {
-  //       month: "long",
-  //       year: "numeric",
-  //     })}`
-  //     : "Joined March 2023",
-  //   followers: user?.followersCount || 0,
-  //   following: user?.followingCount || 0,
-  //   background: user?.backgroundPhoto || "/Screenshot 2025-11-13 232324.png.jpg",
-  // });
   const [localProfileData, setLocalProfileData] = useState({
-    name: user?.username || "Your Name",
-    username: user?.username || "yourname",
+    name: user?.username || "nikhil",
+    username: user?.username || "nikhil",
+    email: user?.email || "nikhil@gmail.com",
     avatar: user?.profilePhoto || null,
-    bio: user?.bio || "",
-    location: user?.location || "",
+    bio: user?.bio || "Blogger || Traveller",
+    location: user?.location || "India",
     joinDate: user?.createdAt
-      ? `Joined ${new Date(user.createdAt).toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      })}`
-      : "Joined",
-    // followers: followersArray.length,
-    // following: followingArray.length,
+      ? `Joined ${new Date(user.createdAt).getFullYear()}`
+      : "Joined 2014",
     followers: user?.followers?.length || 0,
     following: user?.following?.length || 0,
-    background: user?.backgroundPhoto || "",
+    background: user?.backgroundPhoto || null,
   });
 
-  // useEffect(() => {
-  //   if (!user) return;
-
-  //   setLocalProfileData((prev) => ({
-  //     ...prev,
-  //     // followers: (user.followers || []).length,
-  //     // following: (user.following || []).length,
-  //     followers: user?.followers?.length || 0,
-  //     following: user?.following?.length || 0,
-  //   }));
-  // }, [user]);
-
-
+  // Update localProfileData when user changes
+  useEffect(() => {
+    if (user) {
+      setLocalProfileData(prev => ({
+        ...prev,
+        name: user.username || prev.name,
+        username: user.username || prev.username,
+        email: user.email || prev.email,
+        avatar: user.profilePhoto || prev.avatar,
+        bio: user.bio || prev.bio,
+        location: user.location || prev.location,
+        followers: user.followers?.length || 0,
+        following: user.following?.length || 0,
+      }));
+    }
+  }, [user]);
 
   const [editFormData, setEditFormData] = useState({
     name: "",
@@ -120,31 +98,37 @@ const Profile = () => {
     location: "",
   });
 
-  const tabs = [{ id: "posts", label: "Posts" }];
+  const tabs = [{ id: "posts", label: "Your Posts" }];
 
-  // Avatar renderer – handles base64 from backend and cropped blob URL
+  // Avatar renderer - RESPONSIVE (Fixed to match Layout component)
   const renderAvatar = () => {
-    if (localProfileData.avatar && localProfileData.avatar !== "/Profile Icon.png") {
-      const src = localProfileData.avatar.startsWith("data:")
-        ? localProfileData.avatar
-        : `data:image/png;base64,${localProfileData.avatar}`;
+    // Use the same logic as in Layout component
+    const avatarSrc = croppedProfileImage || user?.profilePhoto || localProfileData.avatar;
+    
+    if (avatarSrc) {
+      // Format the avatar source exactly like in Layout component
+      const formattedSrc = avatarSrc.startsWith("data:")
+        ? avatarSrc
+        : `data:image/png;base64,${avatarSrc}`;
 
       return (
         <img
-          src={croppedProfileImage || src}
+          src={formattedSrc}
           alt={localProfileData.name}
-          className="w-16 h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-full object-cover -mt-8 sm:-mt-12 md:-mt-16 border-4 border-white"
+          className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full object-cover border-2 sm:border-3 md:border-4 border-white"
           onError={(e) => {
-            console.error("Failed to load profile image:", localProfileData.avatar);
+            console.error("Failed to load profile image");
             e.target.style.display = "none";
           }}
+          onLoad={() => console.log("Profile image loaded successfully")}
         />
       );
     }
 
+    // Fallback to initial
     return (
-      <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-2xl sm:text-4xl md:text-6xl -mt-8 sm:-mt-12 md:-mt-16 border-4 border-white">
-        {localProfileData.name?.charAt(0)?.toUpperCase() || "Y"}
+      <div className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl border-2 sm:border-3 md:border-4 border-white">
+        {localProfileData.name?.charAt(0)?.toUpperCase() || "N"}
       </div>
     );
   };
@@ -281,271 +265,341 @@ const Profile = () => {
     }
   };
 
+  // Open modal
+  const openModal = (type) => {
+    setActiveModalType(type);
+    if (type === "followers") {
+      setShowFollowersModal(true);
+    } else {
+      setShowFollowingModal(true);
+    }
+  };
 
-  return (
-    <Layout>
-      <div
-        className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-gray-950" : "bg-white"
-          }`}
+  // Close modal
+  const closeModal = () => {
+    setShowFollowersModal(false);
+    setShowFollowingModal(false);
+    setSearchQuery("");
+  };
+
+  // Filter users based on search
+  const getFilteredUsers = () => {
+    const users = activeModalType === "followers" ? user?.followers : user?.following;
+    if (!users || !Array.isArray(users)) return [];
+    
+    return users.filter(userItem => {
+      const username = typeof userItem === 'object' ? userItem.username || userItem.email?.split('@')[0] || '' : '';
+      const email = typeof userItem === 'object' ? userItem.email || '' : '';
+      return username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+             email.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  };
+
+  // Custom UserCheck icon component
+  const UserCheck = (props) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <polyline points="17 11 19 13 23 9" />
+    </svg>
+  );
+
+  // Render user item for modal
+  const renderUserItem = (userItem, index) => {
+    const isFollower = activeModalType === "followers";
+    const userName = typeof userItem === 'object' 
+      ? userItem.username || userItem.email?.split('@')[0] || 'Unknown User'
+      : `User ${index + 1}`;
+    
+    const userEmail = typeof userItem === 'object' ? userItem.email || '' : '';
+    const userAvatar = typeof userItem === 'object' ? userItem.profilePhoto : null;
+    const userId = typeof userItem === 'object' ? userItem._id : index;
+    
+    const initial = userName?.charAt(0)?.toUpperCase() || 'U';
+
+    return (
+      <div 
+        key={`${activeModalType}-${userId}`}
+        className={`group p-3 xs:p-4 transition-all duration-300 ${
+          isDark 
+            ? "hover:bg-gray-700/50 border-gray-700" 
+            : "hover:bg-gray-50 border-gray-200"
+        } border-b last:border-b-0`}
       >
-        <div
-          className={`max-w-4xl mx-auto transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-white"
-            }`}
-        >
-          {/* Profile Header */}
-          <div
-            className={`border-b transition-colors duration-300 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
-              }`}
-          >
-            {/* Cover Photo */}
-            {/* <div
-              className="h-48 sm:h-48 md:h-64 relative"
-              style={{
-                backgroundImage: `url("${croppedBackgroundImage || localProfileData.background}")`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <div
-                className={`absolute inset-0 transition-colors duration-300 ${
-                  isDark ? "bg-black bg-opacity-40" : "bg-black bg-opacity-10"
-                }`}
-              />
-            </div> */}
-
-            {/* Profile Info */}
-            <div
-              className={`p-18 relative transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-neutral-100"
-                }`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                {/* Left Section */}
-                <div className="flex-1 min-w-0">
-                  {/* Avatar */}
-                  <div className="flex items-end gap-3 sm:gap-4 mb-3 sm:mb-4">
-                    {renderAvatar()}
-                  </div>
-
-                  {/* Name + Username */}
-                  <h1
-                    className={`text-xl sm:text-2xl md:text-3xl font-bold transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"
-                      }`}
-                  >
-                    {localProfileData.name}
-                  </h1>
-                  <p
-                    className={`text-sm transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"
-                      }`}
-                  >
-                    @{localProfileData.username}
-                  </p>
-
-                  {/* Bio */}
-                  <p
-                    className={`text-sm md:text-base transition-colors duration-300 ${isDark ? "text-gray-300" : "text-gray-800"
-                      } mt-2 sm:mt-4 max-w-lg`}
-                  >
-                    {localProfileData.bio}
-                  </p>
-
-                  {/* Meta */}
-                  <div
-                    className={`flex flex-wrap gap-2 sm:gap-4 text-sm mt-2 sm:mt-4 ${isDark ? "text-gray-400" : "text-gray-700"
-                      }`}
-                  >
-                    <div className="flex items-center gap-1">
-                      <MapPin
-                        size={16}
-                        className={isDark ? "text-gray-400" : "text-gray-600"}
-                      />
-                      <span className="hidden sm:inline">
-                        {localProfileData.location}
-                      </span>
-                      <span className="sm:hidden">
-                        {localProfileData.location.split(",")[0]}
-                      </span>
-                    </div>
-                    <div className="hidden sm:flex items-center gap-1">
-                      <Calendar
-                        size={16}
-                        className={isDark ? "text-gray-400" : "text-gray-600"}
-                      />
-                      {localProfileData.joinDate}
-                    </div>
-                  </div>
-
-                  {/* Followers / Following / Posts count */}
-                  <div className="flex gap-6 mt-4 sm:mt-6 text-sm">
-                    <button
-                      onClick={() => setShowFollowingModal(true)}
-                      className={`hover:underline transition-colors duration-300 ${isDark ? "text-gray-300" : ""
-                        }`}
-                    >
-                      {/* <span className="font-bold text-gray-900">
-                        {localProfileData.following}
-                      </span>{" "} */}
-                       <span className="font-bold">
-                        {user?.following?.length || 0}
-                      </span>
-                      <span
-                        className={
-                          isDark ? "text-gray-400" : "text-gray-600"
-                        }
-                      >
-                        Following
-                      </span>
-                    </button>
-
-                    <button
-                      onClick={() => setShowFollowersModal(true)}
-                      className={`hover:underline transition-colors duration-300 ${isDark ? "text-gray-300" : ""
-                        }`}
-                    >
-                      {/* <span className="font-bold text-gray-900">
-                        {localProfileData.followers}
-                      </span> */}
-                       <span className="font-bold">
-                        {user?.followers?.length || 0}
-                      </span>
-                      {" "}
-                      <span
-                        className={
-                          isDark ? "text-gray-400" : "text-gray-600"
-                        }
-                      >
-                        Followers
-                      </span>
-                    </button>
-
-                    <div className="flex items-center gap-1">
-                      <span className="font-bold text-gray-900">
-                        {postsCount}
-                      </span>
-                      <span
-                        className={isDark ? "text-gray-400" : "text-gray-600"}
-                      >
-                        Posts
-                      </span>
-                    </div>
-                  </div>
-                  {/* Follow Request Input */}
-                  {/* {showFollowRequest && (
-                    <div className="mt-6">
-                      <h3 className={`text-base font-semibold mb-2 ${isDark ? "text-gray-200" : "text-gray-900"}`}>
-                        Send Follow Request
-                      </h3>
-
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Enter username"
-                          value={followUsername}
-                          onChange={(e) => setFollowUsername(e.target.value)}
-                          className={`flex-1 px-3 py-2 rounded-lg border 
-          ${isDark ? "bg-gray-800 border-gray-700 text-gray-100" : "bg-white border-gray-300"}`}
-                        />
-                        <button
-                          onClick={handleSendFollowRequest}
-                          className={`px-4 py-2 rounded-lg font-semibold 
-          ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
-                        >
-                          Send
-                        </button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              {userAvatar ? (
+                <img
+                  src={
+                    userAvatar.startsWith("data:")
+                      ? userAvatar
+                      : `data:image/png;base64,${userAvatar}`
+                  }
+                  alt={userName}
+                  className="w-10 h-10 xs:w-12 xs:h-12 rounded-full object-cover border-2"
+                  onError={(e) => {
+                    console.error("Failed to load user avatar");
+                    e.target.style.display = "none";
+                    e.target.parentElement.innerHTML = `
+                      <div class="w-10 h-10 xs:w-12 xs:h-12 rounded-full ${
+                        isDark ? 'bg-gray-600' : 'bg-gray-300'
+                      } flex items-center justify-center text-white font-bold text-sm">
+                        ${initial}
                       </div>
-                    </div>
-                  )} */}
-
-
+                    `;
+                  }}
+                />
+              ) : (
+                <div className={`w-10 h-10 xs:w-12 xs:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                  isDark ? 'bg-gray-600' : 'bg-gray-300'
+                }`}>
+                  {initial}
                 </div>
+              )}
+            </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-2 flex-shrink-0">
-                  <button
-                    onClick={handleEditClick}
-                    className={`px-4 sm:px-6 py-2 sm:py-2 rounded-full font-semibold border-2 transition-colors text-sm sm:text-base ${isDark
-                      ? "border-blue-500 text-blue-300 hover:bg-blue-900/20"
-                      : "border-blue-500 text-blue-600 hover:bg-blue-50"
-                      }`}
-                  >
-                    Edit Profile
-                  </button>
-                  {/* <button
-                    onClick={() => setShowFollowRequest(!showFollowRequest)}
-                    className={`px-4 py-2 rounded-lg font-semibold 
-    ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
-                  >
-                    Send Follow Request
-                  </button> */}
-
+            {/* User Info */}
+            <div className="flex-1 min-w-0">
+              <h4 className={`font-semibold text-sm xs:text-base truncate ${
+                isDark ? "text-gray-100" : "text-gray-900"
+              }`}>
+                {userName}
+              </h4>
+              {userEmail && (
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Mail size={10} className={isDark ? "text-gray-400" : "text-gray-500"} />
+                  <p className={`text-xs truncate ${
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  }`}>
+                    {userEmail}
+                  </p>
                 </div>
+              )}
+              <div className="flex items-center gap-2 mt-1">
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  isDark 
+                    ? "bg-gray-700 text-gray-300" 
+                    : "bg-gray-100 text-gray-600"
+                }`}>
+                  {isFollower ? "Follows you" : "You follow"}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Tabs */}
-          <div
-            className={`border-b transition-colors duration-300 px-4 sm:px-6 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 ml-3">
+            <button
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                isFollower
+                  ? isDark
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                  : isDark
+                    ? "bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-gray-100"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900"
               }`}
-          >
-            <div className="flex gap-4 sm:gap-8 overflow-x-auto">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 font-semibold border-b-2 transition-colors text-sm sm:text-base whitespace-nowrap ${activeTab === tab.id
-                    ? `border-blue-500 ${isDark ? "text-blue-300" : "text-blue-600"
-                    }`
-                    : `border-transparent ${isDark
-                      ? "text-gray-400 hover:text-gray-200"
-                      : "text-gray-500 hover:text-gray-700"
-                    }`
-                    }`}
+            >
+              {isFollower ? (
+                <>
+                  <UserPlus size={12} />
+                  <span className="hidden xs:inline">Follow Back</span>
+                </>
+              ) : (
+                <>
+                  <Check size={12} />
+                  <span className="hidden xs:inline">Following</span>
+                </>
+              )}
+            </button>
+            
+            <button
+              className={`p-1.5 rounded-full transition-colors ${
+                isDark
+                  ? "hover:bg-gray-600 text-gray-400 hover:text-gray-300"
+                  : "hover:bg-gray-200 text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <MoreVertical size={14} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <Layout>
+      <div className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
+        {/* RESPONSIVE CONTAINER */}
+        <div className="max-w-4xl mx-auto px-2 xs:px-3 sm:px-4 md:px-5 lg:px-6 py-3 xs:py-4 sm:py-5 md:py-6">
+          
+          {/* Profile Header - RESPONSIVE */}
+          <div className={`shadow-lg transition-colors duration-300 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-800" : "bg-white"} mb-4 xs:mb-5 sm:mb-6 md:mb-7 lg:mb-8`}>
+            
+            {/* Profile Info Section - RESPONSIVE */}
+            <div className={`p-3 xs:p-4 sm:p-5 md:p-6 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-800" : "bg-white"}`}>
+              <div className="flex justify-center mb-3 xs:mb-4 sm:mb-5 md:mb-6">
+                {renderAvatar()}
+              </div>
+                 
+              {/* Name and Email - RESPONSIVE */}
+              <div className="text-center mb-3 xs:mb-4 sm:mb-5 md:mb-6">
+                <h1 className={`text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                  {localProfileData.name}
+                </h1>
+                <p className={`text-xs xs:text-sm sm:text-base md:text-lg transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"} mt-1 xs:mt-2`}>
+                  {localProfileData.email}
+                </p>
+              </div>
+
+              {/* Stats Row - RESPONSIVE */}
+              <div className="flex justify-center gap-6 xs:gap-8 sm:gap-10 md:gap-12 lg:gap-16 mb-4 xs:mb-5 sm:mb-6 md:mb-7 lg:mb-8">
+                <div className="text-center">
+                  <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                    {postsCount}
+                  </div>
+                  <div className={`text-xs transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                    Posts
+                  </div>
+                </div>
+                <button 
+                  onClick={() => openModal("followers")}
+                  className="text-center cursor-pointer group"
                 >
-                  {tab.label}
+                  <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 group-hover:text-blue-500 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                    {user?.followers?.length || 0}
+                  </div>
+                  <div className={`text-xs transition-colors duration-300 group-hover:text-blue-400 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                    Followers
+                  </div>
                 </button>
-              ))}
+                <button 
+                  onClick={() => openModal("following")}
+                  className="text-center cursor-pointer group"
+                >
+                  <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 group-hover:text-blue-500 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                    {user?.following?.length || 0}
+                  </div>
+                  <div className={`text-xs transition-colors duration-300 group-hover:text-blue-400 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                    Following
+                  </div>
+                </button>
+              </div>
+
+              {/* Bio - RESPONSIVE */}
+              <div className="text-center mb-3 xs:mb-4 sm:mb-5 md:mb-6">
+                <p className={`text-xs xs:text-sm sm:text-base transition-colors duration-300 ${isDark ? "text-gray-300" : "text-gray-700"} px-2`}>
+                  {localProfileData.bio}
+                </p>
+              </div>
+
+              {/* Location and Join Date - RESPONSIVE */}
+              <div className="flex flex-col xs:flex-row justify-center items-center gap-1 xs:gap-2 sm:gap-3 md:gap-4 text-xs">
+                <div className={`flex items-center gap-1 transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                  <MapPin size={12} className="shrink-0" />
+                  <span className="truncate max-w-[120px] xs:max-w-[150px] sm:max-w-none">{localProfileData.location}</span>
+                </div>
+                <span className={`hidden xs:inline transition-colors duration-300 ${isDark ? "text-gray-600" : "text-gray-400"}`}>•</span>
+                <div className={`flex items-center gap-1 transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                  <Calendar size={12} className="shrink-0" />
+                  <span>{localProfileData.joinDate}</span>
+                </div>
+              </div>
+
+              {/* Edit Profile Button - RESPONSIVE */}
+              <div className="flex justify-center mt-4 xs:mt-5 sm:mt-6 md:mt-7 lg:mt-8">
+                <button
+                  onClick={handleEditClick}
+                  className={`flex items-center gap-1 xs:gap-2 px-3 xs:px-4 sm:px-5 md:px-6 py-1.5 xs:py-2 sm:py-2 rounded-full font-semibold transition-colors text-xs xs:text-sm sm:text-base ${isDark
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }`}
+                >
+                  <Edit2 size={12} className="xs:w-3 xs:h-3 sm:w-4 sm:h-4" />
+                  <span>Edit Profile</span>
+                </button>
+              </div>
+
+              {/* Follow Request Input - RESPONSIVE */}
+              {showFollowRequest && (
+                <div className="mt-3 xs:mt-4 sm:mt-5 md:mt-6 text-center">
+                  <h3 className={`text-xs xs:text-sm sm:text-base font-semibold mb-1 xs:mb-2 ${isDark ? "text-gray-200" : "text-gray-900"}`}>
+                    Send Follow Request
+                  </h3>
+                  <div className="flex flex-col xs:flex-row justify-center gap-1 xs:gap-2">
+                    <input
+                      type="text"
+                      placeholder="Enter username"
+                      value={followUsername}
+                      onChange={(e) => setFollowUsername(e.target.value)}
+                      className={`w-full xs:w-48 sm:w-56 md:w-64 px-2 xs:px-3 py-1.5 xs:py-2 rounded-lg border text-xs xs:text-sm
+                        ${isDark ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-300"}`}
+                    />
+                    <button
+                      onClick={handleSendFollowRequest}
+                      className={`px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg font-semibold text-xs xs:text-sm
+                        ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
+                    >
+                      Send
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Tab Content */}
-          <div
-            className={`border-l border-r transition-colors duration-300 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-white"
-              }`}
-          >
-            {activeTab === "posts" && (
-              <div className="mt-6 space-y-5 p-4">
-                {userPosts && userPosts.length > 0 ? (
-                  userPosts.map((post) => (
-                    <div
-                      key={post._id}
-                      className="bg-white rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700 p-4"
-                    >
+          {/* Posts Tab - RESPONSIVE */}
+          <div className={`rounded-lg sm:rounded-xl shadow-lg transition-colors duration-300 ${isDark ? "bg-gray-800" : "bg-white"}`}>
+            {/* Tab Header - RESPONSIVE */}
+            <div className={`border-b transition-colors duration-300 ${isDark ? "border-gray-700" : "border-gray-200"} px-3 xs:px-4 sm:px-5 md:px-6 py-2 xs:py-3 sm:py-4`}>
+              <div className="flex gap-2 xs:gap-3 sm:gap-4 md:gap-6 lg:gap-8 overflow-x-auto">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`py-1.5 xs:py-2 font-semibold border-b-2 transition-colors text-xs xs:text-sm sm:text-base whitespace-nowrap ${activeTab === tab.id
+                      ? `border-blue-500 ${isDark ? "text-blue-300" : "text-blue-600"}`
+                      : `border-transparent ${isDark
+                        ? "text-gray-400 hover:text-gray-200"
+                        : "text-gray-500 hover:text-gray-700"
+                      }`
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Posts Content - RESPONSIVE */}
+            <div className="p-3 xs:p-4 sm:p-5 md:p-6">
+              {activeTab === "posts" && (
+                <div className="space-y-3 xs:space-y-4 sm:space-y-5 md:space-y-6">
+                  {userPosts && userPosts.length > 0 ? (
+                    userPosts.map((post) => (
                       <PostCard
+                        key={post._id}
                         _id={post._id}
                         user={post.user}
-                        onLike={() => handleLike(post._id)}
-                        // author={{
-                        //   name: post.user?.name || post.author?.username || post.author?.fullname || post.user.email || 'Unknown',
-                        //   username: post.author?.username || 'unknown',
-                        //   profilePhoto: post.author?.profilePhoto || post.user.profilePhoto || null
-
-                        // }}
                         author={{
-                          name: post.author?.username ||
-                            post.user?.name ||
-                            post.user?.email?.split("@")[0] ||
-                            "Unknown",
-
-                          username: post.author?.username ||
-                            post.user?.username ||
-                            "unknown",
-
-                          profilePhoto:
-                            post.author?.profilePhoto ||
-                            post.user?.profilePhoto ||
-                            null,
+                          name: post.user?.name || post.author?.username || post.author?.fullname || post.user.email || 'Unknown',
+                          username: post.author?.username || 'unknown',
+                          profilePhoto: post.author?.profilePhoto || post.user.profilePhoto || null
                         }}
-
                         timestamp={post.createdAt}
                         title={post.title}
                         content={post.content}
@@ -556,34 +610,27 @@ const Profile = () => {
                         }}
                         isProfilePost={true}
                       />
-
+                    ))
+                  ) : (
+                    <div className={`flex flex-col items-center justify-center py-6 xs:py-8 sm:py-10 md:py-12 transition-colors duration-300 ${isDark ? "text-gray-300" : ""}`}>
+                      <div className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl mb-2 xs:mb-3 sm:mb-4 text-gray-400">📝</div>
+                      <h3 className={`font-bold text-sm xs:text-base sm:text-lg md:text-xl ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                        No posts yet
+                      </h3>
+                      <p className={`${isDark ? "text-gray-400" : "text-gray-600"} mt-1 xs:mt-2 text-xs xs:text-sm sm:text-base max-w-xs xs:max-w-sm sm:max-w-md`}>
+                        Start sharing your thoughts!
+                      </p>
                     </div>
-                  ))
-                ) : (
-                  <div
-                    className={`flex flex-col items-center justify-center py-12 px-4 transition-colors duration-300 ${isDark ? "text-gray-300" : ""
-                      }`}
-                  >
-                    <div className="text-6xl mb-4 text-gray-400">📝</div>
-                    <h3
-                      className={`font-bold text-lg ${isDark ? "text-gray-100" : "text-gray-900"
-                        }`}
-                    >
-                      No posts yet
-                    </h3>
-                    <p className={`${isDark ? "text-gray-400" : "text-gray-600"} mt-2`}>
-                      Start sharing your thoughts!
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Edit Profile Dialog */}
+        {/* Edit Profile Dialog - RESPONSIVE */}
         {showEditDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-1 xs:p-2 sm:p-3 md:p-4">
             <div
               className={
                 isDark
@@ -593,48 +640,48 @@ const Profile = () => {
               onClick={() => setShowEditDialog(false)}
             />
             <div
-              className={`relative w-full max-w-2xl mx-4 rounded-2xl shadow-2xl animate-scale-in max-h-[90vh] overflow-hidden flex flex-col transition-colors duration-300 ${isDark
+              className={`relative w-full max-w-sm xs:max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto rounded-lg xs:rounded-xl sm:rounded-2xl shadow-2xl max-h-[85vh] xs:max-h-[90vh] overflow-hidden flex flex-col transition-colors duration-300 ${isDark
                 ? "bg-gray-900 border border-gray-700 text-gray-100"
                 : "bg-white"
                 }`}
             >
               <div
-                className={`flex items-center justify-between px-6 py-4 border-b transition-colors duration-300 ${isDark ? "border-gray-700" : "border-gray-200"
+                className={`flex items-center justify-between px-3 xs:px-4 sm:px-5 md:px-6 py-2 xs:py-3 sm:py-4 border-b transition-colors duration-300 ${isDark ? "border-gray-700" : "border-gray-200"
                   }`}
               >
                 <h2
-                  className={`text-xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"
+                  className={`text-base xs:text-lg sm:text-xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"
                     }`}
                 >
                   Edit Profile
                 </h2>
                 <button
                   onClick={() => setShowEditDialog(false)}
-                  className={`p-1 transition-colors ${isDark
+                  className={`p-0.5 xs:p-1 transition-colors ${isDark
                     ? "text-gray-300 hover:text-gray-100"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
-                  <X size={20} />
+                  <X size={16} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
 
               <div
-                className={`overflow-y-auto flex-1 p-6 transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-white"
+                className={`overflow-y-auto flex-1 p-3 xs:p-4 sm:p-5 md:p-6 transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-white"
                   }`}
               >
-                <form onSubmit={handleEditSubmit} className="space-y-6">
-                  {/* Profile Photo Upload */}
-                  <div className="space-y-3">
+                <form onSubmit={handleEditSubmit} className="space-y-3 xs:space-y-4 sm:space-y-5 md:space-y-6">
+                  {/* Profile Photo Upload - RESPONSIVE */}
+                  <div className="space-y-1 xs:space-y-2 sm:space-y-3">
                     <label
-                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
                         }`}
                     >
                       Profile Photo
                     </label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col xs:flex-row items-center gap-2 xs:gap-3 sm:gap-4">
                       <div
-                        className={`w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl border-4 overflow-hidden ${isDark ? "border-gray-800" : "border-white"
+                        className={`w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm xs:text-base sm:text-lg md:text-xl border-2 xs:border-3 sm:border-4 overflow-hidden ${isDark ? "border-gray-800" : "border-white"
                           }`}
                       >
                         {croppedProfileImage || localProfileData.avatar ? (
@@ -647,12 +694,16 @@ const Profile = () => {
                             }
                             alt="Profile"
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error("Failed to load edit dialog profile image");
+                              e.target.style.display = "none";
+                            }}
                           />
                         ) : (
                           localProfileData.name?.charAt(0)?.toUpperCase() || "Y"
                         )}
                       </div>
-                      <div>
+                      <div className="text-center xs:text-left">
                         <input
                           type="file"
                           id="profilePhoto"
@@ -662,16 +713,16 @@ const Profile = () => {
                         />
                         <label
                           htmlFor="profilePhoto"
-                          className={`cursor-pointer px-4 py-2 rounded-lg hover:transition-colors flex items-center gap-2 text-sm ${isDark
+                          className={`cursor-pointer px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 rounded-lg hover:transition-colors flex items-center justify-center gap-1 xs:gap-2 text-xs xs:text-sm ${isDark
                             ? "bg-blue-600 text-white hover:bg-blue-700"
                             : "bg-blue-500 text-white hover:bg-blue-600"
                             }`}
                         >
-                          <Upload size={16} />
+                          <Upload size={12} className="xs:w-3 xs:h-3" />
                           Change Photo
                         </label>
                         <p
-                          className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-600"
+                          className={`text-xs mt-0.5 xs:mt-1 ${isDark ? "text-gray-400" : "text-gray-600"
                             }`}
                         >
                           Recommended: Square image, at least 400x400 pixels
@@ -682,12 +733,12 @@ const Profile = () => {
                       <div
                         className={
                           isDark
-                            ? "mt-2 p-2 bg-green-900 rounded-lg border border-green-700"
-                            : "mt-2 p-2 bg-green-50 rounded-lg border border-green-200"
+                            ? "mt-1 xs:mt-2 p-1.5 xs:p-2 bg-green-900 rounded-lg border border-green-700"
+                            : "mt-1 xs:mt-2 p-1.5 xs:p-2 bg-green-50 rounded-lg border border-green-200"
                         }
                       >
                         <p
-                          className={`text-sm ${isDark ? "text-green-300" : "text-green-700"
+                          className={`text-xs xs:text-sm ${isDark ? "text-green-300" : "text-green-700"
                             }`}
                         >
                           ✓ New profile photo ready to save
@@ -696,71 +747,11 @@ const Profile = () => {
                     )}
                   </div>
 
-                  {/* Background Photo Upload */}
-                  <div className="space-y-3">
-                    <label
-                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
-                        }`}
-                    >
-                      Background Photo
-                    </label>
-                    <div
-                      className={`border-2 border-dashed rounded-lg p-4 text-center ${isDark ? "border-gray-700 bg-gray-800" : "border-gray-300"
-                        }`}
-                    >
-                      <input
-                        type="file"
-                        id="backgroundPhoto"
-                        accept="image/*"
-                        onChange={handleBackgroundPhotoUpload}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="backgroundPhoto"
-                        className={`cursor-pointer flex flex-col items-center gap-2 ${isDark ? "text-gray-200" : ""
-                          }`}
-                      >
-                        <Camera
-                          size={24}
-                          className={isDark ? "text-gray-300" : "text-gray-500"}
-                        />
-                        <span
-                          className={`text-sm ${isDark ? "text-gray-100" : "text-gray-900"
-                            }`}
-                        >
-                          Upload Background Photo
-                        </span>
-                        <span
-                          className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                        >
-                          Recommended: 1500x500 pixels
-                        </span>
-                      </label>
-                    </div>
-                    {croppedBackgroundImage && (
-                      <div
-                        className={
-                          isDark
-                            ? "mt-2 p-2 bg-green-900 rounded-lg border border-green-700"
-                            : "mt-2 p-2 bg-green-50 rounded-lg border border-green-200"
-                        }
-                      >
-                        <p
-                          className={`text-sm ${isDark ? "text-green-300" : "text-green-700"
-                            }`}
-                        >
-                          ✓ New background photo ready to save
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Name Field */}
-                  <div className="space-y-2">
+                  {/* Name Field - RESPONSIVE */}
+                  <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
                     <label
                       htmlFor="name"
-                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
                         }`}
                     >
                       Name
@@ -771,7 +762,7 @@ const Profile = () => {
                       name="name"
                       value={editFormData.name}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isDark
+                      className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs xs:text-sm sm:text-base ${isDark
                         ? "bg-gray-800 border-gray-700 text-gray-100"
                         : "border border-gray-300 bg-white text-gray-900"
                         }`}
@@ -779,11 +770,11 @@ const Profile = () => {
                     />
                   </div>
 
-                  {/* Bio Field */}
-                  <div className="space-y-2">
+                  {/* Bio Field - RESPONSIVE */}
+                  <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
                     <label
                       htmlFor="bio"
-                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
                         }`}
                     >
                       Bio
@@ -794,7 +785,7 @@ const Profile = () => {
                       value={editFormData.bio}
                       onChange={handleInputChange}
                       rows={3}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${isDark
+                      className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-xs xs:text-sm sm:text-base ${isDark
                         ? "bg-gray-800 border-gray-700 text-gray-100"
                         : "border border-gray-300 bg-white text-gray-900"
                         }`}
@@ -802,11 +793,11 @@ const Profile = () => {
                     />
                   </div>
 
-                  {/* Location Field */}
-                  <div className="space-y-2">
+                  {/* Location Field - RESPONSIVE */}
+                  <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
                     <label
                       htmlFor="location"
-                      className={`block text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
                         }`}
                     >
                       Location
@@ -817,7 +808,7 @@ const Profile = () => {
                       name="location"
                       value={editFormData.location}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isDark
+                      className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs xs:text-sm sm:text-base ${isDark
                         ? "bg-gray-800 border-gray-700 text-gray-100"
                         : "border border-gray-300 bg-white text-gray-900"
                         }`}
@@ -825,8 +816,8 @@ const Profile = () => {
                     />
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4">
+                  {/* Action Buttons - RESPONSIVE */}
+                  <div className="flex flex-col xs:flex-row gap-1 xs:gap-2 sm:gap-3 pt-2 xs:pt-3 sm:pt-4">
                     <button
                       type="button"
                       onClick={() => {
@@ -834,7 +825,7 @@ const Profile = () => {
                         setCroppedProfileImage(null);
                         setCroppedBackgroundImage(null);
                       }}
-                      className={`flex-1 px-4 py-2 rounded-lg hover:transition-colors ${isDark
+                      className={`flex-1 px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg hover:transition-colors text-xs xs:text-sm sm:text-base ${isDark
                         ? "border border-gray-700 text-gray-200 hover:bg-gray-800"
                         : "border border-gray-300 text-gray-700 hover:bg-gray-50"
                         }`}
@@ -843,7 +834,7 @@ const Profile = () => {
                     </button>
                     <button
                       type="submit"
-                      className={`flex-1 px-4 py-2 rounded-lg transition-colors ${isDark
+                      className={`flex-1 px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg transition-colors text-xs xs:text-sm sm:text-base ${isDark
                         ? "bg-blue-600 text-white hover:bg-blue-700"
                         : "bg-blue-500 text-white hover:bg-blue-600"
                         }`}
@@ -857,9 +848,9 @@ const Profile = () => {
           </div>
         )}
 
-        {/* Image Cropper Modal */}
+        {/* Image Cropper Modal - RESPONSIVE */}
         {imageToCrop && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-1 xs:p-2 sm:p-3 md:p-4">
             <div
               className="absolute inset-0 bg-black/70 backdrop-blur-sm"
               onClick={() => {
@@ -867,9 +858,9 @@ const Profile = () => {
                 setCropType(null);
               }}
             />
-            <div className="relative bg-white p-4 rounded-lg shadow-xl w-[90vw] max-w-2xl h-[80vh] flex flex-col">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+            <div className="relative bg-white p-2 xs:p-3 sm:p-4 rounded-lg shadow-xl w-full max-w-sm xs:max-w-md sm:max-w-lg md:max-w-2xl h-[60vh] xs:h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] flex flex-col">
+              <div className="flex items-center justify-between mb-2 xs:mb-3 sm:mb-4">
+                <h3 className="text-sm xs:text-base sm:text-lg font-semibold text-gray-900">
                   Crop {cropType === "profile" ? "Profile" : "Background"} Photo
                 </h3>
                 <button
@@ -879,7 +870,7 @@ const Profile = () => {
                   }}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  <X size={20} />
+                  <X size={16} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
 
@@ -903,19 +894,19 @@ const Profile = () => {
                 />
               </div>
 
-              <div className="flex justify-between items-center pt-4 mt-4 border-t border-gray-200">
+              <div className="flex flex-col xs:flex-row justify-between items-center gap-1 xs:gap-2 sm:gap-0 pt-2 xs:pt-3 sm:pt-4 mt-2 xs:mt-3 sm:mt-4 border-t border-gray-200">
                 <button
                   onClick={() => {
                     setImageToCrop(null);
                     setCropType(null);
                   }}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                  className="w-full xs:w-auto px-3 xs:px-4 py-1.5 xs:py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors text-xs xs:text-sm sm:text-base"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCropSave}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                  className="w-full xs:w-auto px-3 xs:px-4 py-1.5 xs:py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs xs:text-sm sm:text-base"
                 >
                   Save Cropped Image
                 </button>
@@ -924,207 +915,117 @@ const Profile = () => {
           </div>
         )}
 
-        {/* Followers Modal */}
-        {/* {showFollowersModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Enhanced Followers/Following Modal */}
+        {(showFollowersModal || showFollowingModal) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-2 xs:p-3 sm:p-4">
+            {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              onClick={() => setShowFollowersModal(false)}
+              className={`absolute inset-0 transition-colors duration-300 ${isDark ? "bg-black/70" : "bg-black/50"} backdrop-blur-sm`}
+              onClick={closeModal}
             />
-            <div className="relative w-full max-w-md mx-4 rounded-2xl bg-white shadow-2xl animate-scale-in max-h-96 overflow-hidden flex flex-col">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Followers</h2>
-                <button
-                  onClick={() => setShowFollowersModal(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="overflow-y-auto flex-1">
-                {FOLLOWERS.map((follower) => (
-                  <div
-                    key={follower.id}
-                    className="p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white border-2 flex items-center justify-center font-bold">
-                        {follower.avatar}
-                      </div>
-                      <div>
-                        <p className="font-bold text-gray-900">{follower.name}</p>
-                        <p className="text-xs text-gray-600">@{follower.username}</p>
-                      </div>
+            
+            {/* Modal Container */}
+            <div className={`relative w-full max-w-sm xs:max-w-md sm:max-w-lg mx-auto rounded-xl shadow-2xl max-h-[80vh] xs:max-h-[85vh] overflow-hidden flex flex-col transition-all duration-300 transform ${
+              isDark
+                ? "bg-gray-800 border border-gray-700"
+                : "bg-white border border-gray-200"
+            }`}>
+              
+              {/* Modal Header */}
+              <div className={`px-4 xs:px-5 sm:px-6 py-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${isDark ? "bg-blue-900/30" : "bg-blue-100"}`}>
+                      <User className={isDark ? "text-blue-400" : "text-blue-500"} size={20} />
                     </div>
-                    <button
-                      className={`px-4 py-1 rounded-full text-sm font-semibold ${follower.isFollowing
-                        ? "bg-gray-200 text-gray-800"
-                        : "bg-blue-500 text-white"
-                        }`}
-                    >
-                      {follower.isFollowing ? "Following" : "Follow"}
-                    </button>
+                    <div>
+                      <h2 className={`text-lg xs:text-xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                        {activeModalType === "followers" ? "Followers" : "Following"}
+                      </h2>
+                      <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                        {getFilteredUsers().length} {getFilteredUsers().length === 1 ? "person" : "people"}
+                      </p>
+                    </div>
                   </div>
-                ))}
+                  
+                  <button
+                    onClick={closeModal}
+                    className={`p-1.5 rounded-full transition-colors ${isDark
+                      ? "hover:bg-gray-700 text-gray-400 hover:text-gray-300"
+                      : "hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                
+                {/* Search Bar */}
+                <div className="relative">
+                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`} size={16} />
+                  <input
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className={`w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border transition-colors ${isDark
+                      ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/30"
+                      : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                    } focus:outline-none focus:ring-2`}
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-        )} */}
-        {showFollowersModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              onClick={() => setShowFollowersModal(false)}
-            />
-
-            <div className="relative w-full max-w-md mx-4 rounded-2xl bg-white shadow-2xl max-h-96 overflow-hidden flex flex-col">
-              <div className="flex items-center justify-between px-6 py-4 border-b">
-                <h2 className="text-xl font-bold">Followers</h2>
-                <button onClick={() => setShowFollowersModal(false)}>✕</button>
-              </div>
-
-              <div className="overflow-y-auto flex-1">
-                {followersList.length === 0 ? (
-                  <p className="p-4 text-gray-600">No followers yet</p>
+              
+              {/* Modal Content - User List */}
+              <div className="flex-1 overflow-y-auto">
+                {getFilteredUsers().length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 xs:py-16">
+                    <div className={`p-4 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-100"} mb-4`}>
+                      <User className={isDark ? "text-gray-500" : "text-gray-400"} size={32} />
+                    </div>
+                    <h3 className={`text-base xs:text-lg font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                      No {activeModalType} found
+                    </h3>
+                    <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-500"} max-w-xs text-center px-4`}>
+                      {searchQuery ? "Try a different search term" : `No ${activeModalType} yet`}
+                    </p>
+                  </div>
                 ) : (
-                  followersList.map((follower) =>
-                  //   (
-                  //   <div
-                  //     key={follower._id}
-                  //     className="p-4 border-b hover:bg-gray-50 flex items-center justify-between"
-                  //   >
-                  //     <div className="flex items-center gap-3">
-                  //       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold">
-                  //         {follower.username?.charAt(0).toUpperCase()}
-                  //       </div>
-
-                  //       <div>
-                  //         <p className="font-bold">{follower.username}</p>
-                  //         <p className="text-xs text-gray-600">@{follower.username}</p>
-                  //       </div>
-                  //     </div>
-
-                  //     <button className="px-4 py-1 rounded-full bg-gray-200">
-                  //       Following
-                  //     </button>
-                  //   </div>
-                  // )
-                  {
-                    const avatar = follower?.profilePhoto
-                      ? `data:image/png;base64,${follower.profilePhoto}`
-                      : follower?.username?.[0]?.toUpperCase() || "U";
-
-                    return (
-                      <div key={follower._id} className="p-4 border-b flex justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold">
-                            {avatar}
-                          </div>
-
-                          <div>
-                            <p className="font-bold">{follower.username}</p>
-                            <p className="text-xs opacity-60">@{follower.username}</p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-                  )
+                  <div className="divide-y">
+                    {getFilteredUsers().map((userItem, index) => 
+                      renderUserItem(userItem, index)
+                    )}
+                  </div>
                 )}
+              </div>
+              
+              {/* Modal Footer */}
+              <div className={`px-4 xs:px-5 sm:px-6 py-3 border-t ${isDark ? "border-gray-700 bg-gray-800/50" : "border-gray-200 bg-gray-50/50"}`}>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-1 rounded-md text-xs font-medium ${isDark
+                      ? "bg-gray-700 text-gray-300"
+                      : "bg-gray-200 text-gray-700"
+                    }`}>
+                      Total: {user?.[activeModalType]?.length || 0}
+                    </span>
+                  </div>
+                  <button
+                    onClick={closeModal}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${isDark
+                      ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                    }`}
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
-
-        {/* Following Modal */}
-        {/* {showFollowingModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              onClick={() => setShowFollowingModal(false)}
-            />
-            <div className="relative w-full max-w-md mx-4 rounded-2xl bg-white shadow-2xl animate-scale-in max-h-96 overflow-hidden flex flex-col">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Following</h2>
-                <button
-                  onClick={() => setShowFollowingModal(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="overflow-y-auto flex-1">
-                {FOLLOWERS.map((fUser) => (
-                  <div
-                    key={fUser.id}
-                    className="p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white border-2 flex items-center justify-center font-bold">
-                        {fUser.avatar}
-                      </div>
-                      <div>
-                        <p className="font-bold text-gray-900">{fUser.name}</p>
-                        <p className="text-xs text-gray-600">@{fUser.username}</p>
-                      </div>
-                    </div>
-                    <button className="px-4 py-1 rounded-full text-sm font-semibold bg-gray-200 text-gray-800">
-                      Unfollow
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )} */}
-        {showFollowingModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              onClick={() => setShowFollowingModal(false)}
-            />
-
-            <div className="relative w-full max-w-md mx-4 rounded-2xl bg-white shadow-2xl max-h-96 overflow-hidden flex flex-col">
-              <div className="flex items-center justify-between px-6 py-4 border-b">
-                <h2 className="text-xl font-bold">Following</h2>
-                <button onClick={() => setShowFollowingModal(false)}>✕</button>
-              </div>
-
-              <div className="overflow-y-auto flex-1">
-                {followingList.length === 0 ? (
-                  <p className="p-4 text-gray-600">Not following anyone</p>
-                ) : (
-                  followingList.map((userFollow) => (
-                    <div
-                      key={userFollow._id}
-                      className="p-4 border-b hover:bg-gray-50 flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold">
-                          {userFollow.username?.charAt(0).toUpperCase()}
-                        </div>
-
-                        <div>
-                          <p className="font-bold">{userFollow.username}</p>
-                          <p className="text-xs text-gray-600">@{userFollow.username}</p>
-                        </div>
-                      </div>
-
-                      <button className="px-4 py-1 rounded-full bg-gray-200">
-                        Unfollow
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-      </div>
+        </div>
     </Layout>
   );
 };
+
 export default Profile;
-
-

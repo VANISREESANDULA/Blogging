@@ -176,17 +176,7 @@ function App() {
           createdAt: new Date().toISOString(),
         })
       );
-  //     const currentUserId = user?._id;
-  //      dispatch(updateFollowers({
-  //   followerId: data.followerId || data.byId,
-  //   followingId: data.followingId || currentUserId,
-  // }));
-      // updateFollowers expects followerId & followingId
-      // dispatch(updateFollowers({
-      //   followerId: data.followerId,
-      //   followingId: data.followingId
-      // }));
-    });
+       });
 
     // Request rejected
     socket.on("followRequestRejected", (data) => {
@@ -199,16 +189,42 @@ function App() {
         })
       );
     });
+    // ❤️ LIKE
+    socket.on("articleLiked", (data) => {
+      dispatch(addNotification({
+        id: Date.now(),
+        type: "like",
+        message: `${data.likedBy || data.comment.from} liked your article`,
+        fromUser: data.likedBy,
+        articleId: data.articleId,
+        createdAt: new Date().toISOString(),
+      }));
+    });
+
+    // 💬 COMMENT
+    socket.on("newComment", (data) => {
+      dispatch(addNotification({
+        id: Date.now(),
+        type: "comment",
+        message: `${data.comment.by || data.comment.from} commented: "${data.comment.text}"`,
+        fromUser: data.comment.by,
+        articleId: data.articleId,
+        createdAt: new Date().toISOString(),
+      }));
+    });
+    
 
     return () => {
       socket.off("connect");
       socket.off("followRequestReceived");
       socket.off("followRequestAccepted");
       socket.off("followRequestRejected");
+      socket.off("articleLiked");
+      socket.off("newComment");
       try {
-         socket.off();
+        socket.off();
         socket.disconnect();
-      } catch (e) {}
+      } catch (e) { }
     };
   }, [user, dispatch]);
 

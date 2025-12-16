@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setThemeMode } from "../redux/themeSlice";
 import { setFont, setFontSize, getFontOptions, getFontSizeOptions } from "../redux/fontSlice";
-import { logout } from "../redux/authSlice";
+import { logout } from "../redux/authslice";
 
 export default function Settings() {
   const dispatch = useDispatch();
@@ -15,6 +15,9 @@ export default function Settings() {
   const currentFontSize = useSelector((state) => state.font.currentFontSize);
   const fontOptions = getFontOptions();
   const fontSizeOptions = getFontSizeOptions();
+
+  // Get current user from auth state
+  const currentUser = useSelector((state) => state.auth.user);
 
   const [open, setOpen] = useState({
     appearance: false,
@@ -31,6 +34,7 @@ export default function Settings() {
   const [showAddAccountOptions, setShowAddAccountOptions] = useState(false);
   const [showSwitchAccount, setShowSwitchAccount] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
 
   // Mock saved accounts - In real app, this would come from backend/storage
@@ -40,15 +44,22 @@ export default function Settings() {
     { id: 3, username: 'alex_jones', email: 'alex@example.com', avatar: '🧑' },
   ]);
 
-  const [currentAccount] = useState('john_doe');
-
   const toggle = (key) => {
     setOpen({ ...open, [key]: !open[key] });
   };
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const handleConfirmLogout = () => {
     dispatch(logout());      // remove user from redux & localStorage
+    setShowLogoutDialog(false);
     navigate("/login");      // redirect to login page
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutDialog(false);
   };
 
   const handleAddAccount = () => {
@@ -175,15 +186,60 @@ export default function Settings() {
 
   return (
     <Layout>
-      <div className={`w-full min-h-screen transition-colors duration-300 flex justify-center p-6 ${isDark ? 'bg-gray-950' : 'bg-gray-100'}`}>
-        <div className={`w-full max-w-4xl p-6 rounded-2xl shadow-md transition-colors duration-300 ${isDark ? 'bg-gray-900 border border-gray-700' : 'bg-white'}`}>
+      <div className={`w-full min-h-screen transition-colors duration-300 flex justify-center p-6 ${isDark ? 'bg-gray-900' : 'bg-gray-100'} relative ${showLogoutDialog ? 'overflow-hidden' : ''}`}>
+        
+        {/* Logout Confirmation Dialog - Positioned over the settings page */}
+        {showLogoutDialog && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 ">
+            {/* Semi-transparent backdrop - settings page still visible behind */}
+            <div 
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
+              onClick={handleCancelLogout}
+            />
+            
+            {/* Dialog box */}
+            <div className={`relative mx-4 p-6 rounded-xl w-full max-w-md transition-all duration-300 transform ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}>
+              <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                Logout Confirmation
+              </h3>
+              <p className={`mb-6 transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Are you sure you want to logout from your account?
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={handleCancelLogout}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    isDark 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmLogout}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    isDark 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-red-500 hover:bg-red-600 text-white'
+                  }`}
+                >
+                  Confirm Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Settings Page Content */}
+        <div className={`w-full max-w-4xl p-6 rounded-2xl shadow-md transition-colors duration-300 ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
 
           {/* Search Bar */}
           <div className="mb-6">
             <input
               type="text"
               placeholder="🔍 Search here for more"
-              className={`w-full px-4 py-3 rounded-full border transition-colors duration-300 focus:outline-none ${isDark ? 'bg-gray-800 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-black focus:border-blue-500'}`}
+              className={`w-full px-4 py-3 rounded-full border transition-colors duration-300 focus:outline-none ${isDark ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-black focus:border-blue-500'}`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -371,22 +427,30 @@ export default function Settings() {
                             <div className={`space-y-3 transition-colors duration-300 ${isDark ? 'bg-gray-700/50' : 'bg-white'}`}>
                               <div className={`p-3 rounded-lg transition-colors duration-300`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>FULL NAME</p>
-                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>John Doe</p>
+                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {currentUser?.name || 'John Doe'}
+                                </p>
                               </div>
                               
                               <div className={`p-3 rounded-lg transition-colors duration-300`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>EMAIL ADDRESS</p>
-                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>john@example.com</p>
+                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {currentUser?.email || 'john@example.com'}
+                                </p>
                               </div>
                               
                               <div className={`p-3 rounded-lg transition-colors duration-300`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>USERNAME</p>
-                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>john_doe</p>
+                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {currentUser?.username || 'john_doe'}
+                                </p>
                               </div>
                               
                               <div className={`p-3 rounded-lg transition-colors duration-300`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>PHONE NUMBER</p>
-                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>+1 (555) 123-4567</p>
+                                <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {currentUser?.phone || '+1 (555) 123-4567'}
+                                </p>
                               </div>
                               
                               <button className={`w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
@@ -738,53 +802,18 @@ export default function Settings() {
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">👤</span>
                   <div>
-                    <p className={`font-medium transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{currentAccount}</p>
-                    <p className={`text-xs transition-colors duration-300 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>john@example.com</p>
+                    <p className={`font-medium transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
+                      {currentUser?.username || 'john_doe'}
+                    </p>
+                    <p className={`text-xs transition-colors duration-300 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {currentUser?.email || 'john@example.com'}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Switch Account */}
-            <div>
-              <p 
-                className="text-blue-600 cursor-pointer mb-2 hover:text-blue-700 flex items-center gap-2"
-                onClick={handleSwitchAccount}
-              >
-                <span>🔄</span>
-                Switch Account
-              </p>
-              
-              {/* Switch Account List - shown when button is clicked */}
-              {showSwitchAccount && (
-                <div className={`ml-4 space-y-2 animate-fadeIn border-l-2 pl-4 py-3 transition-colors duration-300 ${isDark ? 'border-gray-600' : 'border-gray-300'}`}>
-                  {savedAccounts.map((account) => (
-                    <div 
-                      key={account.id}
-                      className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all duration-200 ${
-                        account.username === currentAccount
-                          ? isDark ? 'bg-blue-900/30 border border-blue-600' : 'bg-blue-50 border border-blue-400'
-                          : isDark ? 'hover:bg-gray-600 border border-transparent' : 'hover:bg-gray-100 border border-transparent'
-                      }`}
-                    >
-                      <div 
-                        className="flex items-center gap-3 flex-1"
-                        onClick={() => handleSelectAccount(account.username)}
-                      >
-                        <span className="text-2xl">{account.avatar}</span>
-                        <div>
-                          <p className={`font-medium transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{account.username}</p>
-                          <p className={`text-xs transition-colors duration-300 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{account.email}</p>
-                        </div>
-                      </div>
-                      {account.username === currentAccount && (
-                        <span className={`text-sm font-medium px-2 py-1 rounded transition-colors duration-300 ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>✓ Active</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+           
 
             {/* Add Account */}
             <div>
@@ -819,14 +848,14 @@ export default function Settings() {
             
             <p 
               className="text-red-600 cursor-pointer hover:text-red-700 flex items-center gap-2" 
-              onClick={handleLogout}
+              onClick={handleLogoutClick}
             >
               <span>🚪</span>
               Logout
             </p>
           </div>
         </div>
-      </div>
+        </div>
     </Layout>
   );
 }

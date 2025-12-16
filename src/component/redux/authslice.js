@@ -124,23 +124,7 @@ const authSlice = createSlice({
       // Save to localStorage 
       localStorage.setItem("user", JSON.stringify(state.user));
     }
-    // updateFollowRelation(state, action) {
-    //   const { followerId, followingId } = action.payload;
-
-    //   if (!state.user) return;
-
-    //   // YOU received a follower
-    //   if (!state.user.followers.includes(followerId)) {
-    //     state.user.followers.push(followerId);
-    //   }
-
-    //   // YOU are now following someone
-    //   if (!state.user.following.includes(followingId)) {
-    //     state.user.following.push(followingId);
-    //   }
-
-    //   localStorage.setItem("user", JSON.stringify(state.user));
-    // }
+    
 
   },
   extraReducers: (builder) => {
@@ -171,13 +155,6 @@ const authSlice = createSlice({
         // SAVE TO LOCAL STORAGE
         localStorage.setItem("token", action.payload.token);
         localStorage.setItem("user", JSON.stringify(action.payload.user));
-
-        // // 🔥 Connect Socket.IO
-        // socket.connect();
-
-        // // 🔥 Join user room
-        // socket.emit("join", action.payload.user._id);
-
 
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -497,135 +474,12 @@ export const toggleLikeArticle = createAsyncThunk(
 );
 
 
-// SEND FOLLOW REQUEST
-// export const sendFollowRequest = (username) => async (dispatch) => {
-//   try {
-//     const token = localStorage.getItem("token");
-
-//     const res = await fetch(
-//       "https://robo-zv8u.onrender.com/api/follow/send-request",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ targetUsername: username }),
-//       }
-//     );
-
-//     const data = await res.json();
-//     console.log("Backend response:", data);
-
-//     if (!res.ok) {
-//       return dispatch(
-//         followRequestError(data.message || "Failed to send request")
-//       );
-//     }
-
-//     dispatch(followRequestSent("Follow request sent"));
-
-//     // Add local UI notification
-//     dispatch(
-//       addNotification({
-//         type: "followRequestSent",
-//         message: `You sent a follow request to ${username}`,
-//         createdAt: new Date().toISOString(),
-//       })
-//     );
-
-//     // ❌ DO NOT EMIT ANY SOCKET HERE
-//   } catch (error) {
-//     dispatch(followRequestError(error.message));
-//   }
-// };
-// export const acceptFollowRequest = (followerId) => async (dispatch) => {
-//   try {
-//     const token = localStorage.getItem("token");
-
-//     const res = await fetch(
-//       "https://robo-zv8u.onrender.com/api/follow/accept-request",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ followerId }),
-//       }
-//     );
-
-//     const data = await res.json();
-
-//     if (!res.ok) {
-//       return dispatch(acceptFollowError(data.message));
-//     }
-
-//     dispatch(acceptFollowSuccess("Accepted successfully"));
-
-//     dispatch(
-//       addNotification({
-//         type: "followRequestAccepted",
-//         message: `You accepted the follow request`,
-//         createdAt: new Date().toISOString(),
-//       })
-//     );
-
-//     // ❌ DO NOT EMIT ANYTHING – backend already emits followRequestAccepted
-
-//     return data;
-//   } catch (error) {
-//     dispatch(acceptFollowError(error.message));
-//   }
-// };
-// export const rejectFollowRequest = (followerId) => async (dispatch) => {
-//   try {
-//     const token = localStorage.getItem("token");
-
-//     const res = await fetch(
-//       "https://robo-zv8u.onrender.com/api/follow/reject-request",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ followerId }),
-//       }
-//     );
-
-//     const data = await res.json();
-
-//     if (!res.ok) {
-//       return dispatch(
-//         addNotification({
-//           type: "error",
-//           message: data.message,
-//           createdAt: new Date(),
-//         })
-//       );
-//     }
-
-//     dispatch(
-//       addNotification({
-//         type: "followRequestRejected",
-//         message: `You rejected the follow request`,
-//         createdAt: new Date().toISOString(),
-//       })
-//     );
-
-//     // ❌ NO FRONTEND EMIT NEEDED!
-
-//     return data;
-//   } catch (error) {
-//     console.error("Reject error:", error);
-//   }
-// };
+//  send follow request
 
 export const sendFollowRequest = (username) => async (dispatch, getState) => {
   try {
     const token = localStorage.getItem("token");
-    console.log("🔥 TOKEN USED:", token);
+    console.log("TOKEN USED:", token);
     const res = await fetch("https://robo-zv8u.onrender.com/api/follow/send-request", {
       method: "POST",
       headers: {
@@ -652,7 +506,7 @@ export const sendFollowRequest = (username) => async (dispatch, getState) => {
       createdAt: new Date().toISOString(),
 
     }));
-    // 🔥🔥 EMIT SOCKET EVENT TO BACKEND
+    //EMIT SOCKET EVENT TO BACKEND
     socket.emit("followRequestReceived", {
       targetUsername: username
     });
@@ -662,57 +516,7 @@ export const sendFollowRequest = (username) => async (dispatch, getState) => {
   }
 };
 
-// export const acceptFollowRequest = (followerId) => async (dispatch) => {
-//   try {
-//     const token = localStorage.getItem("token");
-
-//     const res = await fetch("https://robo-zv8u.onrender.com/api/follow/accept-request", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify({ followerId }),
-//     });
-
-//     const data = await res.json();
-
-//     if (!res.ok) {
-//       return dispatch(acceptFollowError(data.message || "Failed to accept follow request"));
-//     }
-
-//     // const currentUserId = getState().auth.user._id;
-//     // Update Redux user with new followers/following
-//     // if (data.updatedUser) {
-//     //   dispatch(setUser(data.updatedUser));
-//     //   localStorage.setItem("user", JSON.stringify(data.updatedUser));
-//     // }
-//     // dispatch(acceptFollowSuccess(data.message || "Follow request accepted"));
-//     dispatch(addNotification({
-//       type: "followRequestAccepted",
-//       message: `You accepted ${data.user.username}'s request`,
-//       createdAt: new Date().toISOString()
-//     }));
-//     const currentUserId = getState().auth.user._id;
-
-//     // ✅ FIXED
-//     dispatch(updateFollowers({
-//       followerId,                 // sender
-//       followingId: currentUserId, // receiver (YOU)
-//     }));
-
-//     dispatch(acceptFollowSuccess(data.message || "Follow request accepted"));
-
-//     socket.emit("accept-follow-request",
-//       { followerId: followerId }
-//     );
-
-//     // dispatch(removeIncomingRequest(followerId));
-//     return data;
-//   } catch (error) {
-//     dispatch(acceptFollowError(error.message));
-//   }
-// };
+ 
 
 
 
@@ -745,7 +549,7 @@ export const acceptFollowRequest = (followerId) => async (dispatch, getState) =>
 
     const currentUserId = getState().auth.user._id;
 
-    // ✅ FRONTEND-ONLY INSTANT UPDATE
+    // FRONTEND-ONLY INSTANT UPDATE
     dispatch(updateFollowers({
       followerId:followerId,             // sender
       followingId: currentUserId // receiver (YOU)
@@ -791,7 +595,7 @@ export const rejectFollowRequest = (followerId) => async (dispatch) => {
       createdAt: new Date().toISOString()
     }));
 
-    // 🔥🔥 EMIT REALTIME REJECTION
+    // EMIT REALTIME REJECTION
     socket.emit("followRequestRejected", {
       followerId
     });

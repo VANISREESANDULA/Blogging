@@ -5,15 +5,11 @@ const CreateButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 sm:bottom-8 right-6 sm:right-8 w-14 h-14 rounded-full bg-linear-to-br from-primary via-accent to-primary flex items-center justify-center bg-stone-500 shadow-2xl hover:shadow-2xl transition-all duration-300 hover:scale-110 group z-40"
-      style={{
-        backgroundSize: "200% 200%",
-      }}
+      className="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md z-40"
       title="Create a new post"
       aria-label="Create a new post"
     >
-      <div className="absolute inset-0 rounded-full bg-linear-to-br from-primary via-accent to-primary opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300" />
-      <Plus  className="relative z-10 text-orange-200 size-6 "  />
+      <Plus className="relative z-10" />
     </button>
   );
 };
