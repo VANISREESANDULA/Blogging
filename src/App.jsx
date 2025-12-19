@@ -23,12 +23,7 @@ import NotFound from "./component/homepage/NotFound";
 
 import { socket } from "./socket";
 import { addNotification } from "./component/redux/notificationsSlice";
-import { updateFollowers, logout, setUser } from "./component/redux/authslice";
-// import {
-//   updateFollowRelation,
-//   logout,
-//   setUser
-// } from "./component/redux/authslice";
+import { updateFollowing, logout, setUser } from "./component/redux/authslice";
 
 
 function App() {
@@ -155,32 +150,39 @@ function App() {
 
     // Incoming follow request
     socket.on("followRequestReceived", (data) => {
-      console.log("send request",data);
-      dispatch(
-        addNotification({
-          type: "followRequestIncoming",
-          message: `${data.from} sent you a follow request`,
-          fromId: data.fromId,
-          createdAt: new Date().toISOString(),
-        })
-      );
+      console.log(" request recieved from",data);
+        dispatch(addNotification({
+    type: "followRequestIncoming",
+    message: `${data.from} sent you a follow request`,
+    from: data.from,          // ✅ ADD THIS
+    fromId: data.fromId,
+    createdAt: new Date().toISOString(),
+  }));
     });
+  socket.on("followRequestAccepted", async (data) => {
 
-    // Request accepted — update notifications + followers locally
-    socket.on("followRequestAccepted", (data) => {
-      console.log("accept request",data);
-      dispatch(
-        addNotification({
-          type: "followRequestAccepted",
-          message: `${data.by} accepted your follow request`,
-          createdAt: new Date().toISOString(),
-        })
-      );
-       });
-
+    console.log("request accepted by",data)
+    const { byId,by,from,fromId } = data;
+    console.log('heyyyyyyyyyyyyy',byId)
+    console.log("hello",by)
+      // ✅ Notification
+  dispatch(addNotification({
+    type: "followRequestAccepted",
+    message: `${by} accepted your follow request`,
+    createdAt: new Date().toISOString(),
+  }));
+  dispatch(updateFollowing({
+    followingUser: {
+      _id:  data.by._id ||byId,          // store as reference
+      username:data.by || by,
+      email:data.byId ||data.by.email,
+         profilePhoto: data.by.profilePhoto
+    }
+  }));
+});
     // Request rejected
     socket.on("followRequestRejected", (data) => {
-      console.log("reject request",data);
+      console.log("rejected  request by",data);
       dispatch(
         addNotification({
           type: "followRequestRejected",
@@ -191,6 +193,7 @@ function App() {
     });
     // ❤️ LIKE
     socket.on("articleLiked", (data) => {
+      console.log(data)
       dispatch(addNotification({
         id: Date.now(),
         type: "like",
@@ -203,10 +206,11 @@ function App() {
 
     // 💬 COMMENT
     socket.on("newComment", (data) => {
+      console.log(data)
       dispatch(addNotification({
         id: Date.now(),
         type: "comment",
-        message: `${data.comment.by || data.comment.from} commented: "${data.comment.text}"`,
+        message: `${data.comment.user || data.comment.from} commented: "${data.comment.text}"`,
         fromUser: data.comment.by,
         articleId: data.articleId,
         createdAt: new Date().toISOString(),
