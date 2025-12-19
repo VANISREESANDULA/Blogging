@@ -37,6 +37,10 @@ const Profile = () => {
   const { user } = useSelector((state) => state.auth);
   const { articles = [] } = useSelector((state) => state.articles);
 
+
+
+  const followers = user?.followers || [];
+  const following = user?.following || [];
   // Debug user data
   useEffect(() => {
     if (user) {
@@ -104,7 +108,7 @@ const Profile = () => {
   const renderAvatar = () => {
     // Use the same logic as in Layout component
     const avatarSrc = croppedProfileImage || user?.profilePhoto || localProfileData.avatar;
-    
+
     if (avatarSrc) {
       // Format the avatar source exactly like in Layout component
       const formattedSrc = avatarSrc.startsWith("data:")
@@ -286,12 +290,12 @@ const Profile = () => {
   const getFilteredUsers = () => {
     const users = activeModalType === "followers" ? user?.followers : user?.following;
     if (!users || !Array.isArray(users)) return [];
-    
+
     return users.filter(userItem => {
       const username = typeof userItem === 'object' ? userItem.username || userItem.email?.split('@')[0] || '' : '';
       const email = typeof userItem === 'object' ? userItem.email || '' : '';
       return username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-             email.toLowerCase().includes(searchQuery.toLowerCase());
+        email.toLowerCase().includes(searchQuery.toLowerCase());
     });
   };
 
@@ -318,24 +322,28 @@ const Profile = () => {
   // Render user item for modal
   const renderUserItem = (userItem, index) => {
     const isFollower = activeModalType === "followers";
-    const userName = typeof userItem === 'object' 
+    const userName = typeof userItem === 'object'
       ? userItem.username || userItem.email?.split('@')[0] || 'Unknown User'
       : `User ${index + 1}`;
-    
+
     const userEmail = typeof userItem === 'object' ? userItem.email || '' : '';
-    const userAvatar = typeof userItem === 'object' ? userItem.profilePhoto : null;
+    // const userAvatar = typeof userItem === 'object' ? userItem.profilePhoto : null;
+    const userAvatar =
+      typeof userItem === "object" && typeof userItem.profilePhoto === "string"
+        ? userItem.profilePhoto
+        : null;
+
     const userId = typeof userItem === 'object' ? userItem._id : index;
-    
+
     const initial = userName?.charAt(0)?.toUpperCase() || 'U';
 
     return (
-      <div 
+      <div
         key={`${activeModalType}-${userId}`}
-        className={`group p-3 xs:p-4 transition-all duration-300 ${
-          isDark 
-            ? "hover:bg-gray-700/50 border-gray-700" 
+        className={`group p-3 xs:p-4 transition-all duration-300 ${isDark
+            ? "hover:bg-gray-700/50 border-gray-700"
             : "hover:bg-gray-50 border-gray-200"
-        } border-b last:border-b-0`}
+          } border-b last:border-b-0`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -344,9 +352,11 @@ const Profile = () => {
               {userAvatar ? (
                 <img
                   src={
-                    userAvatar.startsWith("data:")
-                      ? userAvatar
-                      : `data:image/png;base64,${userAvatar}`
+                    userAvatar
+                      ? userAvatar.startsWith("data:")
+                        ? userAvatar
+                        : `data:image/png;base64,${userAvatar}`
+                      : undefined
                   }
                   alt={userName}
                   className="w-10 h-10 xs:w-12 xs:h-12 rounded-full object-cover border-2"
@@ -354,8 +364,7 @@ const Profile = () => {
                     console.error("Failed to load user avatar");
                     e.target.style.display = "none";
                     e.target.parentElement.innerHTML = `
-                      <div class="w-10 h-10 xs:w-12 xs:h-12 rounded-full ${
-                        isDark ? 'bg-gray-600' : 'bg-gray-300'
+                      <div class="w-10 h-10 xs:w-12 xs:h-12 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-300'
                       } flex items-center justify-center text-white font-bold text-sm">
                         ${initial}
                       </div>
@@ -363,9 +372,8 @@ const Profile = () => {
                   }}
                 />
               ) : (
-                <div className={`w-10 h-10 xs:w-12 xs:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                  isDark ? 'bg-gray-600' : 'bg-gray-300'
-                }`}>
+                <div className={`w-10 h-10 xs:w-12 xs:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${isDark ? 'bg-gray-600' : 'bg-gray-300'
+                  }`}>
                   {initial}
                 </div>
               )}
@@ -373,27 +381,24 @@ const Profile = () => {
 
             {/* User Info */}
             <div className="flex-1 min-w-0">
-              <h4 className={`font-semibold text-sm xs:text-base truncate ${
-                isDark ? "text-gray-100" : "text-gray-900"
-              }`}>
+              <h4 className={`font-semibold text-sm xs:text-base truncate ${isDark ? "text-gray-100" : "text-gray-900"
+                }`}>
                 {userName}
               </h4>
               {userEmail && (
                 <div className="flex items-center gap-1 mt-0.5">
                   <Mail size={10} className={isDark ? "text-gray-400" : "text-gray-500"} />
-                  <p className={`text-xs truncate ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}>
+                  <p className={`text-xs truncate ${isDark ? "text-gray-400" : "text-gray-600"
+                    }`}>
                     {userEmail}
                   </p>
                 </div>
               )}
               <div className="flex items-center gap-2 mt-1">
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  isDark 
-                    ? "bg-gray-700 text-gray-300" 
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${isDark
+                    ? "bg-gray-700 text-gray-300"
                     : "bg-gray-100 text-gray-600"
-                }`}>
+                  }`}>
                   {isFollower ? "Follows you" : "You follow"}
                 </span>
               </div>
@@ -403,15 +408,14 @@ const Profile = () => {
           {/* Action Buttons */}
           <div className="flex items-center gap-2 ml-3">
             <button
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
-                isFollower
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${isFollower
                   ? isDark
                     ? "bg-blue-600 hover:bg-blue-700 text-white"
                     : "bg-blue-500 hover:bg-blue-600 text-white"
                   : isDark
                     ? "bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-gray-100"
                     : "bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900"
-              }`}
+                }`}
             >
               {isFollower ? (
                 <>
@@ -425,13 +429,12 @@ const Profile = () => {
                 </>
               )}
             </button>
-            
+
             <button
-              className={`p-1.5 rounded-full transition-colors ${
-                isDark
+              className={`p-1.5 rounded-full transition-colors ${isDark
                   ? "hover:bg-gray-600 text-gray-400 hover:text-gray-300"
                   : "hover:bg-gray-200 text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
             >
               <MoreVertical size={14} />
             </button>
@@ -446,16 +449,16 @@ const Profile = () => {
       <div className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
         {/* RESPONSIVE CONTAINER */}
         <div className="max-w-4xl mx-auto px-2 xs:px-3 sm:px-4 md:px-5 lg:px-6 py-3 xs:py-4 sm:py-5 md:py-6">
-          
+
           {/* Profile Header - RESPONSIVE */}
           <div className={`shadow-lg transition-colors duration-300 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-800" : "bg-white"} mb-4 xs:mb-5 sm:mb-6 md:mb-7 lg:mb-8`}>
-            
+
             {/* Profile Info Section - RESPONSIVE */}
             <div className={`p-3 xs:p-4 sm:p-5 md:p-6 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-800" : "bg-white"}`}>
               <div className="flex justify-center mb-3 xs:mb-4 sm:mb-5 md:mb-6">
                 {renderAvatar()}
               </div>
-                 
+
               {/* Name and Email - RESPONSIVE */}
               <div className="text-center mb-3 xs:mb-4 sm:mb-5 md:mb-6">
                 <h1 className={`text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
@@ -476,7 +479,7 @@ const Profile = () => {
                     Posts
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => openModal("followers")}
                   className="text-center cursor-pointer group"
                 >
@@ -487,7 +490,7 @@ const Profile = () => {
                     Followers
                   </div>
                 </button>
-                <button 
+                <button
                   onClick={() => openModal("following")}
                   className="text-center cursor-pointer group"
                 >
@@ -527,7 +530,7 @@ const Profile = () => {
                   className={`flex items-center gap-1 xs:gap-2 px-3 xs:px-4 sm:px-5 md:px-6 py-1.5 xs:py-2 sm:py-2 rounded-full font-semibold transition-colors text-xs xs:text-sm sm:text-base ${isDark
                     ? "bg-blue-600 hover:bg-blue-700 text-white"
                     : "bg-blue-500 hover:bg-blue-600 text-white"
-                  }`}
+                    }`}
                 >
                   <Edit2 size={12} className="xs:w-3 xs:h-3 sm:w-4 sm:h-4" />
                   <span>Edit Profile</span>
@@ -577,7 +580,7 @@ const Profile = () => {
                         ? "text-gray-400 hover:text-gray-200"
                         : "text-gray-500 hover:text-gray-700"
                       }`
-                    }`}
+                      }`}
                   >
                     {tab.label}
                   </button>
@@ -923,14 +926,13 @@ const Profile = () => {
               className={`absolute inset-0 transition-colors duration-300 ${isDark ? "bg-black/70" : "bg-black/50"} backdrop-blur-sm`}
               onClick={closeModal}
             />
-            
+
             {/* Modal Container */}
-            <div className={`relative w-full max-w-sm xs:max-w-md sm:max-w-lg mx-auto rounded-xl shadow-2xl max-h-[80vh] xs:max-h-[85vh] overflow-hidden flex flex-col transition-all duration-300 transform ${
-              isDark
+            <div className={`relative w-full max-w-sm xs:max-w-md sm:max-w-lg mx-auto rounded-xl shadow-2xl max-h-[80vh] xs:max-h-[85vh] overflow-hidden flex flex-col transition-all duration-300 transform ${isDark
                 ? "bg-gray-800 border border-gray-700"
                 : "bg-white border border-gray-200"
-            }`}>
-              
+              }`}>
+
               {/* Modal Header */}
               <div className={`px-4 xs:px-5 sm:px-6 py-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
                 <div className="flex items-center justify-between mb-4">
@@ -947,18 +949,18 @@ const Profile = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <button
                     onClick={closeModal}
                     className={`p-1.5 rounded-full transition-colors ${isDark
                       ? "hover:bg-gray-700 text-gray-400 hover:text-gray-300"
                       : "hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                    }`}
+                      }`}
                   >
                     <X size={18} />
                   </button>
                 </div>
-                
+
                 {/* Search Bar */}
                 <div className="relative">
                   <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`} size={16} />
@@ -970,11 +972,11 @@ const Profile = () => {
                     className={`w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border transition-colors ${isDark
                       ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/30"
                       : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                    } focus:outline-none focus:ring-2`}
+                      } focus:outline-none focus:ring-2`}
                   />
                 </div>
               </div>
-              
+
               {/* Modal Content - User List */}
               <div className="flex-1 overflow-y-auto">
                 {getFilteredUsers().length === 0 ? (
@@ -991,13 +993,13 @@ const Profile = () => {
                   </div>
                 ) : (
                   <div className="divide-y">
-                    {getFilteredUsers().map((userItem, index) => 
+                    {getFilteredUsers().map((userItem, index) =>
                       renderUserItem(userItem, index)
                     )}
                   </div>
                 )}
               </div>
-              
+
               {/* Modal Footer */}
               <div className={`px-4 xs:px-5 sm:px-6 py-3 border-t ${isDark ? "border-gray-700 bg-gray-800/50" : "border-gray-200 bg-gray-50/50"}`}>
                 <div className="flex items-center justify-between text-sm">
@@ -1005,7 +1007,7 @@ const Profile = () => {
                     <span className={`px-2 py-1 rounded-md text-xs font-medium ${isDark
                       ? "bg-gray-700 text-gray-300"
                       : "bg-gray-200 text-gray-700"
-                    }`}>
+                      }`}>
                       Total: {user?.[activeModalType]?.length || 0}
                     </span>
                   </div>
@@ -1014,7 +1016,7 @@ const Profile = () => {
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${isDark
                       ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
                       : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                    }`}
+                      }`}
                   >
                     Close
                   </button>
@@ -1023,7 +1025,7 @@ const Profile = () => {
             </div>
           </div>
         )}
-        </div>
+      </div>
     </Layout>
   );
 };

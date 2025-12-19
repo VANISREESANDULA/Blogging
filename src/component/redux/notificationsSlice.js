@@ -44,22 +44,6 @@ const notificationSlice = createSlice({
           (req) => req.fromId !== id
     );
 },
-// followRequestAccepted(state, action) {
-//    const { senderId } = action.payload;
-
-//    state.follows.followRequestSent = 
-//        state.follows.followRequestSent.filter(n => n.fromId !== senderId);
-
-//    state.follows.followRequestAccepted.push(action.payload);
-// },
-// removePendingRequest(state, action) {
-//   const id = action.payload;
-
-//   state.all = state.all.filter(
-//     (n) =>
-//       !(n.type === "followRequestSent" && n.toId === id)
-//   );
-// }
   },
 });
 

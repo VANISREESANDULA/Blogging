@@ -78,7 +78,8 @@ const authSlice = createSlice({
       localStorage.removeItem("user");
     },
     setUser(state, action) {
-      state.user = action.payload;
+      state.user = action.payload;   // ✅ ALWAYS replace
+  localStorage.setItem("user", JSON.stringify(action.payload));
     },
     resetError(state) {
       state.error = null;
@@ -103,28 +104,91 @@ const authSlice = createSlice({
       state.acceptFollowStatus = "error";
       state.acceptFollowMessage = action.payload;
     },
-    updateFollowers(state, action) {
-      const { followerId, followingId } = action.payload;
-       if (!state.user) return;
+    // updateFollowers(state, action) {
+    //   const { followerId, followingId } = action.payload;
+    //   if (!state.user) return;
 
-      // If current user IS the follower
-      if (state.user._id === followerId) {
-        if (!state.user.following.includes(followingId)) {
-          state.user.following.push(followingId);
-        }
+    //   // If current user IS the follower
+    //   if (state.user._id === followerId) {
+    //     if (!state.user.following.includes(followingId)) {
+    //       // state.user.following.push(followingId);
+    //       state.user.following = state.user.following.filter(
+    //         (id) => id !== acceptedUser._id
+    //       );
+
+    //     }
+    //   }
+
+    //   // If current user IS the one who was followed
+    //   if (state.user._id === followingId) {
+    //     if (!state.user.followers.includes(followerId)) {
+    //       // state.user.followers.push(followerId);
+    //       state.user.followers = [
+    //         ...state.user.followers,
+    //         acceptedUser
+    //       ];
+
+    //     }
+    //   }
+
+    //   // Save to localStorage 
+    //   localStorage.setItem("user", JSON.stringify(state.user));
+    // }
+    addFollower(state, action) {
+  const follower = action.payload.follower;
+
+  if (!state.user) return;
+
+  if (!state.user.followers) {
+    state.user.followers = [];
+  }
+
+  const exists = state.user.followers.some(
+    (u) => u._id === follower._id
+  );
+
+  if (!exists) {
+    state.user.followers.push(follower);
+  }
+
+  localStorage.setItem("user", JSON.stringify(state.user));
+},
+   updateFollowing(state, action) {
+      const { followingUser } = action.payload;
+      if (!state.user) return;
+
+      const exists = state.user.following?.some(
+        (u) => u._id === followingUser._id
+      );
+
+      if (!exists) {
+        state.user.following = [
+          ...(state.user.following || []),
+          followingUser
+        ];
       }
 
-      // If current user IS the one who was followed
-      if (state.user._id === followingId) {
-        if (!state.user.followers.includes(followerId)) {
-          state.user.followers.push(followerId);
-        }
-      }
-
-      // Save to localStorage 
       localStorage.setItem("user", JSON.stringify(state.user));
-    }
+    },
     
+    moveFollowRequestToAccepted(state, action) {
+  const { fromId, from, createdAt } = action.payload;
+
+  // remove from incoming
+  state.follows.followRequestIncoming =
+    state.follows.followRequestIncoming.filter(
+      (req) => req.fromId !== fromId
+    );
+
+  // add to accepted
+  state.follows.followRequestAccepted.unshift({
+    type: "followRequestAccepted",
+    from,
+    fromId,
+    message: `You accepted ${from} request`,
+    createdAt,
+  });
+}
 
   },
   extraReducers: (builder) => {
@@ -413,7 +477,7 @@ export const rootReducer = combineReducers({
 
 export const authReducer = authSlice.reducer;
 export const articlesReducer = articleSlice.reducer;
-export const { updateFollowers } = authSlice.actions;
+export const {  updateFollowing } = authSlice.actions;
 export const { setUser } = authSlice.actions;
 
 
@@ -461,7 +525,7 @@ export const toggleLikeArticle = createAsyncThunk(
         { headers: { Authorization: token ? `Bearer ${token}` : "" } }
       );
 
-      // Response expected: { message, article: updatedArticle }
+     
       return {
         articleId,
         data: response.data,
@@ -516,11 +580,11 @@ export const sendFollowRequest = (username) => async (dispatch, getState) => {
   }
 };
 
- 
 
 
 
-export const acceptFollowRequest = (followerId) => async (dispatch, getState) => {
+
+export const acceptFollowRequest = ({ followerId, from }) => async (dispatch, getState) => {
   try {
     const token = localStorage.getItem("token");
 
@@ -538,22 +602,48 @@ export const acceptFollowRequest = (followerId) => async (dispatch, getState) =>
 
     const data = await res.json();
     if (!res.ok) {
-       return dispatch(acceptFollowError(data.message));
+      return dispatch(acceptFollowError(data.message));
     }
+     console.log('heyyyyyyy',from)
+     const currentUser = getState().auth.user;
+     const followerData = data.user || {};
     dispatch(addNotification({
       type: "followRequestAccepted",
       // message: `You accepted ${data.user.username}'s request`,
-      message: `You accepted ${data.user?.username || "a user's"} request`,
+       message: `You accepted ${from}  request`,
       createdAt: new Date().toISOString()
     }));
+     console.log(
+  "Redux followers:",
+  getState().auth.user.followers
+);
+    // dispatch(addFollower({
+    //   follower: {
+    //     _id: followerId,
+    //     username: from,              
+    //     email: data.user.email,
+    //     profilePhoto: data.user.profilePhoto
+    //   }
+    // }));
+    dispatch(addFollower({
+  follower: {
+    _id: followerId,
+    username: from,
+    email: followerData.email || "",
+    profilePhoto: followerData.profilePhoto || null
+  }
+}));
 
-    const currentUserId = getState().auth.user._id;
-
-    // FRONTEND-ONLY INSTANT UPDATE
-    dispatch(updateFollowers({
-      followerId:followerId,             // sender
-      followingId: currentUserId // receiver (YOU)
+    dispatch(moveFollowRequestToAccepted({
+      fromId: followerId,
+      from: from,
+      createdAt: new Date().toISOString(),
     }));
+   socket.emit("followRequestAccepted", {
+     to: followerId,
+      byId: currentUser._id,
+      by: currentUser.username
+});
 
     dispatch(acceptFollowSuccess("Follow request accepted"));
     return data;
