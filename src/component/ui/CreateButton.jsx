@@ -5,7 +5,7 @@ const CreateButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md z-40"
+      className="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center bg-orange-600 text-white shadow-md z-40"
       title="Create a new post"
       aria-label="Create a new post"
     >

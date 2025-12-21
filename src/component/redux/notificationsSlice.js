@@ -19,6 +19,10 @@ const notificationSlice = createSlice({
       const notif = action.payload;
       // newest first
       state.all.unshift(notif);
+//       state.all.unshift({
+//   ...action.payload,
+//   isRead: false, // 🔴 REQUIRED
+// });
       
       switch (notif.type) {
         case "followRequestSent":

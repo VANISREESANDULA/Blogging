@@ -92,15 +92,16 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a title..."
-            className={`w-full px-4 py-2 rounded-xl border ${isDark ? 'bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+            autoFocus
+            className={`w-full px-4 py-2 rounded-xl border ${isDark ? 'bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors`}
           />
 
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Share your thoughts..."
-            autoFocus
-            className={`w-full min-h-40 resize-none rounded-2xl px-4 py-3 border ${isDark ? 'bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+           
+            className={`w-full min-h-40 resize-none rounded-2xl px-4 py-3 border ${isDark ? 'bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors`}
           />
         </div>
 
@@ -115,8 +116,8 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
               "px-6 py-2 rounded-full font-bold flex items-center gap-2 transition-colors",
               content.trim() && title.trim() && !isPosting
                 ? isDark 
-                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                  : "bg-blue-500 hover:bg-blue-600 text-white"
+                  ? "bg-orange-600 hover:bg-orange-700 text-white" 
+                  : "bg-orange-500 hover:bg-orange-600 text-white"
                 : isDark 
                   ? "bg-gray-700 text-gray-400 cursor-not-allowed" 
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
