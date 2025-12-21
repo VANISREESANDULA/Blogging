@@ -106,7 +106,6 @@ const Profile = () => {
 
   // Avatar renderer - RESPONSIVE (Fixed to match Layout component)
   const renderAvatar = () => {
-    // Use the same logic as in Layout component
     const avatarSrc = croppedProfileImage || user?.profilePhoto || localProfileData.avatar;
 
     if (avatarSrc) {
