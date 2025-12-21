@@ -19,6 +19,15 @@ const Registrationpage = () => {
   const [book, setBook] = useState(false);
 
   const { loading, error, registrationSuccess } = useSelector((state) => state.auth);
+  const isDark = useSelector((state) => state.theme.isDark);
+
+  // Theme-aware input / label classes for better contrast
+  const inputBase = `w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`;
+  // Default inputs are black for high-contrast readability
+  const inputBg = 'bg-white text-black placeholder-gray-400 border-gray-700';
+  const labelBase = `absolute left-4 font-bold transition-all duration-200 pointer-events-none`;
+  const labelColor = 'text-black';
+  const labelRaisedBg = 'top-[-8px] text-xs bg-white px-2 text-black';
 
   const checkPasswordStrength = (password) => {
     const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -124,24 +133,24 @@ const Registrationpage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url("/Screenshot 2025-11-13 232324.png.jpg")'}}>
+    <div className="min-h-screen flex items-center justify-center py-12  bg-orange-50" >
       <div className="
   w-full max-w-4xl 
-  rounded-3xl 
-  flex flex-row-reverse 
-  overflow-hidden 
-  border border-white/20 
-  bg-white/10 
-  shadow-[0_8px_32px_rgba(31,38,135,0.37)]
-  backdrop-blur-lg 
-  backdrop-saturate-150
+        rounded-3xl 
+        flex flex-col md:flex-row-reverse 
+        overflow-hidden 
+        border border-white/20 
+        bg-orange-50 
+        shadow-[0_8px_32px_rgba(31,38,135,0.37)]
+        backdrop-blur-lg 
+        backdrop-saturate-150
 ">
 
-        <div className="w-full md:w-1/2 p-10 border border-black/10 rounded-2xl shadow-xl ">
+        <div className="w-full md:w-1/2 p-10 border border-black/10 rounded-2xl shadow-xl bg-orange-100">
           <h2 className="text-2xl font-semibold text-center mb-4 ">Sign Up</h2>
 
           {/* Avatar Upload */}
-          <div className="flex justify-center mb-4 relative w-fit mx-auto">
+          <div className="flex justify-center mb-4 relative bg-white w-fit mx-auto">
             <label className="relative cursor-pointer">
               <img src={avatarPreview || "/Profile Icon.png"} alt="Avatar" className="h-32 w-32 border-2 border-black-300 bg-white/10 object-cover rounded-md overflow-hidden"/>
               <input type="file" name="avatar" accept="image/*" onChange={handleFileSelect} className="absolute inset-0 opacity-0 cursor-pointer"/>
@@ -165,41 +174,41 @@ const Registrationpage = () => {
 
           <form onSubmit={formik.handleSubmit}>
             {/* Username */}
-            <div className="relative mb-6">
-              <input type="text" id="username" name="username" className={`w-full px-4 py-3 border ${formik.errors.username ? "border-red-500" : "border-black-300"} rounded-lg bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`} onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.username} placeholder=" "/>
-              <label htmlFor="username" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.username ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>Full name</label>
+            <div className="relative mb-6 rounded-lg">
+              <input type="text" id="username" name="username" className={`${inputBase} ${inputBg} ${formik.errors.username ? 'border-red-500' : ''}`} onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.username} placeholder=" "/>
+              <label htmlFor="username" className={`${labelBase} ${labelColor} ${formik.values.username ? labelRaisedBg : 'top-3 text-base'}`}>Full name</label>
               {formik.touched.username && formik.errors.username && <div className="text-red-500 text-sm mt-1">{formik.errors.username}</div>}
             </div>
 
             {/* Email */}
-            <div className="relative mb-6">
-              <input type="email" id="email" name="email" className={`w-full px-4 py-3 border ${formik.errors.email ? "border-red-500" : "border-black-300"} rounded-lg bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`} onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} placeholder=" "/>
-              <label htmlFor="email" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.email ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>Email</label>
+            <div className="relative mb-6 rounded-lg">
+              <input type="email" id="email" name="email" className={`${inputBase} ${inputBg} ${formik.errors.email ? 'border-red-500' : ''}`} onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} placeholder=" "/>
+              <label htmlFor="email" className={`${labelBase} ${labelColor} ${formik.values.email ? labelRaisedBg : 'top-3 text-base'}`}>Email</label>
               {formik.touched.email && formik.errors.email && <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>}
             </div>
 
             {/* Password */}
-            <div className="relative mb-6">
-              <input type="password" id="password" name="password" className={`w-full px-4 py-3 border ${formik.errors.password ? "border-red-500" : passwordStrength === "strong" ? "border-green-500" : "border-gray-800"} rounded-lg bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950`} onChange={(e)=>{formik.handleChange(e); checkPasswordStrength(e.target.value)}} onBlur={formik.handleBlur} value={formik.values.password} placeholder=" "/>
-              <label htmlFor="password" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.password ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>Password</label>
+            <div className="relative mb-6 rounded-lg">
+              <input type="password" id="password" name="password" className={`${inputBase} ${formik.errors.password ? 'border-red-500' : passwordStrength === 'strong' ? 'border-green-500' : 'border-gray-800'} ${inputBg}`} onChange={(e)=>{formik.handleChange(e); checkPasswordStrength(e.target.value)}} onBlur={formik.handleBlur} value={formik.values.password} placeholder=" "/>
+              <label htmlFor="password" className={`${labelBase} ${labelColor} ${formik.values.password ? labelRaisedBg : 'top-3 text-base'}`}>Password</label>
               {passwordStrength && <p className={`text-sm mt-1 ${passwordStrength === "strong" ? "text-green-600" : "text-red-500"}`}>{passwordStrength === "strong" ? "Strong password" : "Weak password"}</p>}
               {formik.touched.password && formik.errors.password && <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>}
             </div>
 
             {/* Confirm Password */}
-            <div className="relative mb-6">
-              <input type="password" id="confirmpassword" name="confirmpassword" className="w-full px-4 py-3 border border-gray-800 rounded-lg bg-orange-100/50 focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.confirmpassword} placeholder=" "/>
-              <label htmlFor="confirmpassword" className={`absolute left-4 text-black font-bold transition-all duration-200 pointer-events-none ${formik.values.confirmpassword ? 'top-[-8px] text-xs bg-white px-2 text-amber-950' : 'top-3 text-base'}`}>Confirm Password</label>
+            <div className="relative mb-6 rounded-lg">
+              <input type="password" id="confirmpassword" name="confirmpassword" className={`${inputBase} ${inputBg}`} onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.confirmpassword} placeholder=" "/>
+              <label htmlFor="confirmpassword" className={`${labelBase} ${labelColor} ${formik.values.confirmpassword ? labelRaisedBg : 'top-3 text-base'}`}>Confirm Password</label>
               {formik.touched.confirmpassword && formik.errors.confirmpassword && <div className="text-red-500 text-sm mt-1">{formik.errors.confirmpassword}</div>}
             </div>
 
-            <button type="submit" disabled={!isFormValid() || loading} className={`w-full py-3 rounded-lg text-white font-semibold shadow-md ${!isFormValid() || loading ? 'bg-gray-400 cursor-not-allowed opacity-50' : 'bg-orange-100/50 hover:opacity-90'}`}>{loading ? "Creating Account..." : "SIGN UP"}</button>
+            <button type="submit" disabled={!isFormValid() || loading} className={`w-full py-3 rounded-lg text-white font-semibold shadow-md ${!isFormValid() || loading ? 'bg-orange-400 cursor-not-allowed opacity-50' : 'bg-orange-500 hover:opacity-90'}`}>{loading ? "Creating Account..." : "SIGN UP"}</button>
           </form>
         </div>
 
         {/* Right Card */}
         <div className={`w-full md:w-1/2 relative flex items-center justify-center text-white p-10 border border-black/10 rounded-2xl shadow-2xl ${book?"rotate-y-180 transition-all duration-300 origin-right bg-black text-transparent":""}`}>
-          <div className="absolute inset-0 bg-black/10 z-0 rounded-lg"></div>
+          <div className="absolute inset-0 bg-orange-500 z-0 rounded-lg"></div>
           <div className="relative z-10 text-center max-w-md">
             <h3 className="text-xl font-semibold mb-3">Welcome Back!</h3>
             <p className="mb-5">Already have an account? Sign in to access all features</p>

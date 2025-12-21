@@ -131,7 +131,7 @@ const Profile = () => {
 
     // Fallback to initial
     return (
-      <div className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl border-2 sm:border-3 md:border-4 border-white">
+      <div className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-orange-400 text-white flex items-center justify-center font-bold text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl border-2 sm:border-3 md:border-4 border-white">
         {localProfileData.name?.charAt(0)?.toUpperCase() || "N"}
       </div>
     );
@@ -340,13 +340,13 @@ const Profile = () => {
     return (
       <div
         key={`${activeModalType}-${userId}`}
-        className={`group p-3 xs:p-4 transition-all duration-300 ${isDark
-            ? "hover:bg-gray-700/50 border-gray-700"
+        className={`group p-3 xs:p-4   transition-all duration-300 ${isDark
+            ? "hover:bg-gray-900/50 border-gray-800"
             : "hover:bg-gray-50 border-gray-200"
           } border-b last:border-b-0`}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex items-center  justify-between">
+          <div className="flex items-center gap-3 flex-1 min-w-0 ">
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               {userAvatar ? (
@@ -364,7 +364,7 @@ const Profile = () => {
                     console.error("Failed to load user avatar");
                     e.target.style.display = "none";
                     e.target.parentElement.innerHTML = `
-                      <div class="w-10 h-10 xs:w-12 xs:h-12 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-300'
+                      <div class="w-10 h-10 xs:w-12 xs:h-12 rounded-full ${isDark ? 'bg-gray-800' : 'bg-gray-300'
                       } flex items-center justify-center text-white font-bold text-sm">
                         ${initial}
                       </div>
@@ -372,7 +372,7 @@ const Profile = () => {
                   }}
                 />
               ) : (
-                <div className={`w-10 h-10 xs:w-12 xs:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${isDark ? 'bg-gray-600' : 'bg-gray-300'
+                <div className={`w-10 h-10 xs:w-12 xs:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${isDark ? 'bg-gray-800' : 'bg-gray-300'
                   }`}>
                   {initial}
                 </div>
@@ -396,7 +396,7 @@ const Profile = () => {
               )}
               <div className="flex items-center gap-2 mt-1">
                 <span className={`text-xs px-1.5 py-0.5 rounded-full ${isDark
-                    ? "bg-gray-700 text-gray-300"
+                    ? "bg-gray-800 text-gray-300"
                     : "bg-gray-100 text-gray-600"
                   }`}>
                   {isFollower ? "Follows you" : "You follow"}
@@ -413,7 +413,7 @@ const Profile = () => {
                     ? "bg-blue-600 hover:bg-blue-700 text-white"
                     : "bg-blue-500 hover:bg-blue-600 text-white"
                   : isDark
-                    ? "bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-gray-100"
+                    ? "bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100"
                     : "bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900"
                 }`}
             >
@@ -432,7 +432,7 @@ const Profile = () => {
 
             <button
               className={`p-1.5 rounded-full transition-colors ${isDark
-                  ? "hover:bg-gray-600 text-gray-400 hover:text-gray-300"
+                  ? "hover:bg-gray-800 text-gray-400 hover:text-gray-300"
                   : "hover:bg-gray-200 text-gray-500 hover:text-gray-700"
                 }`}
             >
@@ -446,15 +446,15 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
+      <div className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-black" : "bg-orange-50"}`}>
         {/* RESPONSIVE CONTAINER */}
         <div className="max-w-4xl mx-auto px-2 xs:px-3 sm:px-4 md:px-5 lg:px-6 py-3 xs:py-4 sm:py-5 md:py-6">
 
           {/* Profile Header - RESPONSIVE */}
-          <div className={`shadow-lg transition-colors duration-300 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-800" : "bg-white"} mb-4 xs:mb-5 sm:mb-6 md:mb-7 lg:mb-8`}>
+          <div className={`shadow-lg transition-colors duration-300 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-900 border border-gray-800" : "bg-orange-100"} mb-4 xs:mb-5 sm:mb-6 md:mb-7 lg:mb-8`}>
 
             {/* Profile Info Section - RESPONSIVE */}
-            <div className={`p-3 xs:p-4 sm:p-5 md:p-6 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-800" : "bg-white"}`}>
+            <div className={`p-3 xs:p-4 sm:p-5 md:p-6 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl ${isDark ? "bg-gray-900" : "bg-orange-100"}`}>
               <div className="flex justify-center mb-3 xs:mb-4 sm:mb-5 md:mb-6">
                 {renderAvatar()}
               </div>
@@ -464,7 +464,7 @@ const Profile = () => {
                 <h1 className={`text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
                   {localProfileData.name}
                 </h1>
-                <p className={`text-xs xs:text-sm sm:text-base md:text-lg transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"} mt-1 xs:mt-2`}>
+                <p className={`text-xs xs:text-sm sm:text-base md:text-lg transition-colors duration-300 ${isDark ? "text-gray-300" : "text-gray-700"} mt-1 xs:mt-2`}>
                   {localProfileData.email}
                 </p>
               </div>
@@ -475,7 +475,7 @@ const Profile = () => {
                   <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
                     {postsCount}
                   </div>
-                  <div className={`text-xs transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                  <div className={`text-xs transition-colors duration-300 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                     Posts
                   </div>
                 </div>
@@ -483,10 +483,10 @@ const Profile = () => {
                   onClick={() => openModal("followers")}
                   className="text-center cursor-pointer group"
                 >
-                  <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 group-hover:text-blue-500 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                  <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 group-hover:text-orange-600 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
                     {user?.followers?.length || 0}
                   </div>
-                  <div className={`text-xs transition-colors duration-300 group-hover:text-blue-400 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                  <div className={`text-xs transition-colors duration-300 group-hover:text-orange-500 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                     Followers
                   </div>
                 </button>
@@ -494,10 +494,10 @@ const Profile = () => {
                   onClick={() => openModal("following")}
                   className="text-center cursor-pointer group"
                 >
-                  <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 group-hover:text-blue-500 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                  <div className={`text-lg xs:text-xl sm:text-2xl font-bold transition-colors duration-300 group-hover:text-orange-600 ${isDark ? "text-gray-100" : "text-gray-900"}`}>
                     {user?.following?.length || 0}
                   </div>
-                  <div className={`text-xs transition-colors duration-300 group-hover:text-blue-400 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                  <div className={`text-xs transition-colors duration-300 group-hover:text-orange-500 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                     Following
                   </div>
                 </button>
@@ -512,12 +512,12 @@ const Profile = () => {
 
               {/* Location and Join Date - RESPONSIVE */}
               <div className="flex flex-col xs:flex-row justify-center items-center gap-1 xs:gap-2 sm:gap-3 md:gap-4 text-xs">
-                <div className={`flex items-center gap-1 transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                <div className={`flex items-center gap-1 transition-colors duration-300 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                   <MapPin size={12} className="shrink-0" />
                   <span className="truncate max-w-[120px] xs:max-w-[150px] sm:max-w-none">{localProfileData.location}</span>
                 </div>
-                <span className={`hidden xs:inline transition-colors duration-300 ${isDark ? "text-gray-600" : "text-gray-400"}`}>•</span>
-                <div className={`flex items-center gap-1 transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                <span className={`hidden xs:inline transition-colors duration-300 ${isDark ? "text-gray-400" : "text-gray-500"}`}>•</span>
+                <div className={`flex items-center gap-1 transition-colors duration-300 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                   <Calendar size={12} className="shrink-0" />
                   <span>{localProfileData.joinDate}</span>
                 </div>
@@ -528,8 +528,8 @@ const Profile = () => {
                 <button
                   onClick={handleEditClick}
                   className={`flex items-center gap-1 xs:gap-2 px-3 xs:px-4 sm:px-5 md:px-6 py-1.5 xs:py-2 sm:py-2 rounded-full font-semibold transition-colors text-xs xs:text-sm sm:text-base ${isDark
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                    ? "bg-orange-600 hover:bg-orange-700 text-white"
+                    : "bg-orange-500 hover:bg-orange-600 text-white"
                     }`}
                 >
                   <Edit2 size={12} className="xs:w-3 xs:h-3 sm:w-4 sm:h-4" />
@@ -550,12 +550,12 @@ const Profile = () => {
                       value={followUsername}
                       onChange={(e) => setFollowUsername(e.target.value)}
                       className={`w-full xs:w-48 sm:w-56 md:w-64 px-2 xs:px-3 py-1.5 xs:py-2 rounded-lg border text-xs xs:text-sm
-                        ${isDark ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-300"}`}
+                        ${isDark ? "bg-gray-800 border-gray-700 text-gray-100" : "bg-white border-orange-200"}`}
                     />
                     <button
                       onClick={handleSendFollowRequest}
                       className={`px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg font-semibold text-xs xs:text-sm
-                        ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
+                        ${isDark ? "bg-orange-600 text-white" : "bg-orange-500 text-white"}`}
                     >
                       Send
                     </button>
@@ -566,19 +566,19 @@ const Profile = () => {
           </div>
 
           {/* Posts Tab - RESPONSIVE */}
-          <div className={`rounded-lg sm:rounded-xl shadow-lg transition-colors duration-300 ${isDark ? "bg-gray-800" : "bg-white"}`}>
+          <div className={`rounded-lg sm:rounded-xl shadow-lg transition-colors duration-300 ${isDark ? "bg-gray-900 border border-gray-800" : "bg-orange-100"}`}>
             {/* Tab Header - RESPONSIVE */}
-            <div className={`border-b transition-colors duration-300 ${isDark ? "border-gray-700" : "border-gray-200"} px-3 xs:px-4 sm:px-5 md:px-6 py-2 xs:py-3 sm:py-4`}>
+            <div className={`border-b transition-colors duration-300 ${isDark ? "border-gray-800" : "border-orange-200"} px-3 xs:px-4 sm:px-5 md:px-6 py-2 xs:py-3 sm:py-4`}>
               <div className="flex gap-2 xs:gap-3 sm:gap-4 md:gap-6 lg:gap-8 overflow-x-auto">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`py-1.5 xs:py-2 font-semibold border-b-2 transition-colors text-xs xs:text-sm sm:text-base whitespace-nowrap ${activeTab === tab.id
-                      ? `border-blue-500 ${isDark ? "text-blue-300" : "text-blue-600"}`
+                      ? `border-orange-500 ${isDark ? "text-orange-300" : "text-orange-600"}`
                       : `border-transparent ${isDark
                         ? "text-gray-400 hover:text-gray-200"
-                        : "text-gray-500 hover:text-gray-700"
+                        : "text-gray-600 hover:text-gray-800"
                       }`
                       }`}
                   >
@@ -631,225 +631,226 @@ const Profile = () => {
           </div>
         </div>
 
+     
         {/* Edit Profile Dialog - RESPONSIVE */}
-        {showEditDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-1 xs:p-2 sm:p-3 md:p-4">
-            <div
-              className={
-                isDark
-                  ? "absolute inset-0 bg-black/70 backdrop-blur-sm"
-                  : "absolute inset-0 bg-black/40 backdrop-blur-sm"
-              }
-              onClick={() => setShowEditDialog(false)}
-            />
-            <div
-              className={`relative w-full max-w-sm xs:max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto rounded-lg xs:rounded-xl sm:rounded-2xl shadow-2xl max-h-[85vh] xs:max-h-[90vh] overflow-hidden flex flex-col transition-colors duration-300 ${isDark
-                ? "bg-gray-900 border border-gray-700 text-gray-100"
-                : "bg-white"
+{showEditDialog && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-1 xs:p-2 sm:p-3 md:p-4">
+    <div
+      className={
+        isDark
+          ? "absolute inset-0 bg-black/70 backdrop-blur-sm"
+          : "absolute inset-0 bg-black/40 backdrop-blur-sm"
+      }
+      onClick={() => setShowEditDialog(false)}
+    />
+    <div
+      className={`relative w-full max-w-sm xs:max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto rounded-lg xs:rounded-xl sm:rounded-2xl shadow-2xl max-h-[85vh] xs:max-h-[90vh] overflow-hidden flex flex-col transition-colors duration-300 ${isDark
+        ? "bg-gray-900 border border-gray-800 text-gray-100"
+        : "bg-orange-100"
+        }`}
+    >
+      <div
+        className={`flex items-center justify-between px-3 xs:px-4 sm:px-5 md:px-6 py-2 xs:py-3 sm:py-4 border-b transition-colors duration-300 ${isDark ? "border-gray-800" : "border-orange-200"
+          }`}
+      >
+        <h2
+          className={`text-base  xs:text-lg sm:text-xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"
+            }`}
+        >
+          Edit Profile
+        </h2>
+        <button
+          onClick={() => setShowEditDialog(false)}
+          className={`p-0.5 xs:p-1 transition-colors ${isDark
+            ? "text-gray-300 hover:text-gray-100"
+            : "text-gray-500 hover:text-gray-700"
+            }`}
+        >
+          <X size={16} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
+        </button>
+      </div>
+
+      <div
+        className={`overflow-y-auto flex-1 p-3 xs:p-4 sm:p-5 md:p-6 transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-orange-100"
+          }`}
+      >
+        <form onSubmit={handleEditSubmit} className="space-y-3 xs:space-y-4 sm:space-y-5 md:space-y-6">
+          {/* Profile Photo Upload - RESPONSIVE */}
+          <div className="space-y-1 xs:space-y-2 sm:space-y-3">
+            <label
+              className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
                 }`}
             >
+              Profile Photo
+            </label>
+            <div className="flex flex-col xs:flex-row items-center gap-2 xs:gap-3 sm:gap-4">
               <div
-                className={`flex items-center justify-between px-3 xs:px-4 sm:px-5 md:px-6 py-2 xs:py-3 sm:py-4 border-b transition-colors duration-300 ${isDark ? "border-gray-700" : "border-gray-200"
+                className={`w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-orange-400 flex items-center justify-center text-white font-bold text-sm xs:text-base sm:text-lg md:text-xl border-2 xs:border-3 sm:border-4 overflow-hidden ${isDark ? "border-gray-800" : "border-white"
                   }`}
               >
-                <h2
-                  className={`text-base xs:text-lg sm:text-xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"
-                    }`}
-                >
-                  Edit Profile
-                </h2>
-                <button
-                  onClick={() => setShowEditDialog(false)}
-                  className={`p-0.5 xs:p-1 transition-colors ${isDark
-                    ? "text-gray-300 hover:text-gray-100"
-                    : "text-gray-500 hover:text-gray-700"
-                    }`}
-                >
-                  <X size={16} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
-                </button>
+                {croppedProfileImage || localProfileData.avatar ? (
+                  <img
+                    src={
+                      croppedProfileImage ||
+                      (localProfileData.avatar?.startsWith("data:")
+                        ? localProfileData.avatar
+                        : `data:image/png;base64,${localProfileData.avatar}`)
+                    }
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error("Failed to load edit dialog profile image");
+                      e.target.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  localProfileData.name?.charAt(0)?.toUpperCase() || "Y"
+                )}
               </div>
-
-              <div
-                className={`overflow-y-auto flex-1 p-3 xs:p-4 sm:p-5 md:p-6 transition-colors duration-300 ${isDark ? "bg-gray-900" : "bg-white"
-                  }`}
-              >
-                <form onSubmit={handleEditSubmit} className="space-y-3 xs:space-y-4 sm:space-y-5 md:space-y-6">
-                  {/* Profile Photo Upload - RESPONSIVE */}
-                  <div className="space-y-1 xs:space-y-2 sm:space-y-3">
-                    <label
-                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
-                        }`}
-                    >
-                      Profile Photo
-                    </label>
-                    <div className="flex flex-col xs:flex-row items-center gap-2 xs:gap-3 sm:gap-4">
-                      <div
-                        className={`w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm xs:text-base sm:text-lg md:text-xl border-2 xs:border-3 sm:border-4 overflow-hidden ${isDark ? "border-gray-800" : "border-white"
-                          }`}
-                      >
-                        {croppedProfileImage || localProfileData.avatar ? (
-                          <img
-                            src={
-                              croppedProfileImage ||
-                              (localProfileData.avatar?.startsWith("data:")
-                                ? localProfileData.avatar
-                                : `data:image/png;base64,${localProfileData.avatar}`)
-                            }
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              console.error("Failed to load edit dialog profile image");
-                              e.target.style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          localProfileData.name?.charAt(0)?.toUpperCase() || "Y"
-                        )}
-                      </div>
-                      <div className="text-center xs:text-left">
-                        <input
-                          type="file"
-                          id="profilePhoto"
-                          accept="image/*"
-                          onChange={handleProfilePhotoUpload}
-                          className="hidden"
-                        />
-                        <label
-                          htmlFor="profilePhoto"
-                          className={`cursor-pointer px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 rounded-lg hover:transition-colors flex items-center justify-center gap-1 xs:gap-2 text-xs xs:text-sm ${isDark
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
-                            }`}
-                        >
-                          <Upload size={12} className="xs:w-3 xs:h-3" />
-                          Change Photo
-                        </label>
-                        <p
-                          className={`text-xs mt-0.5 xs:mt-1 ${isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                        >
-                          Recommended: Square image, at least 400x400 pixels
-                        </p>
-                      </div>
-                    </div>
-                    {croppedProfileImage && (
-                      <div
-                        className={
-                          isDark
-                            ? "mt-1 xs:mt-2 p-1.5 xs:p-2 bg-green-900 rounded-lg border border-green-700"
-                            : "mt-1 xs:mt-2 p-1.5 xs:p-2 bg-green-50 rounded-lg border border-green-200"
-                        }
-                      >
-                        <p
-                          className={`text-xs xs:text-sm ${isDark ? "text-green-300" : "text-green-700"
-                            }`}
-                        >
-                          ✓ New profile photo ready to save
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Name Field - RESPONSIVE */}
-                  <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
-                    <label
-                      htmlFor="name"
-                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
-                        }`}
-                    >
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={editFormData.name}
-                      onChange={handleInputChange}
-                      className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs xs:text-sm sm:text-base ${isDark
-                        ? "bg-gray-800 border-gray-700 text-gray-100"
-                        : "border border-gray-300 bg-white text-gray-900"
-                        }`}
-                      placeholder="Enter your name"
-                    />
-                  </div>
-
-                  {/* Bio Field - RESPONSIVE */}
-                  <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
-                    <label
-                      htmlFor="bio"
-                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
-                        }`}
-                    >
-                      Bio
-                    </label>
-                    <textarea
-                      id="bio"
-                      name="bio"
-                      value={editFormData.bio}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-xs xs:text-sm sm:text-base ${isDark
-                        ? "bg-gray-800 border-gray-700 text-gray-100"
-                        : "border border-gray-300 bg-white text-gray-900"
-                        }`}
-                      placeholder="Tell us about yourself..."
-                    />
-                  </div>
-
-                  {/* Location Field - RESPONSIVE */}
-                  <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
-                    <label
-                      htmlFor="location"
-                      className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
-                        }`}
-                    >
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      id="location"
-                      name="location"
-                      value={editFormData.location}
-                      onChange={handleInputChange}
-                      className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs xs:text-sm sm:text-base ${isDark
-                        ? "bg-gray-800 border-gray-700 text-gray-100"
-                        : "border border-gray-300 bg-white text-gray-900"
-                        }`}
-                      placeholder="Where are you based?"
-                    />
-                  </div>
-
-                  {/* Action Buttons - RESPONSIVE */}
-                  <div className="flex flex-col xs:flex-row gap-1 xs:gap-2 sm:gap-3 pt-2 xs:pt-3 sm:pt-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowEditDialog(false);
-                        setCroppedProfileImage(null);
-                        setCroppedBackgroundImage(null);
-                      }}
-                      className={`flex-1 px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg hover:transition-colors text-xs xs:text-sm sm:text-base ${isDark
-                        ? "border border-gray-700 text-gray-200 hover:bg-gray-800"
-                        : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                        }`}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className={`flex-1 px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg transition-colors text-xs xs:text-sm sm:text-base ${isDark
-                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
-                        }`}
-                    >
-                      Save Changes
-                    </button>
-                  </div>
-                </form>
+              <div className="text-center xs:text-left">
+                <input
+                  type="file"
+                  id="profilePhoto"
+                  accept="image/*"
+                  onChange={handleProfilePhotoUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="profilePhoto"
+                  className={`cursor-pointer px-2 xs:px-3 sm:px-4 py-1.5 xs:py-2 rounded-lg hover:transition-colors flex items-center justify-center gap-1 xs:gap-2 text-xs xs:text-sm ${isDark
+                    ? "bg-orange-600 text-white hover:bg-orange-700"
+                    : "bg-orange-500 text-white hover:bg-orange-600"
+                    }`}
+                >
+                  <Upload size={12} className="xs:w-3 xs:h-3" />
+                  Change Photo
+                </label>
+                <p
+                  className={`text-xs mt-0.5 xs:mt-1 ${isDark ? "text-gray-400" : "text-gray-600"
+                    }`}
+                >
+                  Recommended: Square image, at least 400x400 pixels
+                </p>
               </div>
             </div>
+            {croppedProfileImage && (
+              <div
+                className={
+                  isDark
+                    ? "mt-1 xs:mt-2 p-1.5 xs:p-2 bg-green-900 rounded-lg border border-green-700"
+                    : "mt-1 xs:mt-2 p-1.5 xs:p-2 bg-green-50 rounded-lg border border-green-200"
+                }
+              >
+                <p
+                  className={`text-xs xs:text-sm ${isDark ? "text-green-300" : "text-green-700"
+                    }`}
+                >
+                  ✓ New profile photo ready to save
+                </p>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Name Field - RESPONSIVE */}
+          <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
+            <label
+              htmlFor="name"
+              className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                }`}
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={editFormData.name}
+              onChange={handleInputChange}
+              className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-xs xs:text-sm sm:text-base ${isDark
+                ? "bg-gray-800 border-gray-700 text-gray-100"
+                : "border border-orange-200 bg-white text-gray-900"
+                }`}
+              placeholder="Enter your name"
+            />
+          </div>
+
+          {/* Bio Field - RESPONSIVE */}
+          <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
+            <label
+              htmlFor="bio"
+              className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                }`}
+            >
+              Bio
+            </label>
+            <textarea
+              id="bio"
+              name="bio"
+              value={editFormData.bio}
+              onChange={handleInputChange}
+              rows={3}
+              className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none text-xs xs:text-sm sm:text-base ${isDark
+                ? "bg-gray-800 border-gray-700 text-gray-100"
+                : "border border-orange-200 bg-white text-gray-900"
+                }`}
+              placeholder="Tell us about yourself..."
+            />
+          </div>
+
+          {/* Location Field - RESPONSIVE */}
+          <div className="space-y-0.5 xs:space-y-1 sm:space-y-2">
+            <label
+              htmlFor="location"
+              className={`block text-xs xs:text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"
+                }`}
+            >
+              Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={editFormData.location}
+              onChange={handleInputChange}
+              className={`w-full px-2 xs:px-3 py-1.5 xs:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-xs xs:text-sm sm:text-base ${isDark
+                ? "bg-gray-800 border-gray-700 text-gray-100"
+                : "border border-orange-200 bg-white text-gray-900"
+                }`}
+              placeholder="Where are you based?"
+            />
+          </div>
+
+          {/* Action Buttons - RESPONSIVE */}
+          <div className="flex flex-col xs:flex-row gap-1 xs:gap-2 sm:gap-3 pt-2 xs:pt-3 sm:pt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setShowEditDialog(false);
+                setCroppedProfileImage(null);
+                setCroppedBackgroundImage(null);
+              }}
+              className={`flex-1 px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg hover:transition-colors text-xs xs:text-sm sm:text-base ${isDark
+                ? "border border-gray-700 text-gray-200 hover:bg-gray-800"
+                : "border border-orange-300 text-gray-700 hover:bg-orange-50"
+                }`}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={`flex-1 px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg transition-colors text-xs xs:text-sm sm:text-base ${isDark
+                ? "bg-orange-600 text-white hover:bg-orange-700"
+                : "bg-orange-500 text-white hover:bg-orange-600"
+                }`}
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+)}
 
         {/* Image Cropper Modal - RESPONSIVE */}
         {imageToCrop && (
@@ -909,7 +910,7 @@ const Profile = () => {
                 </button>
                 <button
                   onClick={handleCropSave}
-                  className="w-full xs:w-auto px-3 xs:px-4 py-1.5 xs:py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-xs xs:text-sm sm:text-base"
+                  className="w-full xs:w-auto px-3 xs:px-4 py-1.5 xs:py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors text-xs xs:text-sm sm:text-base"
                 >
                   Save Cropped Image
                 </button>
@@ -929,22 +930,22 @@ const Profile = () => {
 
             {/* Modal Container */}
             <div className={`relative w-full max-w-sm xs:max-w-md sm:max-w-lg mx-auto rounded-xl shadow-2xl max-h-[80vh] xs:max-h-[85vh] overflow-hidden flex flex-col transition-all duration-300 transform ${isDark
-                ? "bg-gray-800 border border-gray-700"
-                : "bg-white border border-gray-200"
+                ? "bg-gray-900 border border-gray-800"
+                : "bg-orange-100 border border-orange-200"
               }`}>
 
               {/* Modal Header */}
-              <div className={`px-4 xs:px-5 sm:px-6 py-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+              <div className={`px-4 xs:px-5 sm:px-6 py-4 border-b ${isDark ? "border-gray-800" : "border-orange-200"}`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${isDark ? "bg-blue-900/30" : "bg-blue-100"}`}>
-                      <User className={isDark ? "text-blue-400" : "text-blue-500"} size={20} />
+                    <div className={`p-2 rounded-lg ${isDark ? "bg-gray-800/30" : "bg-orange-200"}`}>
+                      <User className={isDark ? "text-orange-400" : "text-orange-500"} size={20} />
                     </div>
                     <div>
                       <h2 className={`text-lg xs:text-xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"}`}>
                         {activeModalType === "followers" ? "Followers" : "Following"}
                       </h2>
-                      <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                      <p className={`text-xs ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                         {getFilteredUsers().length} {getFilteredUsers().length === 1 ? "person" : "people"}
                       </p>
                     </div>
@@ -953,8 +954,8 @@ const Profile = () => {
                   <button
                     onClick={closeModal}
                     className={`p-1.5 rounded-full transition-colors ${isDark
-                      ? "hover:bg-gray-700 text-gray-400 hover:text-gray-300"
-                      : "hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                      ? "hover:bg-gray-800 text-gray-400 hover:text-gray-300"
+                      : "hover:bg-orange-200 text-gray-500 hover:text-gray-700"
                       }`}
                   >
                     <X size={18} />
@@ -963,15 +964,15 @@ const Profile = () => {
 
                 {/* Search Bar */}
                 <div className="relative">
-                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`} size={16} />
+                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDark ? "text-gray-400" : "text-gray-500"}`} size={16} />
                   <input
                     type="text"
                     placeholder="Search by name or email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={`w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border transition-colors ${isDark
-                      ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/30"
-                      : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                      ? "bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500/30"
+                      : "bg-white border-orange-200 text-gray-900 placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500/20"
                       } focus:outline-none focus:ring-2`}
                   />
                 </div>
@@ -981,13 +982,13 @@ const Profile = () => {
               <div className="flex-1 overflow-y-auto">
                 {getFilteredUsers().length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 xs:py-16">
-                    <div className={`p-4 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-100"} mb-4`}>
-                      <User className={isDark ? "text-gray-500" : "text-gray-400"} size={32} />
+                    <div className={`p-4 rounded-full ${isDark ? "bg-gray-800" : "bg-orange-200"} mb-4`}>
+                      <User className={isDark ? "text-gray-400" : "text-gray-500"} size={32} />
                     </div>
                     <h3 className={`text-base xs:text-lg font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                       No {activeModalType} found
                     </h3>
-                    <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-500"} max-w-xs text-center px-4`}>
+                    <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"} max-w-xs text-center px-4`}>
                       {searchQuery ? "Try a different search term" : `No ${activeModalType} yet`}
                     </p>
                   </div>
@@ -1001,12 +1002,12 @@ const Profile = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className={`px-4 xs:px-5 sm:px-6 py-3 border-t ${isDark ? "border-gray-700 bg-gray-800/50" : "border-gray-200 bg-gray-50/50"}`}>
+              <div className={`px-4 xs:px-5 sm:px-6 py-3 border-t ${isDark ? "border-gray-800 bg-gray-900/50" : "border-orange-200 bg-orange-50/50"}`}>
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-1 rounded-md text-xs font-medium ${isDark
-                      ? "bg-gray-700 text-gray-300"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-gray-800 text-gray-300"
+                      : "bg-orange-200 text-gray-700"
                       }`}>
                       Total: {user?.[activeModalType]?.length || 0}
                     </span>
@@ -1014,8 +1015,8 @@ const Profile = () => {
                   <button
                     onClick={closeModal}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${isDark
-                      ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                      ? "bg-gray-800 hover:bg-gray-700 text-gray-300"
+                      : "bg-orange-200 hover:bg-orange-300 text-gray-700"
                       }`}
                   >
                     Close
