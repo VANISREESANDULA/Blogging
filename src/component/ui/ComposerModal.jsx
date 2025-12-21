@@ -27,7 +27,7 @@ const ComposerModal = ({ isOpen, onClose, onPost }) => {
     setIsPosting(true);
 
     try {
-      await onPost({ title, content }); // Wait for backend response
+      await onPost({ title, content }); 
       setTitle("");
       setContent("");
       onClose();

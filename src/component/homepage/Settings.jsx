@@ -89,6 +89,15 @@ export default function Settings() {
     navigate('/register');
   };
 
+  // Helper for keyboard activation (Enter / Space)
+  const handleKeyAction = (e, action) => {
+    if (!action) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  };
+
   const handleThemeChange = (mode) => {
     dispatch(setThemeMode(mode));
   };
@@ -321,8 +330,11 @@ export default function Settings() {
                               {fontOptions.map((font) => (
                                 <div
                                   key={font.id}
+                                  role="button"
+                                  tabIndex={0}
+                                  onKeyDown={(e) => handleKeyAction(e, () => handleFontChange(font.id))}
                                   onClick={() => handleFontChange(font.id)}
-                                  className={`p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center justify-between ${
+                                  className={`p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center justify-between focus:outline-none focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white ${
                                     currentFont === font.id
                                       ? isDark
                                         ? 'bg-gray-600 border border-gray-500 hover:bg-orange-500 hover:text-white'
@@ -363,7 +375,7 @@ export default function Settings() {
                                 <button
                                   key={size.id}
                                   onClick={() => handleFontSizeChange(size.id)}
-                                  className={`p-2 sm:p-3 rounded-lg border-2 transition-all duration-200 text-center min-h-[80px] sm:min-h-[90px] flex flex-col items-center justify-center ${
+                                  className={`p-2 sm:p-3 rounded-lg border-2 transition-all duration-200 text-center min-h-20 sm:min-h-24 flex flex-col items-center justify-center ${
                                     currentFontSize === size.id
                                       ? isDark
                                         ? 'bg-gray-600 border-gray-500 hover:bg-orange-500 hover:text-white hover:border-orange-600'
@@ -437,28 +449,28 @@ export default function Settings() {
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Personal Details</h3>
                             
                             <div className={`space-y-2 sm:space-y-3 transition-colors duration-300 ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
-                              <div className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>FULL NAME</p>
                                 <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                                   {currentUser?.name || 'John Doe'}
                                 </p>
                               </div>
                               
-                              <div className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>EMAIL ADDRESS</p>
                                 <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                                   {currentUser?.email || 'john@example.com'}
                                 </p>
                               </div>
                               
-                              <div className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>USERNAME</p>
                                 <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                                   {currentUser?.username || 'john_doe'}
                                 </p>
                               </div>
                               
-                              <div className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer`}>
                                 <p className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>PHONE NUMBER</p>
                                 <p className={`text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                                   {currentUser?.phone || '+1 (555) 123-4567'}
@@ -480,7 +492,7 @@ export default function Settings() {
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Linked Accounts</h3>
                             
                             <div className={`space-y-2 transition-colors duration-300`}>
-                              <div className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xl">📱</span>
                                   <div>
@@ -497,7 +509,7 @@ export default function Settings() {
                                 </button>
                               </div>
                               
-                              <div className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xl">📘</span>
                                   <div>
@@ -520,7 +532,7 @@ export default function Settings() {
                           <div className="space-y-2 sm:space-y-3 pt-2 border-t" style={{borderColor: isDark ? '#4B5563' : '#FDBA74'}}>
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Two-Factor Authentication</h3>
                             
-                            <div className={`p-3 sm:p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                            <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-3 sm:p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                               <div>
                                 <p className={`font-medium text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Enable 2FA</p>
                                 <p className={`text-xs transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Add an extra layer of security to your account</p>
@@ -539,7 +551,7 @@ export default function Settings() {
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Active Sessions</h3>
                             
                             <div className={`space-y-2 transition-colors duration-300`}>
-                              <div className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xl">💻</span>
                                   <div>
@@ -549,7 +561,7 @@ export default function Settings() {
                                 </div>
                               </div>
                               
-                              <div className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                              <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xl">📱</span>
                                   <div>
@@ -581,7 +593,7 @@ export default function Settings() {
                         <h2 className={`text-lg sm:text-xl font-bold transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Account privacy</h2>
                         
                         <div className="space-y-3 sm:space-y-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 p-3 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer">
+                          <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 p-3 rounded-lg hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer">
                             <h3 className={`text-base sm:text-lg font-medium transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Private account</h3>
                             <ToggleSwitch 
                               isOn={isPrivateAccount}
@@ -590,16 +602,16 @@ export default function Settings() {
                           </div>
                           
                           <div className={`space-y-2 text-xs sm:text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                            <p>
+                              <p>
                               When your account is public, your profile and posts can be seen by anyone, 
                               on or off Instagram, even if they don't have an Instagram account.
                             </p>
-                            <p>
+                              <p>
                               When your account is private, only the followers that you approve can see what you share, 
                               including your photos or videos on hashtag and location pages, and your followers and 
                               following lists. Certain info on your profile, such as your profile picture and username, 
                               is visible to everyone on and off Instagram.{" "}
-                              <span className="text-orange-600 cursor-pointer hover:text-orange-700">Learn more</span>
+                              <span role="link" tabIndex={0} onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`text-orange-600 cursor-pointer transition-colors px-1 rounded focus:outline-none ${isDark ? 'hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white' : 'hover:text-orange-700'}`}>Learn more</span>
                             </p>
                           </div>
                         </div>
@@ -634,21 +646,21 @@ export default function Settings() {
                           <div className="space-y-2 sm:space-y-3">
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Frequently Asked Questions</h3>
                             
-                            <div className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                            <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                               <p className={`font-medium text-sm sm:text-base mb-1 sm:mb-2 transition-colors duration-300 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>How do I create a post?</p>
                               <p className={`text-xs sm:text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                 Click the "Create" button on the home page, add your content, images, or text, and publish. Your post will be visible to your followers based on your account privacy settings.
                               </p>
                             </div>
                             
-                            <div className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                            <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                               <p className={`font-medium text-sm sm:text-base mb-1 sm:mb-2 transition-colors duration-300 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>How do I change my theme?</p>
                               <p className={`text-xs sm:text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                 Go to Settings → Appearance Settings. Select between Light Mode, Dark Mode, or System Default theme. Your preference will be saved automatically.
                               </p>
                             </div>
                             
-                            <div className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
+                            <div tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`p-2 sm:p-3 rounded-lg transition-colors duration-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white focus:outline-none cursor-pointer ${isDark ? 'bg-gray-700' : 'bg-orange-100'}`}>
                               <p className={`font-medium text-sm sm:text-base mb-1 sm:mb-2 transition-colors duration-300 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Can I customize fonts?</p>
                               <p className={`text-xs sm:text-sm transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                 Yes! Go to Settings → Appearance Settings. Choose from 15 different Google Fonts and adjust the font size from 5 predefined options to suit your preference.
@@ -675,13 +687,13 @@ export default function Settings() {
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Need More Help?</h3>
                             
                             <div className="space-y-1 sm:space-y-2">
-                              <p className={`text-xs sm:text-sm transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                              <p tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`text-xs sm:text-sm transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                 ✉️ <span className="font-medium">Email Support:</span> support@bloggingapp.com
                               </p>
-                              <p className={`text-xs sm:text-sm transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                              <p tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`text-xs sm:text-sm transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                 📱 <span className="font-medium">Twitter:</span> @BloggingApp
                               </p>
-                              <p className={`text-xs sm:text-sm transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                              <p tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className={`text-xs sm:text-sm transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                 🔗 <span className="font-medium">Website:</span> www.bloggingapp.com/help
                               </p>
                             </div>
@@ -692,7 +704,7 @@ export default function Settings() {
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Quick Tips</h3>
                             
                             <ul className={`text-xs sm:text-sm space-y-1 sm:space-y-2 transition-colors duration-300 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                              <li className="p-2 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer">💡 Use hashtags to make your posts discoverable</li>
+                              <li tabIndex={0} role="button" onKeyDown={(e)=>handleKeyAction(e, ()=>{})} className="p-2 rounded-lg hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white cursor-pointer">💡 Use hashtags to make your posts discoverable</li>
                               <li className="p-2 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer">💡 Reply to comments to engage with your community</li>
                               <li className="p-2 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer">💡 Check Notifications regularly to stay updated</li>
                               <li className="p-2 rounded-lg hover:bg-orange-500 hover:text-white cursor-pointer">💡 Explore trending posts to discover new creators</li>
@@ -774,13 +786,13 @@ export default function Settings() {
                             <h3 className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>Legal & Resources</h3>
                             
                             <div className="space-y-1 sm:space-y-2">
-                              <p className={`text-xs sm:text-sm cursor-pointer hover:text-orange-500 transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                              <p className={`text-xs sm:text-sm cursor-pointer transition-colors duration-300 p-2 rounded-lg ${isDark ? 'hover:bg-orange-500 hover:text-white text-gray-300' : 'hover:text-orange-500 text-gray-600'}`}>
                                 📋 <span className="font-medium">Terms of Service</span>
                               </p>
-                              <p className={`text-xs sm:text-sm cursor-pointer hover:text-orange-500 transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                              <p className={`text-xs sm:text-sm cursor-pointer transition-colors duration-300 p-2 rounded-lg ${isDark ? 'hover:bg-orange-500 hover:text-white text-gray-300' : 'hover:text-orange-500 text-gray-600'}`}>
                                 🔒 <span className="font-medium">Privacy Policy</span>
                               </p>
-                              <p className={`text-xs sm:text-sm cursor-pointer hover:text-orange-500 transition-colors duration-300 p-2 rounded-lg hover:bg-orange-500 hover:text-white ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                              <p className={`text-xs sm:text-sm cursor-pointer transition-colors duration-300 p-2 rounded-lg ${isDark ? 'hover:bg-orange-500 hover:text-white text-gray-300' : 'hover:text-orange-500 text-gray-600'}`}>
                                 ⚖️ <span className="font-medium">Community Guidelines</span>
                               </p>
                             </div>
@@ -843,14 +855,20 @@ export default function Settings() {
               {showAddAccountOptions && (
                 <div className={`ml-3 sm:ml-4 space-y-2 sm:space-y-3 animate-fadeIn border-l-2 pl-3 sm:pl-4 py-2 transition-colors duration-300 ${isDark ? 'border-gray-600' : 'border-orange-300'}`}>
                   <p 
-                    className="text-orange-600 cursor-pointer hover:text-orange-700 flex items-center gap-2 text-sm p-2 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-300"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e)=>handleKeyAction(e, handleLoginToExisting)}
+                    className={`text-orange-600 cursor-pointer flex items-center gap-2 text-sm p-2 rounded-lg transition-all duration-300 ${isDark ? 'hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white' : 'hover:text-orange-700'}`}
                     onClick={handleLoginToExisting}
                   >
                     <span>🔑</span>
                     Log into existing account
                   </p>
                   <p 
-                    className="text-orange-600 cursor-pointer hover:text-orange-700 flex items-center gap-2 text-sm p-2 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-300"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e)=>handleKeyAction(e, handleCreateNewAccount)}
+                    className={`text-orange-600 cursor-pointer flex items-center gap-2 text-sm p-2 rounded-lg transition-all duration-300 ${isDark ? 'hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white' : 'hover:text-orange-700'}`}
                     onClick={handleCreateNewAccount}
                   >
                     <span>✨</span>
@@ -861,8 +879,11 @@ export default function Settings() {
             </div>
             
             <p 
-              className={`text-red-600 cursor-pointer flex items-center gap-2 text-sm sm:text-base p-2 rounded-lg hover:bg-red-500 hover:text-white transition-all duration-300 ${
-                isDark ? 'hover:bg-red-500 hover:text-white' : ''
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e)=>handleKeyAction(e, handleLogoutClick)}
+              className={`text-red-600 cursor-pointer flex items-center gap-2 text-sm sm:text-base p-2 rounded-lg transition-all duration-300 ${
+                isDark ? 'hover:bg-orange-500 hover:text-white' : 'hover:bg-red-500 hover:text-white'
               }`} 
               onClick={handleLogoutClick}
             >
@@ -879,10 +900,13 @@ export default function Settings() {
 function AccordionItem({ title, icon, open, onClick, isDark }) {
   return (
     <div 
-      className={`flex justify-between items-center cursor-pointer transition-all duration-300 rounded-lg p-2 sm:p-3 ${
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
+      className={`flex justify-between items-center cursor-pointer transition-all duration-300 rounded-lg p-2 sm:p-3 focus:outline-none ${
         isDark 
-          ? 'text-gray-300 hover:bg-orange-500 hover:text-white' 
-          : 'text-gray-700 hover:bg-orange-500 hover:text-white'
+          ? 'text-gray-300 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white' 
+          : 'text-gray-700 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white active:bg-orange-500 active:text-white'
       }`} 
       onClick={onClick}
     >
@@ -898,6 +922,9 @@ function AccordionItem({ title, icon, open, onClick, isDark }) {
 function ThemeOption({ title, icon, description, isSelected, onClick, isDark }) {
   return (
     <div 
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
       onClick={onClick}
       className={`text-center p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[120px] sm:min-h-[140px] ${
         isSelected 
